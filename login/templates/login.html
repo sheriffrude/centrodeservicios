@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
+</head>
+<body>
+    <h1>login</h1>
+
+    {{error}}
+    <form action="/signin/" method="POST">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button>iniciar sesion</button>
+    </form>
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>  
+</body>
+</html>
