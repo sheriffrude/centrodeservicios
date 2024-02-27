@@ -1,20 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
-</head>
-<body>
-    <h1>login</h1>
+{% extends "adminlte/base.html" %}
+{% load i18n static %}
+{% load static %}
+<div class="pos-f-t">
+    <div class="collapse" id="navbarToggleExternalContent">
+      <div class="bg-dark p-4">
+        <h4 class="text-white">Collapsed content</h4>
+        <span class="text-muted">Toggleable via the navbar brand.</span>
+      </div>
+    </div>
+    <nav class="navbar navbar-dark bg-dark">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </nav>
+  </div>
+{% block body_class %}login-page{% endblock %}
 
-    {{error}}
-    <form action="/signin/" method="POST">
-        {% csrf_token %}
-        {{form.as_p}}
-        <button>iniciar sesion</button>
-    </form>
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>  
+{% block body %}
+
+<body style="background-image: url('{% static '/images/back.png' %}'); background-size: 70%; height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center;background-repeat: no-repeat; background-position-y: 60%;
+background-position-x: 50%;" >
+
+    <div class="login-box"  >
+        {% block logo %}
+        <div class="login-logo">
+            {# Mirrors block names used in _main_header.html #}
+            <a href="{% block logo_href %}/{% endblock %}">{% block logo_text %}<b>CENTRO DE SERVICIOS</b>{% endblock %}</a>
+        </div>
+        {% endblock %}
+        {{error}}
+        <!-- /.login-logo -->
+        <div class="card">
+            <div class="card-body login-card-body">
+                {% block login_errors %}
+                    {% if form.errors and not form.non_field_errors %}
+                        <p class="alert alert-danger">
+                            {% if form.errors.items|length == 1 %}{% trans "usuario o contraseña incorrectos" %}{% else %}
+                                {% trans "usuario o contraseña incorrectos" %}{% endif %}
+                        </p>
+                    {% endif %}
+
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <p class="alert alert-danger">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    {% endif %}
+                {% endblock login_errors %}
+                <p class="login-box-msg">Inicia Sesion</p>
+                {% block login_form %}
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        {% if message %}
+                            <p class="login-box-msg" style="color: rgb(102, 65, 65);">{{ message }}</p>
+                        {% endif %}
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="USUARIO" id="username" name="username">
+                          <div class="input-group-append">
+                            <div class="input-group-text">
+                              <span class="fas fa-user"></span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="password" class="form-control" placeholder="{% trans 'Contraseña' %}" name="password">
+                          <div class="input-group-append">
+                            <div class="input-group-text">
+                              <span class="fas fa-lock"></span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                           
+                            
+                            <!-- /.col -->
+                            <div class="col-4">
+                                <button type="submit" class="btn btn-primary btn-block">{% trans 'Sign In' %}</button>
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                    </form>
+                {% endblock login_form %}
+                
+                <!-- /.social-auth-links -->
+                <p class="mb-1">
+                    <a href="contraseñaolvidada">Soy pendej@ y olvide mi contraseña</a>
+                </p>
+                
+
+            </div>
+            <!-- /.login-card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+    <!-- /.login-box -->
 </body>
-</html>
+{% endblock %}
