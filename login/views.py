@@ -33,3 +33,7 @@ def home(request):
 def exit(request):
     logout(request)
     return redirect('/')
+
+@login_required
+def granja(request):
+   return render(request, 'granja.html')

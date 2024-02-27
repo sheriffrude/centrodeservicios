@@ -1,24 +1,38 @@
-{% extends "adminlte/base.html" %}
+{% load adminlte_helpers i18n %}
+{% load static %}<!DOCTYPE html>
+<html>
+<head>
+    {% block title_outer %}
+        <title>{% block title %}{{ site.name }}{% endblock %}</title>
+    {% endblock %}
+
+    {% block meta %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% endblock %}
+
+    {% block stylesheets %}
+        {% include 'adminlte/lib/_styles.html' %}
+    {% endblock %}
+
+   
+</head>
 {% load i18n static %}
 {% load static %}
 <div class="pos-f-t">
     <div class="collapse" id="navbarToggleExternalContent">
       <div class="bg-dark p-4">
-        <h4 class="text-white">Collapsed content</h4>
-        <span class="text-muted">Toggleable via the navbar brand.</span>
+    
       </div>
     </div>
-    <nav class="navbar navbar-dark bg-dark">
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-    </nav>
+   
   </div>
-{% block body_class %}login-page{% endblock %}
+
 
 {% block body %}
 
-<body style="background-image: url('{% static '/images/back.png' %}'); background-size: 70%; height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center;background-repeat: no-repeat; background-position-y: 60%;
+<body style="background-image: url('{%static 'admin-lte/dist/img/cercafelog.png' %}'); background-size: 70%; height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center;background-repeat: no-repeat; background-position-y: 60%;
 background-position-x: 50%;" >
 
     <div class="login-box"  >
@@ -76,7 +90,7 @@ background-position-x: 50%;" >
                             
                             <!-- /.col -->
                             <div class="col-4">
-                                <button type="submit" class="btn btn-primary btn-block">{% trans 'Sign In' %}</button>
+                                <button type="submit" class="btn --cercafe btn-danger btn-block">{% trans 'sign in' %}</button>
                             </div>
                             <!-- /.col -->
                         </div>
