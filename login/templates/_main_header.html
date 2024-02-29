@@ -32,7 +32,7 @@
             {% block user_info %}
             {% if request.user.is_authenticated %}
             <li class="nav-item dropdown">
-                <a class="nav-link" data-toggle="dropdown" href="#">
+                <a class="nav-link" data-toggle="dropdown">
                     <i class="far fa-user fa-2x"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
@@ -46,8 +46,7 @@
                                     <span class="float-right text-sm text-danger"><i class="fas fa-online"></i></span>
                                 </h3>
                                 <p class="text-sm"><small>{% trans 'Member since' %} :</small></p>
-                                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> <small>{{
-                                        request.user.date_joined }}</small></p>
+                                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> <small>{{ request.user.date_joined }}</small></p>
                             </div>
                         </div>
                         <!-- Message End -->
