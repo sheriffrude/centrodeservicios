@@ -48,6 +48,14 @@ def granja(request):
 def financiera(request):
    return render(request, 'financiera.html')
 
+#---Define La Vista del modulo reportes-----
+@login_required
+def repoprove(request):
+   return render(request, 'report_prov.html')
+
+@login_required
+def repofina(request):
+   return render(request, 'report_finan.html')
 
 
 def mi_vista(request):

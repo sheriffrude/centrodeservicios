@@ -46,25 +46,25 @@
                             <p>Financiera</p>
                         </a>
                     </li>
-                <!-- <li class="nav-item has-tree-view ">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-object-group"></i> <p>Sub menu</p>
+                <li class="nav-item has-tree-view ">
+                    <a  class="nav-link">
+                        <i class="nav-icon fas fa-chart-pie"></i> <p>Reportes</p>
                         <p><i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview menu-open">
                             <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="nav-icon fas fa-circle"></i> link
+                                    <a id="cargarContenido" ref="{% url 'repoprove' %}" class="nav-link">
+                                        <i class="nav-icon fas fa-chart-line"></i>Proveeduria
                                     </a>
                                 </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link active">
-                                <i class="nav-icon fas fa-user"></i> Another link
+                            <a id="cargarContenido" ref="{% url 'repofina' %}" class="nav-link">
+                                <i class="nav-icon fas fa-file-invoice-dollar"></i>Financiera
                             </a>
                         </li>
                     </ul>
-                </li> -->
+                </li>
             {% endblock nav_links %}
             {% endblock nav_links_outer %}
             </ul>
