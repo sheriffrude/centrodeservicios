@@ -62,7 +62,7 @@ ROOT_URLCONF = 'centrodeservicios.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates/mi_vista/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,23 +81,41 @@ WSGI_APPLICATION = 'centrodeservicios.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        # Replace this value with your local database's connection string.
-        default='postgresql://postgres:postgres@localhost/postgres',
-        conn_max_age=600
-    )
-}
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'centrodeservicios',
-#         'USER': 'root',
-#         'PASSWORD': '1234',
-#         'HOST': 'localhost',
-#         'PORT': '3306',
-#     }
+#     'default': dj_database_url.config(
+#         # Replace this value with your local database's connection string.
+#         default='postgresql://postgres:postgres@localhost/postgres',
+#         conn_max_age=600
+#     )
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'centrodeservicios',
+        'USER': 'root',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    },
+    
+    'proveeduria': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'proveeduria',
+        'USER': 'root',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    },
+    'b_ca': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'b_ca',
+        'USER': 'DEV_USER',
+        'PASSWORD': 'DEV-USER12345',
+        'HOST': '192.168.9.200',
+        'PORT': '3308',
+    },
+    
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

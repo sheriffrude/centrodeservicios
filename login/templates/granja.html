@@ -2,84 +2,50 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proveeduria</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proveeduria</title>
 </head>
 
 <body>
-    
 
-    <!-- SELECT2 EXAMPLE -->
-    <div class="card card-default">
-        <div class="card-header">
-          <h3 class="card-title">Ingreso De Compromiso por granja</h3>
 
-          <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
-            <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
-          </div>
-        </div>
-        <!-- /.card-header -->
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label>Grupo Asociados</label>
-                    <select class="form-control select2 select2-danger" data-dropdown-css-class="select2-danger"
-                        style="width: 100%;">
-                        <option selected="selected"></option>
-                        <option>grupo 1</option>
-                        <option>grupo 2</option>
-                        <option>grupo 3</option>
-                        <option>grupo 4</option>
-                        <option>grupo 5</option>
-                        <option>grupo 6</option>
-                    </select>
-                </div>
-              <!-- /.form-group -->
-             
-            </div>
-            <!-- /.col -->
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Multiple</label>
-                <select class="select2bs4" multiple="multiple" data-placeholder="Select a State"
-                        style="width: 100%;">
-                  <option></option>
-                  <option></option>
-                  <option></option>
-                  <option></option>
-                  <option></option>
-                  <option></option>
-                  <option></option>
-                </select>
-              </div>
-              <!-- /.form-group -->
-              <div class="form-group">
-                <label>Disabled Result</label>
-                <select class="form-control select2bs4" style="width: 100%;">
-                  <option selected="selected">Alabama</option>
-                  <option>Alaska</option>
-                  <option disabled="disabled">California (disabled)</option>
-                  <option>Delaware</option>
-                  <option>Tennessee</option>
-                  <option>Texas</option>
-                  <option>Washington</option>
-                </select>
-              </div>
-              <!-- /.form-group -->
-            </div>
-            <!-- /.col -->
-          </div>
-          <!-- /.row -->
-        </div>
-        <!-- /.card-body -->
-        <div class="card-footer">
-          los valores ingresados aqui, no pueden ser cambiados luego de ingresarlos.
-        </div>
+  <!-- SELECT2 EXAMPLE -->
+  <div class="card card-default">
+    <div class="card-header">
+      <h3 class="card-title">Ingreso De Compromiso por granja</h3>
+
+      <div class="card-tools">
+        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+        <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
       </div>
-      <!-- /.card -->
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="archivo_excel">Selecciona un archivo Excel:</label>
+            <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
+            <br>
+            <button class="btn btn-success" type="submit">Cargar Datos</button>
+            <!-- <a class="btn btn-primary" href="/myapp/grafico_pie">
+            Reportes</a> -->
+        
+        </form>
+          <!-- /.form-group -->
+
+        </div>
+        <!-- /.col -->
+      
+    </div>
+    <!-- /.card-body -->
+    <div class="card-footer">
+      los valores ingresados aqui, no pueden ser cambiados luego de ingresarlos.
+    </div>
+  </div>
+  <!-- /.card -->
 </body>
 
 </html>

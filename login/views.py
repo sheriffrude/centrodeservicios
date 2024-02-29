@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.db import connections
 
 #---Define La Vista del login-----
 def signin(request):
@@ -37,3 +38,14 @@ def exit(request):
 @login_required
 def granja(request):
    return render(request, 'granja.html')
+
+
+
+def mi_vista(request):
+    with connections['proveeduria'].cursor() as cursor:
+        cursor.execute("SELECT nombre FROM grupo")
+        grupos = [row[0] for row in cursor.fetchall()]
+
+    print(grupos)  # Verifica los resultados en la consola del servidor
+
+    return render(request, '/granja/', {'grupos': grupos})
