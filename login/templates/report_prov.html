@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,7 +18,20 @@
     <link rel="stylesheet" href="/static/admin-lte/dist/css/adminlte.min.css">
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <!-- DataTables Buttons CSS -->
+    <link rel="stylesheet" href="/static/admin-lte/plugins/datatables-buttons/css/buttons.dataTables.min.css">
+
+    <!-- DataTables Buttons JS -->
+    <script src="/../../plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="/../../plugins/jszip/jszip.min.js"></script>
+    <script src="/../../plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="/../../plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="/../../plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="/../../plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+
+
 </head>
+
 <body>
     <h1>REPORTE PROVEEDURIAAA</h1>
 
@@ -36,6 +50,7 @@
                         <label>Search:<input type="search" class="form-control form-control-sm" placeholder=""
                                 aria-controls="example1"></label>
                         <!-- <button class="btn btn-success" type="submit">actualizar</button> -->
+
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
@@ -48,8 +63,9 @@
                             <tbody>
                                 <!-- Los datos se llenarán aquí -->
                             </tbody>
+                            <button id="exportToPDF" class="btn btn-primary">Exportar a PDF</button>
                         </table>
-                        
+
 
                     </div>
                     <!-- /.card-body -->
@@ -77,12 +93,30 @@
         });
 
         $(document).ready(function () {
-            $('#example1').DataTable({
-                "searching": true
+            var table = $('#example1').DataTable({
+                "searching": true,
+                "dom": 'Bfrtip',
+                "buttons": [
+                    'pdfHtml5'
+                ]
+            });
+
+            $('#exportToPDF').on('click', function () {
+                table.button('.buttons-pdfHtml5').trigger();
             });
         });
-    </script>
 
+    </script>
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE -->
+    <script src="dist/js/adminlte.js"></script>
+
+    <!-- OPTIONAL SCRIPTS -->
+    <script src="plugins/chart.js/Chart.min.js"></script>
+    <script src="dist/js/demo.js"></script>
+    <script src="dist/js/pages/dashboard3.js"></script>
     <script src="/static/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <script src="/static/admin-lte/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -103,4 +137,5 @@
     <script src="/static/admin-lte/plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="/static/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 </body>
+
 </html

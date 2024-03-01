@@ -5,11 +5,15 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.db import connections
 import pandas as pd
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from .forms import UploadFileForm
 from django.http import JsonResponse
 import openpyxl
 from django.contrib import messages
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from weasyprint.fonts import FontConfiguration
+
 
 #---Define La Vista del login-----
 def signin(request):
@@ -116,3 +120,15 @@ def repfinan(request):
 
     return JsonResponse({'data': data})
 
+def export_pdf(request):
+
+    context = {}
+    html = render_to_string("report/report-pdf.html", context)
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = "inline; report.pdf"
+
+    font_config = FontConfiguration()
+    HTML(string=html).write_pdf(response, font_config=font_config)
+
+    return response

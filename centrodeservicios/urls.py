@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.urls import path
+from centrodeservicios import settings
 from login import views
-
+from django.conf.urls.static import static
 #--Todas las urls de Centro de servicios ---
 
 urlpatterns = [
@@ -19,4 +20,7 @@ urlpatterns = [
     path('carexitosa/', views.carexitosa, name='carexitosa'),
     path('reproved/', views.reproved, name='reproved'), 
     path('repfinan/', views.repfinan, name='repfinan'),
-]
+    path('export/', views.export_pdf, name="export-pdf" )
+    
+    
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

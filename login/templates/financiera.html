@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +19,7 @@
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
+
 <body>
     <h1>Reporte Financiera</h1>
 
@@ -25,7 +27,7 @@
     <section class="content">
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card overflow-x-auto">
                     <div class="card-header">
                         <h3 class="card-title">DATOS FINANCIERA</h3>
                     </div>
@@ -34,9 +36,9 @@
                     <div class="card-body">
 
                         <label>Search:<input type="search" class="form-control form-control-sm" placeholder=""
-                                aria-controls="example1"></label>
-                        <!-- <button class="btn btn-success" type="submit">actualizar</button> -->
-                        <table id="example1" class="table table-bordered table-striped">
+                                aria-controls="example1" id="myInput"></label>
+                        <button class="btn btn-success" type="submit" id="applyFilterButton">actualizar</button>
+                        <table id="example1" class="table table-bordered table-striped table-responsive">
                             <thead>
                                 <tr>
                                     <th>Fecha Transformación</th>
@@ -61,7 +63,7 @@
                                 <!-- Los datos se llenarán aquí -->
                             </tbody>
                         </table>
-                        
+
 
                     </div>
                     <!-- /.card-body -->
@@ -76,21 +78,25 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+     
         $(document).ready(function () {
             $.ajax({
                 url: '/repfinan/',
                 type: 'GET',
                 success: function (response) {
                     response.data.forEach(function (compromiso) {
-                        $('#example1 tbody').append('<tr><td>' + compromiso.Fecha_transformacion + '</td><td>' + compromiso.Unidades + '</td><td>' + compromiso.Peso_canal_fria + '</td><td>' + compromiso.Lote + '</td><td>' + compromiso.Codigo_granja + '</td><td>' + compromiso.Remision + '</td><td>' + compromiso.Valor + '</td><td>' + compromiso.Cliente + '</td><td>' + compromiso.Planta_Beneficio + '</td><td>' + compromiso.Granja + '</td><td>' + compromiso.Nit_asociado + '</td><td>' + compromiso.Asociado + '</td><td>' + compromiso.Grupo_Granja + '</td><td>' + compromiso.Retencion + '</td><td>' + compromiso.Valor_a_pagar_asociado + '</td><td>' + compromiso.Valor_kilo + '</td></tr>');
+                        $('#example1 tbody').append('<tr><td>' + compromiso.Fecha_transformacion + '</td><td>' + compromiso.Unidades + '</td><td>' + compromiso.Peso_canal_fria + '</td><td>' + compromiso.Lote + '</td><td>' + compromiso.Codigo_granja + '</td><td>' + compromiso.Remision + '</td><td>' + compromiso.Valor + '</td><td>' + compromiso.Cliente + '</td><td>' + compromiso.Planta_Beneficio + '</td><td>' + compromiso.Granja + '</td><td>' + compromiso.Nit_asociado + '</td><td>' + compromiso.Asociado + '</td><td>' + compromiso.Grupo_Granja + '</td><td>' + compromiso.Retencion + '</td><td>' + compromiso.Valor_a_pagar_asociado + '</td> <td contenteditable=true>' + compromiso.Valor_kilo + '</td></tr>');
                     });
                 }
             });
-        });
 
-        $(document).ready(function () {
             $('#example1').DataTable({
                 "searching": true
+            });
+
+           
+            $('#applyFilterButton').on('click', function() {
+                applyFilter();
             });
         });
     </script>
@@ -115,4 +121,5 @@
     <script src="/static/admin-lte/plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="/static/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 </body>
+
 </html>
