@@ -100,16 +100,33 @@ import logging
 from django.views.decorators.csrf import csrf_exempt
 logger = logging.getLogger(__name__)
 
+# def repfinan(request):
+#     with connections['base_gaf'].cursor() as cursor:
+#         cursor.execute('''
+#             SELECT Fecha_transformacion,Unidades,Peso_canal_fria,Lote,Codigo_granja,Remision,Valor,Cliente,Planta_Beneficio,Granja,Nit_asociado,
+#             Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado,Valor_kilo
+#             FROM B_GAF.OPERACION_DESPOSTE
+#         ''')
+#         compromisos = cursor.fetchall()
+
+#     # Loguear los datos recuperados
+#     logger.info(compromisos)
+
+#     data = [{'Fecha_transformacion': Fecha_transformacion, 'Unidades': Unidades, 'Peso_canal_fria': Peso_canal_fria, 'Lote': Lote, 'Codigo_granja': Codigo_granja, 'Remision': Remision, 'Valor': Valor, 'Cliente': Cliente, 'Planta_Beneficio': Planta_Beneficio, 'Granja': Granja, 'Nit_asociado': Nit_asociado, 'Asociado': Asociado, 'Grupo_Granja': Grupo_Granja, 'Retencion': Retencion, 'Valor_a_pagar_asociado': Valor_a_pagar_asociado, 'Valor_kilo': Valor_kilo} for Fecha_transformacion, Unidades, Peso_canal_fria, Lote, Codigo_granja, Remision, Valor, Cliente, Planta_Beneficio, Granja, Nit_asociado, Asociado, Grupo_Granja, Retencion, Valor_a_pagar_asociado, Valor_kilo in compromisos]
+
+#     return JsonResponse({'data': data})
+
 def repfinan(request):
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
     with connections['base_gaf'].cursor() as cursor:
         cursor.execute('''
-            SELECT Fecha_transformacion, Unidades, Peso_canal_fria, Lote, Codigo_granja, Remision,
-                   Valor, Cliente, Planta_Beneficio, Granja, Nit_asociado, Asociado, Grupo_Granja,
-                   Retencion, Valor_a_pagar_asociado, Valor_kilo
-            FROM B_GAF.OPERACION_DESPOSTE
-            WHERE GUID = (SELECT GUID FROM B_GAF.OPERACION_DESPOSTE
-                          WHERE FECHA_DATOS = (SELECT MAX(FECHA_DATOS) FROM B_GAF.OPERACION_DESPOSTE) LIMIT 1)
-        ''')
+            SELECT Fecha_transformacion,Unidades,Peso_canal_fria,Lote,Codigo_granja,Remision,Valor,Cliente,Planta_Beneficio,Granja,Nit_asociado,
+#             Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado,Valor_kilo
+#             FROM B_GAF.OPERACION_DESPOSTE
+            AND Fecha_transformacion BETWEEN %s AND %s
+        ''', [start_date, end_date])
         compromisos = cursor.fetchall()
 
     # Loguear los datos recuperados
@@ -118,4 +135,3 @@ def repfinan(request):
     data = [{'Fecha_transformacion': Fecha_transformacion, 'Unidades': Unidades, 'Peso_canal_fria': Peso_canal_fria, 'Lote': Lote, 'Codigo_granja': Codigo_granja, 'Remision': Remision, 'Valor': Valor, 'Cliente': Cliente, 'Planta_Beneficio': Planta_Beneficio, 'Granja': Granja, 'Nit_asociado': Nit_asociado, 'Asociado': Asociado, 'Grupo_Granja': Grupo_Granja, 'Retencion': Retencion, 'Valor_a_pagar_asociado': Valor_a_pagar_asociado, 'Valor_kilo': Valor_kilo} for Fecha_transformacion, Unidades, Peso_canal_fria, Lote, Codigo_granja, Remision, Valor, Cliente, Planta_Beneficio, Granja, Nit_asociado, Asociado, Grupo_Granja, Retencion, Valor_a_pagar_asociado, Valor_kilo in compromisos]
 
     return JsonResponse({'data': data})
-

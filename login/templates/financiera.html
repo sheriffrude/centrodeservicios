@@ -18,6 +18,9 @@
     <link rel="stylesheet" href="/static/admin-lte/dist/css/adminlte.min.css">
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
 </head>
 
 <body>
@@ -31,7 +34,12 @@
                     <div class="card-header">
                         <h3 class="card-title">DATOS FINANCIERA</h3>
                     </div>
-
+                    <input type="text" id="dateRange" name="dateRange" value="" />
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                        <i class="far fa-calendar-alt"></i>
+                        </span>
+                        </div>
                     <!-- /.card-header -->
                     <div class="card-body">
 
@@ -78,7 +86,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-     
+
         $(document).ready(function () {
             $.ajax({
                 url: '/repfinan/',
@@ -94,9 +102,34 @@
                 "searching": true
             });
 
-           
-            $('#applyFilterButton').on('click', function() {
+
+            $('#applyFilterButton').on('click', function () {
                 applyFilter();
+            });
+        });
+        $(document).ready(function () {
+            // Inicializar Date Range Picker
+            $('#dateRange').daterangepicker({
+                opens: 'left'
+            }, function (start, end, label) {
+                // Cuando se selecciona un rango de fechas, enviar el rango a la vista repfinan
+                var startDate = start.format('YYYY-MM-DD');
+                var endDate = end.format('YYYY-MM-DD');
+                $.ajax({
+                    url: '/repfinan/',
+                    type: 'GET',
+                    data: {
+                        start_date: startDate,
+                        end_date: endDate
+                    },
+                    success: function (response) {
+                        // Actualizar la tabla con los datos filtrados
+                        $('#example1 tbody').empty();
+                        response.data.forEach(function (compromiso) {
+                            $('#example1 tbody').append('<tr><td>' + compromiso.Fecha_transformacion + '</td><td>' + compromiso.Unidades + '</td><td>' + compromiso.Peso_canal_fria + '</td><td>' + compromiso.Lote + '</td><td>' + compromiso.Codigo_granja + '</td><td>' + compromiso.Remision + '</td><td>' + compromiso.Valor + '</td><td>' + compromiso.Cliente + '</td><td>' + compromiso.Planta_Beneficio + '</td><td>' + compromiso.Granja + '</td><td>' + compromiso.Nit_asociado + '</td><td>' + compromiso.Asociado + '</td><td>' + compromiso.Grupo_Granja + '</td><td>' + compromiso.Retencion + '</td><td>' + compromiso.Valor_a_pagar_asociado + '</td> <td contenteditable=true>' + compromiso.Valor_kilo + '</td></tr>');
+                        });
+                    }
+                });
             });
         });
     </script>
@@ -116,6 +149,8 @@
     <script src="/static/admin-lte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
     <script src="/static/admin-lte/dist/js/adminlte.min.js?v=3.2.0"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
     <script src="/static/admin-lte/dist/js/demo.js"></script>
     <script src="/static/admin-lte/plugins/datatables/jquery.dataTables.min.js"></script>
