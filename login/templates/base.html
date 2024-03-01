@@ -1,123 +1,143 @@
 {% load adminlte_helpers i18n %}
-{% load static %}<!DOCTYPE html>
+{% load static %}
+<!DOCTYPE html>
 <html>
+
 <head>
     {% block title_outer %}
-        <title>{% block title %}Centro de Servicios{% endblock %}</title>
+    <title>{% block title %}Centro de Servicios{% endblock %}</title>
     {% endblock %}
 
     {% block meta %}
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
-        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     {% endblock %}
 
     {% block stylesheets %}
-        {% include 'adminlte/lib/_styles.html' %}
+    {% include 'adminlte/lib/_styles.html' %}
     {% endblock %}
 
     {% block extra_head %}{% endblock %}
 </head>
+
 <body class="hold-transition sidebar-mini {% block body_class %}{% block bodyclass %}{% endblock %}{% endblock %}">
 
-{% block body %}
+    {% block body %}
     <div class="wrapper">
         {% block nav_header %}
-            {% include '_main_header.html' %}
+        {% include '_main_header.html' %}
         {% endblock %}
 
         {% block nav_sidebar %}
-            {% include '_main_sidebar.html' %}
+        {% include '_main_sidebar.html' %}
         {% endblock %}
 
         {% block content_wrapper %}
         <div class="content-wrapper">
             {% block content_header %}
-                <section class="content-header">
-                    {% block no_heading %}
-                        <h1>
-                            {% block page_name %}{% endblock %}
-                            <div class="header-actions">
-                                {% block page_actions %}{% endblock %}
-                            </div>
-                            {% block no_description %}
-                            <small>{% block page_description %}{% endblock %}</small>
-                            {% endblock %}
-                        </h1>
-                        {% block breadcrumbs %}
-                            {# Breadcrumb implementation left to developers #}
-                        {% endblock %}
-                    {% endblock no_heading %}
-                    <h1>Bienvenidos al Centro de Servicio</h1>
-                </section>
+            <section class="content-header">
+                {% block no_heading %}
+                <h1>
+                    {% block page_name %}{% endblock %}
+                    <div class="header-actions">
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                    {% block no_description %}
+                    <small>{% block page_description %}{% endblock %}</small>
+                    {% endblock %}
+                </h1>
+                {% block breadcrumbs %}
+                {# Breadcrumb implementation left to developers #}
+                {% endblock %}
+                {% endblock no_heading %}
+                <h1>Bienvenidos al Centro de Servicio</h1>
+            </section>
             {% endblock %}
 
             {% block content_outer %}
             <section class="content">
                 {% block messages %}
-                    {% include 'adminlte/lib/_messages.html' %}
+                {% include 'adminlte/lib/_messages.html' %}
                 {% endblock %}
 
                 {% block content_block_wrap %}
-                    {% block content %}
-                        <!-- Contenido dinámico se cargará aquí -->
-                        <!-- Contenido dinámico se cargará aquí -->
-                        <!-- Contenido dinámico se cargará aquí -->
-                    {% endblock %}
+                {% block content %}
+                <!-- Contenido dinámico se cargará aquí -->
+                <!-- Contenido dinámico se cargará aquí -->
+                <!-- Contenido dinámico se cargará aquí -->
+                {% endblock %}
                 {% endblock %}
             </section>
             {% endblock %}
 
         </div>
         {% endblock content_wrapper %}
-        
+
         {% block nav_footer %}
-            {% include '_main_footer.html' %}
+        {% include '_main_footer.html' %}
         {% endblock %}
 
     </div>
-{% endblock body %}
+    {% endblock body %}
 
-{% block javascript %}
-{% include 'adminlte/lib/_scripts.html' %}
-<!-- script para llamar los html en el contenido -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Obtener todos los elementos con la clase 'nav-link'
-        var enlaces = document.querySelectorAll('.nav-link');
-        
-        // Iterar sobre cada enlace
-        enlaces.forEach(function(enlace) {
-            // Agregar un evento de clic a cada enlace
-            enlace.addEventListener('click', function(event) {
-                event.preventDefault(); // Evitar que el enlace redireccione
-                cargarContenido(this); // Pasar el enlace al método cargarContenido
+    {% block javascript %}
+    {% include 'adminlte/lib/_scripts.html' %} {% endblock %}
+    <!-- script para llamar los html en el contenido -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Obtener todos los elementos con la clase 'nav-link'
+            var enlaces = document.querySelectorAll('.nav-link');
+
+            // Iterar sobre cada enlace
+            enlaces.forEach(function (enlace) {
+                // Agregar un evento de clic a cada enlace
+                enlace.addEventListener('click', function (event) {
+                    event.preventDefault(); // Evitar que el enlace redireccione
+                    cargarContenido(this); // Pasar el enlace al método cargarContenido
+                });
             });
-        });
 
-        function cargarContenido(enlace) {
-            // Obtener la URL de la que se debe cargar el contenido
-            var url = enlace.getAttribute('ref');
-            
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        // Insertar la respuesta en el contenedor especificado
-                        document.querySelector('.content-wrapper').innerHTML = xhr.responseText;
-                    } else {
-                        console.error('Error al cargar el contenido:', xhr.status);
+            function cargarContenido(enlace) {
+                // Obtener la URL de la que se debe cargar el contenido
+                var url = enlace.getAttribute('ref');
+
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            // Insertar la respuesta en el contenedor especificado
+                            document.querySelector('.content-wrapper').innerHTML = xhr.responseText;
+
+                            // Ejecutar scripts dentro del nuevo contenido
+                            var scripts = document.querySelectorAll('.content-wrapper script');
+                            scripts.forEach(function (script) {
+                                eval(script.innerHTML);
+                            });
+
+                            // Reasignar los eventos de clic a los nuevos enlaces
+                            var enlaces = document.querySelectorAll('.nav-link');
+                            enlaces.forEach(function (enlace) {
+                                enlace.addEventListener('click', function (event) {
+                                    event.preventDefault(); // Evitar que el enlace redireccione
+                                    cargarContenido(this); // Pasar el enlace al método cargarContenido
+                                });
+                            });
+                        } else {
+                            console.error('Error al cargar el contenido:', xhr.status);
+                        }
                     }
-                }
-            };
-            xhr.open('GET', url, true);
-            xhr.send();
-        }
-    });
-</script>
+                };
+                xhr.open('GET', url, true);
+                xhr.send();
+            }
+            
+
+        });
+    </script>
 
 
-{% endblock %}
+   
 </body>
-</html>
 
+</html>

@@ -106,9 +106,17 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306',
     },
-    'b_ca': {
+    'base_ca': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'b_ca',
+        'USER': 'DEV_USER',
+        'PASSWORD': 'DEV-USER12345',
+        'HOST': '192.168.9.200',
+        'PORT': '3308',
+    },
+    'base_gaf': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'b_gaf',
         'USER': 'DEV_USER',
         'PASSWORD': 'DEV-USER12345',
         'HOST': '192.168.9.200',

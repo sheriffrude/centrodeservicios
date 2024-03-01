@@ -11,8 +11,12 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     path('exit/', views.exit, name='exit'),
     path('granja/', views.granja, name='granja'),
-    path('mi_vista/', views.mi_vista, name='mi_vista'),
+    path('granja/', views.cargar_excel, name='granja'),
     path('financiera/', views.financiera, name='financiera'),
     path('repoprove/', views.repoprove, name='repoprove'),
     path('repofina/', views.repofina, name='repofina'),
+    path('cargar_excel/', views.cargar_excel, name='cargar_excel'),
+    path('carexitosa/', views.carexitosa, name='carexitosa'),
+    path('reproved/', views.reproved, name='reproved'), 
+    path('repfinan/', views.repfinan, name='repfinan'),
 ]

@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financiera</title>
+    <title>Reporte Financiera</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Font Awesome -->
@@ -19,9 +18,8 @@
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
-
 <body>
-    <h1> si hubiera FINANCIERA estaria aqui</h1>
+    <h1>Reporte Financiera</h1>
 
     <!-- Main content -->
     <section class="content">
@@ -29,85 +27,42 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">DATOS FINANCIEROS</h3>
+                        <h3 class="card-title">DATOS FINANCIERA</h3>
                     </div>
 
                     <!-- /.card-header -->
                     <div class="card-body">
+
                         <label>Search:<input type="search" class="form-control form-control-sm" placeholder=""
                                 aria-controls="example1"></label>
-                                <button class="btn btn-success" type="submit">actualizar</button>
+                        <!-- <button class="btn btn-success" type="submit">actualizar</button> -->
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th>Rendering engine</th>
-                                    <th>Browser</th>
-                                    <th>Platform(s)</th>
-                                    <th>Engine version</th>
-                                    <th>valor</th>
+                                    <th>Fecha Transformación</th>
+                                    <th>Unidades</th>
+                                    <th>Peso Canal Fría</th>
+                                    <th>Lote</th>
+                                    <th>Código Granja</th>
+                                    <th>Remisión</th>
+                                    <th>Valor</th>
+                                    <th>Cliente</th>
+                                    <th>Planta Beneficio</th>
+                                    <th>Granja</th>
+                                    <th>Nit Asociado</th>
+                                    <th>Asociado</th>
+                                    <th>Grupo Granja</th>
+                                    <th>Retención</th>
+                                    <th>Valor a Pagar Asociado</th>
+                                    <th>Valor Kilo</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Gecko</td>
-                                    <td>Internet
-                                        Explorer 4.0
-                                    </td>
-                                    <td>Win 95+</td>
-                                    <td> 3</td>
-                                    <td contenteditable="true"></td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet
-                                        Explorer 4.0
-                                    </td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td contenteditable="true"></td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Opera
-                                    </td>
-                                    <td>Win 95+</td>
-                                    <td> 5</td>
-                                    <td contenteditable="true"></td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>gx
-                                    </td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td contenteditable="true"></td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>gx
-                                    </td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td contenteditable="true"></td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>gx
-                                    </td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td contenteditable="true"></td>
-                                </tr>
-                                
-                            
-                                
-
-    
-                                <!-- Otros datos de la tabla -->
+                                <!-- Los datos se llenarán aquí -->
                             </tbody>
-
                         </table>
                         
+
                     </div>
                     <!-- /.card-body -->
                 </div>
@@ -118,9 +73,27 @@
         <!-- /.row -->
     </section>
     <!-- /.content -->
-    </div>
 
-    <script src="/static/admin-lte/plugins/jquery/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '/repfinan/',
+                type: 'GET',
+                success: function (response) {
+                    response.data.forEach(function (compromiso) {
+                        $('#example1 tbody').append('<tr><td>' + compromiso.Fecha_transformacion + '</td><td>' + compromiso.Unidades + '</td><td>' + compromiso.Peso_canal_fria + '</td><td>' + compromiso.Lote + '</td><td>' + compromiso.Codigo_granja + '</td><td>' + compromiso.Remision + '</td><td>' + compromiso.Valor + '</td><td>' + compromiso.Cliente + '</td><td>' + compromiso.Planta_Beneficio + '</td><td>' + compromiso.Granja + '</td><td>' + compromiso.Nit_asociado + '</td><td>' + compromiso.Asociado + '</td><td>' + compromiso.Grupo_Granja + '</td><td>' + compromiso.Retencion + '</td><td>' + compromiso.Valor_a_pagar_asociado + '</td><td>' + compromiso.Valor_kilo + '</td></tr>');
+                    });
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            $('#example1').DataTable({
+                "searching": true
+            });
+        });
+    </script>
 
     <script src="/static/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 
@@ -139,16 +112,7 @@
     <script src="/static/admin-lte/dist/js/adminlte.min.js?v=3.2.0"></script>
 
     <script src="/static/admin-lte/dist/js/demo.js"></script>
-
-    <!-- page script -->
-    <script>
-        $(document).ready(function() {
-            $('#example1').DataTable({
-                "searching": true
-            });
-        });
-    </script>
-
+    <script src="/static/admin-lte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="/static/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 </body>
-
 </html>

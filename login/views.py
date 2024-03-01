@@ -7,6 +7,9 @@ from django.db import connections
 import pandas as pd
 from django.http import HttpResponseRedirect
 from .forms import UploadFileForm
+from django.http import JsonResponse
+import openpyxl
+from django.contrib import messages
 
 #---Define La Vista del login-----
 def signin(request):
@@ -52,30 +55,64 @@ def financiera(request):
 @login_required
 def repoprove(request):
    return render(request, 'report_prov.html')
+@login_required
+def carexitosa(request):
+   return render(request, 'carga_exitosa.html')
 
 @login_required
 def repofina(request):
    return render(request, 'report_finan.html')
 
-
-def mi_vista(request):
-    with connections['proveeduria'].cursor() as cursor:
-        cursor.execute("SELECT nombre FROM grupo")
-        grupos = [row[0] for row in cursor.fetchall()]
-
-    print(grupos)  # Verifica los resultados en la consola del servidor
-
-    return render(request, '/granja/', {'grupos': grupos})
-
-def upload_file(request):
+#------ vista para el cargue de excel en proveeduria----
+@login_required
+def cargar_excel(request):
     if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            archivo_excel = request.FILES['archivo_excel']
-            df = pd.read_excel(archivo_excel)
-            df.to_sql('compromiso_mes', connections['b_ca'], schema='b_ca', if_exists='append', index=False)
-            return HttpResponseRedirect('granja')
-    else:
-        form = UploadFileForm()
-    return render(request, 'granja.html', {'form': form})
+        archivo_excel = request.FILES['archivo_excel']
+        wb = openpyxl.load_workbook(archivo_excel)
+        ws = wb.active
+
+        # Abre una conexión a la base de datos b_ca
+        with connections['base_ca'].cursor() as cursor:
+            for row in ws.iter_rows(min_row=2):
+                granja, mes, semana, cantidad_cerdos = row
+                # Ejecuta una consulta SQL para insertar los datos en la tabla compromiso_mes
+                cursor.execute(
+                    'INSERT INTO compromiso_mes (granja, mes, semana, cantidad_cerdos) VALUES (%s, %s, %s, %s)',
+                    (granja.value, mes.value, semana.value, cantidad_cerdos.value)
+                )
+        messages.success(request, 'Carga de datos en proveeduria exitosa')
+        return redirect('home')
+    return render(request, '/home/')
+
+def reproved(request):
+    with connections['base_ca'].cursor() as cursor:
+        cursor.execute('SELECT granja, mes, semana, cantidad_cerdos FROM compromiso_mes')
+        compromisos = cursor.fetchall()
+
+    data = [{'granja': granja, 'mes': mes, 'semana': semana, 'cantidad_cerdos': cantidad_cerdos} for granja, mes, semana, cantidad_cerdos in compromisos]
+
+    return JsonResponse({'data': data})
+
+import logging
+from django.views.decorators.csrf import csrf_exempt
+logger = logging.getLogger(__name__)
+
+def repfinan(request):
+    with connections['base_gaf'].cursor() as cursor:
+        cursor.execute('''
+            SELECT Fecha_transformacion, Unidades, Peso_canal_fria, Lote, Codigo_granja, Remision,
+                   Valor, Cliente, Planta_Beneficio, Granja, Nit_asociado, Asociado, Grupo_Granja,
+                   Retencion, Valor_a_pagar_asociado, Valor_kilo
+            FROM B_GAF.OPERACION_DESPOSTE
+            WHERE GUID = (SELECT GUID FROM B_GAF.OPERACION_DESPOSTE
+                          WHERE FECHA_DATOS = (SELECT MAX(FECHA_DATOS) FROM B_GAF.OPERACION_DESPOSTE) LIMIT 1)
+        ''')
+        compromisos = cursor.fetchall()
+
+    # Loguear los datos recuperados
+    logger.info(compromisos)
+
+    data = [{'Fecha_transformacion': Fecha_transformacion, 'Unidades': Unidades, 'Peso_canal_fria': Peso_canal_fria, 'Lote': Lote, 'Codigo_granja': Codigo_granja, 'Remision': Remision, 'Valor': Valor, 'Cliente': Cliente, 'Planta_Beneficio': Planta_Beneficio, 'Granja': Granja, 'Nit_asociado': Nit_asociado, 'Asociado': Asociado, 'Grupo_Granja': Grupo_Granja, 'Retencion': Retencion, 'Valor_a_pagar_asociado': Valor_a_pagar_asociado, 'Valor_kilo': Valor_kilo} for Fecha_transformacion, Unidades, Peso_canal_fria, Lote, Codigo_granja, Remision, Valor, Cliente, Planta_Beneficio, Granja, Nit_asociado, Asociado, Grupo_Granja, Retencion, Valor_a_pagar_asociado, Valor_kilo in compromisos]
+
+    return JsonResponse({'data': data})
 
