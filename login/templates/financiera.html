@@ -1,169 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reporte Financiera</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="/static/admin-lte/plugins/fontawesome-free/css/all.min.css">
-    <!-- Ionicons -->
-    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-    <!-- DataTables -->
-    <link rel="stylesheet" href="/static/admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="/static/admin-lte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="/static/admin-lte/dist/css/adminlte.min.css">
-    <!-- Google Font: Source Sans Pro -->
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DatePickerRange y Tabla con Ajax</title>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<style>
+  .ui-datepicker-calendar {
+    display: none;
+  }
+</style>
 </head>
-
 <body>
-    <h1>Reporte Financiera</h1>
+  <div>
+    <label for="datepicker-start">Desde:</label>
+    <input type="text" id="datepicker-start">
+    <label for="datepicker-end">Hasta:</label>
+    <input type="text" id="datepicker-end">
+    <button id="filter-btn">Filtrar</button>
+  </div>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="row">
-            <div class="col-12">
-                <div class="card overflow-x-auto">
-                    <div class="card-header">
-                        <h3 class="card-title">DATOS FINANCIERA</h3>
-                    </div>
-                    <input type="text" id="dateRange" name="dateRange" value="" />
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">
-                            <i class="far fa-calendar-alt"></i>
-                        </span>
-                    </div>
-                    <!-- /.card-header -->
-                    <div class="card-body">
-                        <input type="text" name="daterange" value="01/01/2018 - 01/15/2018" />
-                        <label>Search:<input type="search" class="form-control form-control-sm" placeholder=""
-                                aria-controls="example1" id="myInput"></label>
-                        <button class="btn btn-success" type="submit" id="applyFilterButton">actualizar</button>
-                        <table id="example1" class="table table-bordered table-striped table-responsive">
-                            <thead>
-                                <tr>
-                                    <th>Fecha Transformación</th>
-                                    <th>Unidades</th>
-                                    <th>Peso Canal Fría</th>
-                                    <th>Lote</th>
-                                    <th>Código Granja</th>
-                                    <th>Remisión</th>
-                                    <th>Valor</th>
-                                    <th>Cliente</th>
-                                    <th>Planta Beneficio</th>
-                                    <th>Granja</th>
-                                    <th>Nit Asociado</th>
-                                    <th>Asociado</th>
-                                    <th>Grupo Granja</th>
-                                    <th>Retención</th>
-                                    <th>Valor a Pagar Asociado</th>
-                                    <th>Valor Kilo</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Los datos se llenarán aquí -->
-                            </tbody>
-                        </table>
+  <table id="example1" class="table table-bordered table-striped table-responsive">
+    <thead>
+      <tr>
+        <th>Fecha Transformación</th>
+        <th>Unidades</th>
+        <th>Peso Canal Fría</th>
+        <th>Lote</th>
+        <th>Código Granja</th>
+        <th>Remisión</th>
+        <th>Valor</th>
+        <th>Cliente</th>
+        <th>Planta Beneficio</th>
+        <th>Granja</th>
+        <th>Nit Asociado</th>
+        <th>Asociado</th>
+        <th>Grupo Granja</th>
+        <th>Retención</th>
+        <th>Valor a Pagar Asociado</th>
+        <th>Valor Kilo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Los datos se llenarán aquí -->
+    </tbody>
+  </table>
 
+  <script>
+    $(document).ready(function () {
+      // Inicializar los datepickers
+      $("#datepicker-start").datepicker();
+      $("#datepicker-end").datepicker();
 
-                    </div>
-                    <!-- /.card-body -->
-                </div>
-                <!-- /.card -->
-            </div>
-            <!-- /.col -->
-        </div>
-        <!-- /.row -->
-    </section>
-    <!-- /.content -->
+      // Al hacer clic en el botón Filtrar
+      $("#filter-btn").click(function () {
+        // Obtener las fechas seleccionadas
+        var startDate = $("#datepicker-start").val();
+        var endDate = $("#datepicker-end").val();
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(function () {
-            $('input[name="daterange"]').daterangepicker({
-                opens: 'left'
-            }, function (start, end, label) {
-                console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        // Hacer la solicitud AJAX con las fechas como parámetros
+        $.ajax({
+          url: '/repfinan/',
+          type: 'GET',
+          data: {
+            start_date: startDate,
+            end_date: endDate
+          },
+          success: function (response) {
+            // Limpiar la tabla
+            $('#example1 tbody').empty();
+
+            // Agregar las filas con los datos
+            response.data.forEach(function (compromiso) {
+              $('#example1 tbody').append('<tr><td>' + compromiso.Fecha_transformacion + '</td><td>' + compromiso.Unidades + '</td><td>' + compromiso.Peso_canal_fria + '</td><td>' + compromiso.Lote + '</td><td>' + compromiso.Codigo_granja + '</td><td>' + compromiso.Remision + '</td><td>' + compromiso.Valor + '</td><td>' + compromiso.Cliente + '</td><td>' + compromiso.Planta_Beneficio + '</td><td>' + compromiso.Granja + '</td><td>' + compromiso.Nit_asociado + '</td><td>' + compromiso.Asociado + '</td><td>' + compromiso.Grupo_Granja + '</td><td>' + compromiso.Retencion + '</td><td>' + compromiso.Valor_a_pagar_asociado + '</td> <td contenteditable=true>' + compromiso.Valor_kilo + '</td></tr>');
             });
-        }); 
-
-        $(document).ready(function () {
-            $.ajax({
-                url: '/repfinan/',
-                type: 'GET',
-                success: function (response) {
-                    response.data.forEach(function (compromiso) {
-                        $('#example1 tbody').append('<tr><td>' + compromiso.Fecha_transformacion + '</td><td>' + compromiso.Unidades + '</td><td>' + compromiso.Peso_canal_fria + '</td><td>' + compromiso.Lote + '</td><td>' + compromiso.Codigo_granja + '</td><td>' + compromiso.Remision + '</td><td>' + compromiso.Valor + '</td><td>' + compromiso.Cliente + '</td><td>' + compromiso.Planta_Beneficio + '</td><td>' + compromiso.Granja + '</td><td>' + compromiso.Nit_asociado + '</td><td>' + compromiso.Asociado + '</td><td>' + compromiso.Grupo_Granja + '</td><td>' + compromiso.Retencion + '</td><td>' + compromiso.Valor_a_pagar_asociado + '</td> <td contenteditable=true>' + compromiso.Valor_kilo + '</td></tr>');
-                    });
-                }
-            });
-
-            $('#example1').DataTable({
-                "searching": true
-            });
-
-
-            $('#applyFilterButton').on('click', function () {
-                applyFilter();
-            });
+          }
         });
-        $(document).ready(function () {
-            // Inicializar Date Range Picker
-            $('#dateRange').daterangepicker({
-                opens: 'left'
-            }, function (start, end, label) {
-                // Cuando se selecciona un rango de fechas, enviar el rango a la vista repfinan
-                var startDate = start.format('YYYY-MM-DD');
-                var endDate = end.format('YYYY-MM-DD');
-                $.ajax({
-                    url: '/repfinan/',
-                    type: 'GET',
-                    data: {
-                        start_date: startDate,
-                        end_date: endDate
-                    },
-                    success: function (response) {
-                        // Actualizar la tabla con los datos filtrados
-                        $('#example1 tbody').empty();
-                        response.data.forEach(function (compromiso) {
-                            $('#example1 tbody').append('<tr><td>' + compromiso.Fecha_transformacion + '</td><td>' + compromiso.Unidades + '</td><td>' + compromiso.Peso_canal_fria + '</td><td>' + compromiso.Lote + '</td><td>' + compromiso.Codigo_granja + '</td><td>' + compromiso.Remision + '</td><td>' + compromiso.Valor + '</td><td>' + compromiso.Cliente + '</td><td>' + compromiso.Planta_Beneficio + '</td><td>' + compromiso.Granja + '</td><td>' + compromiso.Nit_asociado + '</td><td>' + compromiso.Asociado + '</td><td>' + compromiso.Grupo_Granja + '</td><td>' + compromiso.Retencion + '</td><td>' + compromiso.Valor_a_pagar_asociado + '</td> <td contenteditable=true>' + compromiso.Valor_kilo + '</td></tr>');
-                        });
-                    }
-                });
-            });
-        });
-    </script>
-
-    <script src="/static/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <script src="/static/admin-lte/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="/static/admin-lte/plugins/jszip/jszip.min.js"></script>
-    <script src="/static/admin-lte/plugins/pdfmake/pdfmake.min.js"></script>
-    <script src="/static/admin-lte/plugins/pdfmake/vfs_fonts.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
-
-    <script src="/static/admin-lte/dist/js/adminlte.min.js?v=3.2.0"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-
-    <script src="/static/admin-lte/dist/js/demo.js"></script>
-    <script src="/static/admin-lte/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+      });
+    });
+  </script>
 </body>
-
 </html>
