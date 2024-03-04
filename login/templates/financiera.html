@@ -29,6 +29,11 @@
         <button id="export-excel">Exportar a Excel</button>
     </div>
 
+    <div>
+        <label for="">BUSCAR: </label><input type="text" id="search-input" placeholder="Buscar por Consecutivo Cercafe, Remisión o Cliente">
+
+    </div>
+
     <table id="example1" class="table table-bordered table-striped table-responsive">
         <thead>
             <tr>
@@ -157,6 +162,36 @@
                 });
             });
         });
+        $(".editable").on("input", function () {
+            // Obtener el valor actual del campo
+            var currentValue = $(this).text();
+
+            // Eliminar todos los caracteres que no sean números
+            var newValue = currentValue.replace(/[^0-9]/g, '');
+
+            // Establecer el nuevo valor en el campo
+            $(this).text(newValue);
+        });
+        $("#search-input").on("input", function () {
+            // Obtener el texto de búsqueda
+            var searchText = $(this).val().toLowerCase();
+
+            // Filtrar las filas de la tabla
+            $("#example1 tbody tr").each(function () {
+                // Obtener los valores de las columnas relevantes
+                var consecutivoCercafe = $(this).find("td:nth-child(4)").text().toLowerCase();
+                var remision = $(this).find("td:nth-child(6)").text().toLowerCase();
+                var cliente = $(this).find("td:nth-child(8)").text().toLowerCase();
+
+                // Ocultar o mostrar la fila según el texto de búsqueda
+                if (consecutivoCercafe.indexOf(searchText) > -1 || remision.indexOf(searchText) > -1 || cliente.indexOf(searchText) > -1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
     </script>
 </body>
 
