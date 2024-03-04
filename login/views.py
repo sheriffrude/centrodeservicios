@@ -11,7 +11,8 @@ from django.http import JsonResponse
 import openpyxl
 from django.contrib import messages
 from django.template.loader import render_to_string
-
+import xlsxwriter
+import pdfkit
 
 
 #---Define La Vista del login-----
@@ -100,29 +101,16 @@ import logging
 from django.views.decorators.csrf import csrf_exempt
 logger = logging.getLogger(__name__)
 
-# def repfinan(request):
-#     with connections['base_gaf'].cursor() as cursor:
-#         cursor.execute('''
-#             SELECT Fecha_transformacion,Unidades,Peso_canal_fria,Lote,Codigo_granja,Remision,Valor,Cliente,Planta_Beneficio,Granja,Nit_asociado,
-#             Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado,Valor_kilo
-#             FROM B_GAF.OPERACION_DESPOSTE
-#         ''')
-#         compromisos = cursor.fetchall()
 
-#     # Loguear los datos recuperados
-#     logger.info(compromisos)
-
-#     data = [{'Fecha_transformacion': Fecha_transformacion, 'Unidades': Unidades, 'Peso_canal_fria': Peso_canal_fria, 'Lote': Lote, 'Codigo_granja': Codigo_granja, 'Remision': Remision, 'Valor': Valor, 'Cliente': Cliente, 'Planta_Beneficio': Planta_Beneficio, 'Granja': Granja, 'Nit_asociado': Nit_asociado, 'Asociado': Asociado, 'Grupo_Granja': Grupo_Granja, 'Retencion': Retencion, 'Valor_a_pagar_asociado': Valor_a_pagar_asociado, 'Valor_kilo': Valor_kilo} for Fecha_transformacion, Unidades, Peso_canal_fria, Lote, Codigo_granja, Remision, Valor, Cliente, Planta_Beneficio, Granja, Nit_asociado, Asociado, Grupo_Granja, Retencion, Valor_a_pagar_asociado, Valor_kilo in compromisos]
-
-#     return JsonResponse({'data': data})
 
 def repfinan(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
-
+   
+    
     with connections['base_gaf'].cursor() as cursor:
         cursor.execute('''
-            SELECT Fecha_transformacion,Unidades,Peso_canal_fria,Lote,Codigo_granja,Remision,Valor,Cliente,Planta_Beneficio,Granja,Nit_asociado,Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado,Valor_kilo
+            SELECT Fecha_transformacion,Unidades,Peso_canal_fria,Consecutivo_Cercafe,Codigo_granja,Remision,Valor,Cliente,Planta_Beneficio,Granja,Nit_asociado,Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado,Valor_kilo
             FROM B_GAF.OPERACION_DESPOSTE
             WHERE Fecha_transformacion BETWEEN %s AND %s
         ''', [start_date, end_date])
@@ -131,7 +119,78 @@ def repfinan(request):
     # Loguear los datos recuperados
     logger.info(compromisos)
 
-    data = [{'Fecha_transformacion': Fecha_transformacion, 'Unidades': Unidades, 'Peso_canal_fria': Peso_canal_fria, 'Lote': Lote, 'Codigo_granja': Codigo_granja, 'Remision': Remision, 'Valor': Valor, 'Cliente': Cliente, 'Planta_Beneficio': Planta_Beneficio, 'Granja': Granja, 'Nit_asociado': Nit_asociado, 'Asociado': Asociado, 'Grupo_Granja': Grupo_Granja, 'Retencion': Retencion, 'Valor_a_pagar_asociado': Valor_a_pagar_asociado, 'Valor_kilo': Valor_kilo} for Fecha_transformacion, Unidades, Peso_canal_fria, Lote, Codigo_granja, Remision, Valor, Cliente, Planta_Beneficio, Granja, Nit_asociado, Asociado, Grupo_Granja, Retencion, Valor_a_pagar_asociado, Valor_kilo in compromisos]
+    data = [{'Fecha_transformacion': Fecha_transformacion, 'Unidades': Unidades, 'Peso_canal_fria': Peso_canal_fria, 'Consecutivo_Cercafe': Consecutivo_Cercafe, 'Codigo_granja': Codigo_granja, 'Remision': Remision, 'Valor': Valor, 'Cliente': Cliente, 'Planta_Beneficio': Planta_Beneficio, 'Granja': Granja, 'Nit_asociado': Nit_asociado, 'Asociado': Asociado, 'Grupo_Granja': Grupo_Granja, 'Retencion': Retencion, 'Valor_a_pagar_asociado': Valor_a_pagar_asociado, 'Valor_kilo': Valor_kilo} for Fecha_transformacion, Unidades, Peso_canal_fria, Consecutivo_Cercafe, Codigo_granja, Remision, Valor, Cliente, Planta_Beneficio, Granja, Nit_asociado, Asociado, Grupo_Granja, Retencion, Valor_a_pagar_asociado, Valor_kilo in compromisos]
 
     return JsonResponse({'data': data})
 
+
+def export_pdf(request):
+    # Obtener los datos para exportar
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    # Obtener los datos filtrados
+    compromisos = get_filtered_data(start_date, end_date)
+
+    # Crear el PDF
+    html = '<html><body><table><thead><tr><th>Fecha Transformación</th><th>Unidades</th><th>Peso Canal Fría</th><th>Consecutivo Cercafe</th><th>Código Granja</th><th>Remisión</th><th>Valor</th><th>Cliente</th><th>Planta Beneficio</th><th>Granja</th><th>Nit Asociado</th><th>Asociado</th><th>Grupo Granja</th><th>Retención</th><th>Valor a Pagar Asociado</th><th>Valor Kilo</th></tr></thead><tbody>'
+    for compromiso in compromisos:
+        html += '<tr>'
+        for value in compromiso:
+            html += '<td>' + str(value) + '</td>'
+        html += '</tr>'
+    html += '</tbody></table></body></html>'
+
+    # Convertir HTML a PDF
+    pdf = pdfkit.from_string(html, False)
+
+    # Enviar el PDF como respuesta
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="reporte.pdf"'
+    return response
+
+def export_excel(request):
+    # Obtener los datos para exportar
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    
+
+    # Obtener los datos filtrados
+    compromisos = get_filtered_data(start_date, end_date)
+
+    # Crear el archivo Excel
+    workbook = xlsxwriter.Workbook('reporte.xlsx')
+    worksheet = workbook.add_worksheet()
+
+    # Escribir los encabezados
+    headers = ['Fecha Transformación', 'Unidades', 'Peso Canal Fría', 'Consecutivo_Cercafe', 'Código Granja', 'Remisión', 'Valor', 'Cliente', 'Planta Beneficio', 'Granja', 'Nit Asociado', 'Asociado', 'Grupo Granja', 'Retención', 'Valor a Pagar Asociado', 'Valor Kilo']
+    for i, header in enumerate(headers):
+        worksheet.write(0, i, header)
+
+    # Escribir los datos
+    for row, compromiso in enumerate(compromisos, start=1):
+        for col, value in enumerate(compromiso, start=1):
+            worksheet.write(row, col, value)
+
+    # Cerrar el archivo Excel
+    workbook.close()
+
+    # Enviar el archivo Excel como respuesta
+    with open('reporte.xlsx', 'rb') as file:
+        response = HttpResponse(file.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="reporte.xlsx"'
+        return redirect('financiera')
+
+def get_filtered_data(start_date, end_date):
+    with connections['base_gaf'].cursor() as cursor:
+        cursor.execute('''
+            SELECT Fecha_transformacion,Unidades,Peso_canal_fria,Consecutivo_Cercafe,Codigo_granja,Remision,Valor,Cliente,Planta_Beneficio,Granja,Nit_asociado,Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado,Valor_kilo
+            FROM B_GAF.OPERACION_DESPOSTE
+            WHERE Fecha_transformacion BETWEEN %s AND %s
+        ''', [start_date, end_date])
+        compromisos = cursor.fetchall()
+
+    # Loguear los datos recuperados
+    logger.info(compromisos)
+
+    return compromisos

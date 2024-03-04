@@ -20,6 +20,8 @@ urlpatterns = [
     path('carexitosa/', views.carexitosa, name='carexitosa'),
     path('reproved/', views.reproved, name='reproved'), 
     path('repfinan/', views.repfinan, name='repfinan'),
+    path('export-excel/', views.export_excel, name='export_excel'),
+    path('export-pdf/', views.export_pdf, name='export-pdf'),
     
     
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

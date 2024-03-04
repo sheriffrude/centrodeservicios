@@ -1,85 +1,129 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DatePickerRange y Tabla con Ajax</title>
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-<style>
-  .ui-datepicker-calendar {
-    display: none;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DatePickerRange y Tabla con Ajax</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        .ui-datepicker-calendar {
+            display: none;
+        }
+    </style>
 </head>
+
 <body>
-  <div>
-    <label for="datepicker-start" >Desde:</label>
-    <input type="text" id="datepicker-start" placeholder="yyyy-mm-dd">
-    <label for="datepicker-end"  >Hasta:</label>
-    <input type="text" id="datepicker-end"placeholder="yyyy-mm-dd">
-    <button id="filter-btn">Filtrar</button>
-  </div>
+    <div>
+        <label for="datepicker-start">Desde:</label>
+        <input type="text" id="datepicker-start" placeholder="yyyy-mm-dd">
+        <label for="datepicker-end">Hasta:</label>
+        <input type="text" id="datepicker-end" placeholder="yyyy-mm-dd">
+        <button id="filter-btn">Filtrar</button>
+    </div>
+    
+    <div>
+        <button id="export-pdf">Exportar a PDF</button>
+        <button id="export-excel">Exportar a Excel</button>
+    </div>
 
-  <table id="example1" class="table table-bordered table-striped table-responsive">
-    <thead>
-      <tr>
-        <th>Fecha Transformación</th>
-        <th>Unidades</th>
-        <th>Peso Canal Fría</th>
-        <th>Lote</th>
-        <th>Código Granja</th>
-        <th>Remisión</th>
-        <th>Valor</th>
-        <th>Cliente</th>
-        <th>Planta Beneficio</th>
-        <th>Granja</th>
-        <th>Nit Asociado</th>
-        <th>Asociado</th>
-        <th>Grupo Granja</th>
-        <th>Retención</th>
-        <th>Valor a Pagar Asociado</th>
-        <th>Valor Kilo</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Los datos se llenarán aquí -->
-    </tbody>
-  </table>
+    <table id="example1" class="table table-bordered table-striped table-responsive">
+        <thead>
+            <tr>
+                <th>Fecha Transformación</th>
+                <th>Unidades</th>
+                <th>Peso Canal Fría</th>
+                <th>Consecutivo Cercafe</th>
+                <th>Código Granja</th>
+                <th>Remisión</th>
+                <th>Valor</th>
+                <th>Cliente</th>
+                <th>Planta Beneficio</th>
+                <th>Granja</th>
+                <th>Nit Asociado</th>
+                <th>Asociado</th>
+                <th>Grupo Granja</th>
+                <th>Retención</th>
+                <th>Valor a Pagar Asociado</th>
+                <th>Valor Kilo</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Los datos se llenarán aquí -->
+        </tbody>
+    </table>
 
-  <script>
-    $(document).ready(function () {
-      // Inicializar los datepickers
-      $("#datepicker-start").datepicker();
-      $("#datepicker-end").datepicker();
+    <script>
+        $(document).ready(function () {
+            // Inicializar los datepickers
+            $("#datepicker-start").datepicker();
+            $("#datepicker-end").datepicker();
 
-      // Al hacer clic en el botón Filtrar
-      $("#filter-btn").click(function () {
-        // Obtener las fechas seleccionadas
-        var startDate = $("#datepicker-start").val();
-        var endDate = $("#datepicker-end").val();
+            // Al hacer clic en el botón Filtrar
+            $("#filter-btn").click(function () {
+                // Obtener las fechas seleccionadas
+                var startDate = $("#datepicker-start").val();
+                var endDate = $("#datepicker-end").val();
+               
+                // Hacer la solicitud AJAX con las fechas como parámetros
+                $.ajax({
+                    url: '/repfinan/',
+                    type: 'GET',
+                    data: {
+                        start_date: startDate,
+                        end_date: endDate,
+                       
+                    },
+                    success: function (response) {
+                        // Limpiar la tabla
+                        $('#example1 tbody').empty();
 
-        // Hacer la solicitud AJAX con las fechas como parámetros
-        $.ajax({
-          url: '/repfinan/',
-          type: 'GET',
-          data: {
-            start_date: startDate,
-            end_date: endDate
-          },
-          success: function (response) {
-            // Limpiar la tabla
-            $('#example1 tbody').empty();
-
-            // Agregar las filas con los datos
-            response.data.forEach(function (compromiso) {
-              $('#example1 tbody').append('<tr><td>' + compromiso.Fecha_transformacion + '</td><td>' + compromiso.Unidades + '</td><td>' + compromiso.Peso_canal_fria + '</td><td>' + compromiso.Lote + '</td><td>' + compromiso.Codigo_granja + '</td><td>' + compromiso.Remision + '</td><td>' + compromiso.Valor + '</td><td>' + compromiso.Cliente + '</td><td>' + compromiso.Planta_Beneficio + '</td><td>' + compromiso.Granja + '</td><td>' + compromiso.Nit_asociado + '</td><td>' + compromiso.Asociado + '</td><td>' + compromiso.Grupo_Granja + '</td><td>' + compromiso.Retencion + '</td><td>' + compromiso.Valor_a_pagar_asociado + '</td> <td contenteditable=true>' + compromiso.Valor_kilo + '</td></tr>');
+                        // Agregar las filas con los datos
+                        response.data.forEach(function (compromiso) {
+                            $('#example1 tbody').append('<tr><td>' + compromiso.Fecha_transformacion + '</td><td>' + compromiso.Unidades + '</td><td>' + compromiso.Peso_canal_fria + '</td><td>' + compromiso.Consecutivo_Cercafe + '</td><td>' + compromiso.Codigo_granja + '</td><td>' + compromiso.Remision + '</td><td>' + compromiso.Valor + '</td><td>' + compromiso.Cliente + '</td><td>' + compromiso.Planta_Beneficio + '</td><td>' + compromiso.Granja + '</td><td>' + compromiso.Nit_asociado + '</td><td>' + compromiso.Asociado + '</td><td>' + compromiso.Grupo_Granja + '</td><td>' + compromiso.Retencion + '</td><td>' + compromiso.Valor_a_pagar_asociado + '</td> <td contenteditable=true>' + compromiso.Valor_kilo + '</td></tr>');
+                        });
+                    }
+                });
             });
-          }
         });
-      });
-    });
-  </script>
+        $("#export-pdf").click(function () {
+            $.ajax({
+                url: '/export-pdf/',
+                type: 'GET',
+                data: {
+                    start_date: $("#datepicker-start").val(),
+                    end_date: $("#datepicker-end").val(),
+                   
+                },
+                success: function (response) {
+                    // Abrir el PDF en una nueva pestaña
+                    window.open(response.url, '_blank');
+                }
+            });
+        });
+
+        // Exportar a Excel
+        $("#export-excel").click(function () {
+            $.ajax({
+                url: '/export-excel/',
+                type: 'GET',
+                data: {
+                    start_date: $("#datepicker-start").val(),
+                    end_date: $("#datepicker-end").val(),
+                   
+                },
+                success: function (response) {
+                    // Descargar el archivo Excel
+                    var a = document.createElement('a');
+                    a.href = response.url;
+                    a.download = 'reporte.xlsx';
+                    a.click();
+                }
+            });
+        });
+    </script>
 </body>
+
 </html>
