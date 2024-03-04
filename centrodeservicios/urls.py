@@ -23,5 +23,5 @@ urlpatterns = [
     path('export-excel/', views.export_excel, name='export_excel'),
     path('export-pdf/', views.export_pdf, name='export-pdf'),
     path('save-changes/', views.save_changes, name='save_changes'),
-    
+    path('generate-excel-report/', views.generate_excel_report, name='generate_excel_report'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

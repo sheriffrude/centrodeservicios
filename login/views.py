@@ -242,3 +242,67 @@ def save_changes(request):
     else:
         # Devolver una respuesta de error si la solicitud no es POST
         return JsonResponse({'success': False, 'error': 'Método de solicitud no permitido'})
+    
+def get_filtered_data_by_group(start_date, end_date, selected_group):
+    with connections['base_gaf'].cursor() as cursor:
+        cursor.execute('''
+            SELECT Granja,Cliente,Unidades,Peso_canal_fria,Valor_kilo,Valor,Retencion,Valor_a_pagar_asociado
+            FROM B_GAF.OPERACION_DESPOSTE
+            WHERE Fecha_transformacion BETWEEN %s AND %s AND Grupo_Granja = %s
+        ''', [start_date, end_date, selected_group])
+        compromisos = cursor.fetchall()
+
+    # Loguear los datos recuperados
+    logger.info(compromisos)
+
+    return compromisos
+
+from collections import defaultdict
+    
+def generate_excel_report(request):
+    # Obtener los datos para exportar
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    selected_group = request.GET.get('selected_group')
+
+    # Obtener los datos filtrados para el grupo seleccionado
+    compromisos = get_filtered_data_by_group(start_date, end_date, selected_group)
+
+    # Crear el archivo Excel
+    workbook = xlsxwriter.Workbook('reporte_grupo_' + selected_group + '.xlsx')
+    worksheet = workbook.add_worksheet()
+
+    # Escribir los encabezados
+    headers = ['Granja', 'Cliente', 'Unidades', 'Peso Canal', 'Valor Kilo', 'Valor a facturar', 'Retención',
+               'Valor a Pagar Asociado']
+    for i, header in enumerate(headers):
+        worksheet.write(0, i, header)
+
+    # Escribir los datos
+    current_granja = None
+    current_row = 1
+    for compromiso in compromisos:
+        if current_granja is None or current_granja != compromiso[0]:
+            # Si la granja cambió, agregar dos líneas vacías
+            if current_row > 1:
+                current_row += 2
+            current_granja = compromiso[0]
+            worksheet.write(current_row, 0, current_granja)  
+            current_row += 1
+
+        # Escribir los demás valores en las columnas correspondientes
+        for col, value in enumerate(compromiso[1:], start=1):
+            worksheet.write(current_row, col, value)
+
+        current_row += 1
+
+    # Cerrar el archivo Excel
+    workbook.close()
+
+    # Enviar el archivo Excel como respuesta
+    with open('reporte_grupo_' + selected_group + '.xlsx', 'rb') as file:
+        response = HttpResponse(file.read(),
+                                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="reporte_grupo_' + selected_group + '.xlsx"'
+        return response
+

@@ -28,9 +28,21 @@
         <button id="export-pdf">Exportar a PDF</button>
         <button id="export-excel">Exportar a Excel</button>
     </div>
+    <div>
+        <select id="grupo-granja-selector">
+            <option value="Agrojabar">Agrojabar</option>
+            <option value="Agrocerdos">Agrocerdos</option>
+            <option value="campeon">campeon</option>
+            <option value="Gamm">Gamm</option>
+            <option value="CER">CER</option>
+            <option value="HBM">HBM</option>
+        </select>
+        <button id="generate-report-btn">Generar Reporte por grupo</button>
+    </div>
 
     <div>
-        <label for="">BUSCAR: </label><input type="text" id="search-input" placeholder="Buscar por Consecutivo Cercafe, Remisión o Cliente">
+        <label for="">BUSCAR: </label><input type="text" id="search-input"
+            placeholder="Buscar por Consecutivo Cercafe, Remisión o Cliente">
 
     </div>
 
@@ -191,6 +203,31 @@
                 }
             });
         });
+
+        // Evento click para el botón de generar informe en Excel
+        $("#generate-report-btn").click(function () {
+            // Obtener el valor seleccionado del selector de opciones
+            var selectedGroup = $("#grupo-granja-selector").val();
+
+            // Hacer la solicitud AJAX para generar el informe en Excel
+            $.ajax({
+                url: '/generate-excel-report/',
+                type: 'GET',
+                data: {
+                    start_date: $("#datepicker-start").val(),
+                    end_date: $("#datepicker-end").val(),
+                    selected_group: selectedGroup
+                },
+                success: function (response) {
+                    // Descargar el archivo Excel
+                    var a = document.createElement('a');
+                    a.href = response.url;
+                    a.download = 'reporte_grupo_' + selectedGroup + '.xlsx';
+                    a.click();
+                }
+            });
+        });
+        
 
     </script>
 </body>
