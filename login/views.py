@@ -13,7 +13,8 @@ from django.contrib import messages
 from django.template.loader import render_to_string
 import xlsxwriter
 import pdfkit
-
+from django.template import loader
+from django.http import FileResponse
 
 #---Define La Vista del login-----
 def signin(request):
@@ -142,18 +143,18 @@ def export_pdf(request):
     html += '</tbody></table></body></html>'
 
     # Convertir HTML a PDF
-    pdf = pdfkit.from_string(html, False)
+    pdf = pdfkit.from_string(html, False, configuration=pdfkit.configuration(wkhtmltopdf='C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'))
 
     # Enviar el PDF como respuesta
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="reporte.pdf"'
-    return response
+    response['Content-Length'] = len(pdf)
+    return redirect('financiera')
 
 def export_excel(request):
     # Obtener los datos para exportar
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
-    
 
     # Obtener los datos filtrados
     compromisos = get_filtered_data(start_date, end_date)
@@ -169,8 +170,26 @@ def export_excel(request):
 
     # Escribir los datos
     for row, compromiso in enumerate(compromisos, start=1):
-        for col, value in enumerate(compromiso, start=1):
-            worksheet.write(row, col, value)
+        # Formatear la fecha como un string
+        fecha_transformacion = compromiso[0].strftime('%Y-%m-%d')
+        # Escribir la fecha en la columna 0
+        worksheet.write(row, 0, fecha_transformacion)
+        # Escribir los demás valores en las columnas correspondientes
+        worksheet.write(row, 1, compromiso[1])  # Unidades
+        worksheet.write(row, 2, compromiso[2])  # Peso Canal Fría
+        worksheet.write(row, 3, compromiso[3])  # Consecutivo_Cercafe
+        worksheet.write(row, 4, compromiso[4])  # Código Granja
+        worksheet.write(row, 5, compromiso[5])  # Remisión
+        worksheet.write(row, 6, compromiso[6])  # Valor
+        worksheet.write(row, 7, compromiso[7])  # Cliente
+        worksheet.write(row, 8, compromiso[8])  # Planta Beneficio
+        worksheet.write(row, 9, compromiso[9])  # Granja
+        worksheet.write(row, 10, compromiso[10])  # Nit Asociado
+        worksheet.write(row, 11, compromiso[11])  # Asociado
+        worksheet.write(row, 12, compromiso[12])  # Grupo Granja
+        worksheet.write(row, 13, compromiso[13])  # Retención
+        worksheet.write(row, 14, compromiso[14])  # Valor a Pagar Asociado
+        worksheet.write(row, 15, compromiso[15])  # Valor Kilo
 
     # Cerrar el archivo Excel
     workbook.close()
@@ -179,8 +198,7 @@ def export_excel(request):
     with open('reporte.xlsx', 'rb') as file:
         response = HttpResponse(file.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename="reporte.xlsx"'
-        return redirect('financiera')
-
+        return response
 def get_filtered_data(start_date, end_date):
     with connections['base_gaf'].cursor() as cursor:
         cursor.execute('''

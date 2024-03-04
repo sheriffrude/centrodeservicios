@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'login',
     'adminlte3',
     'adminlte3_theme',
+    'wkhtmltopdf',
 ]
 
 MIDDLEWARE = [
