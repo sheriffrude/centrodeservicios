@@ -74,6 +74,8 @@ TEMPLATES = [
         },
     },
 ]
+CSRF_COOKIE_SECURE = True  
+CSRF_COOKIE_HTTPONLY = True  
 
 WSGI_APPLICATION = 'centrodeservicios.wsgi.application'
 

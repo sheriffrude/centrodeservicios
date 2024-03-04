@@ -22,6 +22,6 @@ urlpatterns = [
     path('repfinan/', views.repfinan, name='repfinan'),
     path('export-excel/', views.export_excel, name='export_excel'),
     path('export-pdf/', views.export_pdf, name='export-pdf'),
-    
+    path('save-changes/', views.save_changes, name='save_changes'),
     
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

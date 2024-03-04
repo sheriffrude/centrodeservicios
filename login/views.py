@@ -212,3 +212,33 @@ def get_filtered_data(start_date, end_date):
     logger.info(compromisos)
 
     return compromisos
+from django.views.decorators.csrf import csrf_protect
+
+@csrf_protect
+def save_changes(request):
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        id = request.POST.get('id')
+        newValue = request.POST.get('newValue')
+
+        # Validar los datos
+        if not id.isdigit():
+            return JsonResponse({'success': False, 'error': 'El ID debe ser un número entero válido'})
+
+        # Realizar la actualización en la base de datos
+        try:
+            # Actualizar el campo 'Valor Kilo'
+            with connections['base_gaf'].cursor() as cursor:
+                cursor.execute('''
+                    UPDATE B_GAF.OPERACION_DESPOSTE
+                    SET Valor_kilo = %s
+                    WHERE Consecutivo_Cercafe = %s
+                ''', [newValue, id])
+            # Devolver una respuesta de éxito
+            return JsonResponse({'success': True})
+        except Exception as e:
+            # Devolver una respuesta de error si ocurre algún error
+            return JsonResponse({'success': False, 'error': str(e)})
+    else:
+        # Devolver una respuesta de error si la solicitud no es POST
+        return JsonResponse({'success': False, 'error': 'Método de solicitud no permitido'})

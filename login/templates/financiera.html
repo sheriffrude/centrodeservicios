@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DatePickerRange y Tabla con Ajax</title>
+    <title></title>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
@@ -23,7 +23,7 @@
         <input type="text" id="datepicker-end" placeholder="yyyy-mm-dd">
         <button id="filter-btn">Filtrar</button>
     </div>
-    
+
     <div>
         <button id="export-pdf">Exportar a PDF</button>
         <button id="export-excel">Exportar a Excel</button>
@@ -54,6 +54,8 @@
             <!-- Los datos se llenarán aquí -->
         </tbody>
     </table>
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
 
     <script>
         $(document).ready(function () {
@@ -66,7 +68,7 @@
                 // Obtener las fechas seleccionadas
                 var startDate = $("#datepicker-start").val();
                 var endDate = $("#datepicker-end").val();
-               
+
                 // Hacer la solicitud AJAX con las fechas como parámetros
                 $.ajax({
                     url: '/repfinan/',
@@ -74,7 +76,7 @@
                     data: {
                         start_date: startDate,
                         end_date: endDate,
-                       
+
                     },
                     success: function (response) {
                         // Limpiar la tabla
@@ -82,7 +84,8 @@
 
                         // Agregar las filas con los datos
                         response.data.forEach(function (compromiso) {
-                            $('#example1 tbody').append('<tr><td>' + compromiso.Fecha_transformacion + '</td><td>' + compromiso.Unidades + '</td><td>' + compromiso.Peso_canal_fria + '</td><td>' + compromiso.Consecutivo_Cercafe + '</td><td>' + compromiso.Codigo_granja + '</td><td>' + compromiso.Remision + '</td><td>' + compromiso.Valor + '</td><td>' + compromiso.Cliente + '</td><td>' + compromiso.Planta_Beneficio + '</td><td>' + compromiso.Granja + '</td><td>' + compromiso.Nit_asociado + '</td><td>' + compromiso.Asociado + '</td><td>' + compromiso.Grupo_Granja + '</td><td>' + compromiso.Retencion + '</td><td>' + compromiso.Valor_a_pagar_asociado + '</td> <td contenteditable=true>' + compromiso.Valor_kilo + '</td></tr>');
+                            $('#example1 tbody').append('<tr data-id="' + compromiso.Consecutivo_Cercafe + '"><td>' + compromiso.Fecha_transformacion + '</td><td>' + compromiso.Unidades + '</td><td>' + compromiso.Peso_canal_fria + '</td><td>' + compromiso.Consecutivo_Cercafe + '</td><td>' + compromiso.Codigo_granja + '</td><td>' + compromiso.Remision + '</td><td>' + compromiso.Valor + '</td><td>' + compromiso.Cliente + '</td><td>' + compromiso.Planta_Beneficio + '</td><td>' + compromiso.Granja + '</td><td>' + compromiso.Nit_asociado + '</td><td>' + compromiso.Asociado + '</td><td>' + compromiso.Grupo_Granja + '</td><td>' + compromiso.Retencion + '</td><td>' + compromiso.Valor_a_pagar_asociado + '</td> <td contenteditable=true class="editable">' + compromiso.Valor_kilo + '</td><td><button class="save-btn">Guardar</button></td></tr>');
+
                         });
                     }
                 });
@@ -95,7 +98,7 @@
                 data: {
                     start_date: $("#datepicker-start").val(),
                     end_date: $("#datepicker-end").val(),
-                   
+
                 },
                 success: function (response) {
                     // Abrir el PDF en una nueva pestaña
@@ -112,7 +115,7 @@
                 data: {
                     start_date: $("#datepicker-start").val(),
                     end_date: $("#datepicker-end").val(),
-                   
+
                 },
                 success: function (response) {
                     // Descargar el archivo Excel
@@ -121,6 +124,37 @@
                     a.download = 'reporte.xlsx';
                     a.click();
                 }
+            });
+        });
+        $(document).ready(function () {
+            // ... otros códigos
+
+            // Evento click para el botón de guardar
+            $("body").on("click", ".save-btn", function () {
+                // Obtener el valor modificado
+                var newValue = $(this).closest("tr").find(".editable").text();
+                // Obtener el ID de la fila
+                var id = $(this).closest("tr").data("id");
+
+                var csrfToken = $("[name=csrfmiddlewaretoken]").val();
+                // Hacer la solicitud AJAX para guardar los cambios
+                $.ajax({
+                    url: '/save-changes/',
+                    type: 'POST',
+                    data: {
+                        id: id,
+                        newValue: newValue,
+                        csrfmiddlewaretoken: csrfToken
+                    },
+                    success: function (response) {
+                        // Si la operación fue exitosa, actualizar la tabla
+                        if (response.success) {
+                            alert('Cambios guardados exitosamente.');
+                        } else {
+                            alert('Error al guardar los cambios.');
+                        }
+                    }
+                });
             });
         });
     </script>
