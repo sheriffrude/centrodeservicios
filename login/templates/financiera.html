@@ -9,7 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
 </head>
 
 <body>
@@ -20,10 +20,12 @@
         <input type="text" id="datepicker-end" placeholder="yyyy-mm-dd">
         <button id="filter-btn">Filtrar</button>
     </div>
-
+<div>
+    <input type="text" name="daterange" value="01/01/2018 - 01/15/2018" />
+</div>
     <div>
         <button id="export-pdf">Exportar a PDF</button>
-        <a id="export-excel" href="{% url 'export_excel'%}">Exportar a Excel</a>
+        <button id="export-excel">Exportar a Excel</button>
     </div>
     <div>
         <select id="grupo-granja-selector">
@@ -74,9 +76,7 @@
     <!-- Agrega la biblioteca DataTables JS -->
     <script type="text/javascript" charset="utf8"
         src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
 
     <script>
         $(document).ready(function () {
@@ -137,25 +137,25 @@
             });
         });
 
-        // // Exportar a Excel
-        // $("#export-excel").click(function () {
-        //     $.ajax({
-        //         url: '/export-excel/',
-        //         type: 'GET',
-        //         data: {
-        //             start_date: $("#datepicker-start").val(),
-        //             end_date: $("#datepicker-end").val(),
+        // Exportar a Excel
+        $("#export-excel").click(function () {
+            $.ajax({
+                url: '/export-excel/',
+                type: 'GET',
+                data: {
+                    start_date: $("#datepicker-start").val(),
+                    end_date: $("#datepicker-end").val(),
 
-        //         },
-        //         success: function (response) {
-        //             // Descargar el archivo Excel
-        //             var a = document.createElement('a');
-        //             a.href = response.url;
-        //             a.download = 'reporteaa.xlsx';
-        //             a.click();
-        //         }
-        //     });
-        // });
+                },
+                success: function (response) {
+                    // Descargar el archivo Excel
+                    var a = document.createElement('a');
+                    a.href = response.url;
+                    a.download = 'reporte.xlsx';
+                    a.click();
+                }
+            });
+        });
         $(document).ready(function () {
             // ... otros códigos
 
@@ -242,13 +242,7 @@
                 }
             });
         });
-        $(document).ready(function () {
-            $('input[name="daterange"]').daterangepicker({
-                opens: 'left'
-            }, function (start, end, label) {
-                console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-            });
-        });
+        
 
 
 

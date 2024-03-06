@@ -135,7 +135,7 @@ def get_filtered_data(start_date, end_date):
 
     # Loguear los datos recuperados
     logger.info(compromisos)
-    print(compromisos)
+
     return compromisos
 
 def export_pdf(request):
