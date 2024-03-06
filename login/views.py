@@ -23,13 +23,14 @@ def signin(request):
             'form' : AuthenticationForm
             })
    else:
-       user = authenticate(authenticate, username=request.POST['username'], 
+       user = authenticate( username=request.POST['username'], 
                            password=request.POST['password'])
-       if user is None:
-        return render(request, 'login.html',{
-                'form' : AuthenticationForm,
-                'error' : 'Usuario o Contraseña incorrectos'
-                })
+       if user is None or not user.is_active:
+            # Usuario no válido o cuenta desactivada
+            return render(request, 'login.html', {
+                'form': AuthenticationForm,
+                'error': 'Usuario o contraseña incorrectos'
+    })
        else:
            login (request, user)
            return redirect('home')
@@ -123,7 +124,19 @@ def repfinan(request):
     data = [{'Fecha_transformacion': Fecha_transformacion, 'Unidades': Unidades, 'Peso_canal_fria': Peso_canal_fria, 'Consecutivo_Cercafe': Consecutivo_Cercafe, 'Codigo_granja': Codigo_granja, 'Remision': Remision, 'Valor': Valor, 'Cliente': Cliente, 'Planta_Beneficio': Planta_Beneficio, 'Granja': Granja, 'Nit_asociado': Nit_asociado, 'Asociado': Asociado, 'Grupo_Granja': Grupo_Granja, 'Retencion': Retencion, 'Valor_a_pagar_asociado': Valor_a_pagar_asociado, 'Valor_kilo': Valor_kilo} for Fecha_transformacion, Unidades, Peso_canal_fria, Consecutivo_Cercafe, Codigo_granja, Remision, Valor, Cliente, Planta_Beneficio, Granja, Nit_asociado, Asociado, Grupo_Granja, Retencion, Valor_a_pagar_asociado, Valor_kilo in compromisos]
 
     return JsonResponse({'data': data})
+def get_filtered_data(start_date, end_date):
+    with connections['base_gaf'].cursor() as cursor:
+        cursor.execute('''
+            SELECT Fecha_transformacion,Unidades,Peso_canal_fria,Consecutivo_Cercafe,Codigo_granja,Remision,Valor,Cliente,Planta_Beneficio,Granja,Nit_asociado,Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado,Valor_kilo
+            FROM B_GAF.OPERACION_DESPOSTE
+            WHERE Fecha_transformacion BETWEEN %s AND %s
+        ''', [start_date, end_date])
+        compromisos = cursor.fetchall()
 
+    # Loguear los datos recuperados
+    logger.info(compromisos)
+    print(compromisos)
+    return compromisos
 
 def export_pdf(request):
     # Obtener los datos para exportar
@@ -199,19 +212,7 @@ def export_excel(request):
         response = HttpResponse(file.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename="reporte.xlsx"'
         return response
-def get_filtered_data(start_date, end_date):
-    with connections['base_gaf'].cursor() as cursor:
-        cursor.execute('''
-            SELECT Fecha_transformacion,Unidades,Peso_canal_fria,Consecutivo_Cercafe,Codigo_granja,Remision,Valor,Cliente,Planta_Beneficio,Granja,Nit_asociado,Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado,Valor_kilo
-            FROM B_GAF.OPERACION_DESPOSTE
-            WHERE Fecha_transformacion BETWEEN %s AND %s
-        ''', [start_date, end_date])
-        compromisos = cursor.fetchall()
 
-    # Loguear los datos recuperados
-    logger.info(compromisos)
-
-    return compromisos
 from django.views.decorators.csrf import csrf_protect
 
 @csrf_protect
