@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -8,8 +9,8 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-
-
+    
+   
 </head>
 
 <body>
@@ -20,9 +21,7 @@
         <input type="text" id="datepicker-end" placeholder="yyyy-mm-dd">
         <button id="filter-btn">Filtrar</button>
     </div>
-<div>
-    <input type="text" name="daterange" value="01/01/2018 - 01/15/2018" />
-</div>
+
     <div>
         <button id="export-pdf">Exportar a PDF</button>
         <button id="export-excel">Exportar a Excel</button>
@@ -112,11 +111,6 @@
                             $('#example1 tbody').append('<tr data-id="' + compromiso.Consecutivo_Cercafe + '"><td>' + compromiso.Fecha_transformacion + '</td><td>' + compromiso.Unidades + '</td><td>' + compromiso.Peso_canal_fria + '</td><td>' + compromiso.Consecutivo_Cercafe + '</td><td>' + compromiso.Codigo_granja + '</td><td>' + compromiso.Remision + '</td><td>' + compromiso.Valor + '</td><td>' + compromiso.Cliente + '</td><td>' + compromiso.Planta_Beneficio + '</td><td>' + compromiso.Granja + '</td><td>' + compromiso.Nit_asociado + '</td><td>' + compromiso.Asociado + '</td><td>' + compromiso.Grupo_Granja + '</td><td>' + compromiso.Retencion + '</td><td>' + compromiso.Valor_a_pagar_asociado + '</td> <td contenteditable=true class="editable">' + compromiso.Valor_kilo + '</td><td><button class="save-btn">Guardar</button></td></tr>');
 
                         });
-                        $('#example1').DataTable({
-                            "paging": true,
-                            "pageLength": 20
-                        });
-
                     }
                 });
             });
@@ -242,8 +236,12 @@
                 }
             });
         });
-        
-
+        $(document).ready( function () {
+            $('#example1').DataTable({
+                "paging": true,
+                "pageLength": 20 
+            });
+        });
 
 
     </script>
