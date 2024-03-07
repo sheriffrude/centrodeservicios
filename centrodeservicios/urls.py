@@ -42,6 +42,31 @@ urlpatterns = [
     path('cargar_excel_sstindi/', views.cargar_excel_sstindi, name='cargar_excel_sstindi'),
     path('cargar_excel_sstseveridad/', views.cargar_excel_sstseveridad, name='cargar_excel_sstseveridad'),
     
+    #------------------------gestion Tecnica ------------------------------------------------
+    path('gestiontecnica/', views.gestiontecnica, name='gestiontecnica'),
+    path('gestiontecnica/', views.cargar_excel_abashem, name='gestiontecnica'),
+    path('gestiontecnica/', views.cargar_excel_fortuitos, name='gestiontecnica'),
+    path('gestiontecnica/', views.cargar_excel_kgvend, name='gestiontecnica'),
+    path('gestiontecnica/', views.cargar_excel_pesofinconver, name='gestiontecnica'),
+    path('gestiontecnica/', views.cargar_excel_proyhem, name='gestiontecnica'),
+    path('gestiontecnica/', views.cargar_excel_tecnicacia, name='gestiontecnica'),
+    
+    path('cargar_excel_abashem/', views.cargar_excel_abashem, name='cargar_excel_abashem'),
+    path('cargar_excel_fortuitos/', views.cargar_excel_fortuitos, name='cargar_excel_fortuitos'),
+    path('cargar_excel_kgvend/', views.cargar_excel_kgvend, name='cargar_excel_kgvend'),
+    path('cargar_excel_pesofinconver/', views.cargar_excel_pesofinconver, name='cargar_excel_pesofinconver'),
+    path('cargar_excel_proyhem/', views.cargar_excel_proyhem, name='cargar_excel_proyhem'),
+    path('cargar_excel_tecnicacia/', views.cargar_excel_tecnicacia, name='cargar_excel_tecnicacia'),
+    
+    #------------------------gestion Alimento Balanceado ------------------------------------------------
+    path('gestionalbal/', views.gestionalbal, name='gestionalbal'),
+    path('gestionalbal/', views.cargar_excel_alibal, name='gestionalbal'),
+    
+    path('cargar_excel_alibal/', views.cargar_excel_alibal, name='cargar_excel_alibal'),
+    
+    
+    
+    
     
     path('financiera/', views.financiera, name='financiera'),
     path('repoprove/', views.repoprove, name='repoprove'),

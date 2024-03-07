@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proveeduria</title>
+</head>
+
+<body>
+
+
+  <!-- SELECT2 EXAMPLE -->
+  <div class="card card-default collapsed-box">
+    <div class="card-header bg-dark" data-card-widget="collapse">
+      <h3 class="card-title">Ingreso De Planta Alimentos Balanceado</h3>
+
+      <div class="card-tools">
+        <button type="button" class="btn btn-tool"><i class="fas fa-minus"></i></button>
+      </div>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <form method="post" action="{% url 'cargar_excel_alibal' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="archivo_excel">Selecciona un archivo Excel:</label>
+            <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
+            <br>
+            <button class="btn btn-success" type="submit">Cargar Datos</button>
+          </form>
+        </div>
+      </div>
+      <div class="card-footer">
+        Los valores ingresados aquí no pueden ser cambiados luego de ingresarlos.
+      </div>
+    </div>
+  </div>
