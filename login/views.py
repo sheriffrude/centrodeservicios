@@ -15,6 +15,10 @@ import xlsxwriter
 import pdfkit
 from django.template import loader
 from django.http import FileResponse
+import logging
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_protect
+
 
 #---Define La Vista del login-----
 def signin(request):
@@ -99,8 +103,7 @@ def reproved(request):
 
     return JsonResponse({'data': data})
 
-import logging
-from django.views.decorators.csrf import csrf_exempt
+
 logger = logging.getLogger(__name__)
 
 
@@ -124,6 +127,7 @@ def repfinan(request):
     data = [{'Fecha_transformacion': Fecha_transformacion, 'Unidades': Unidades, 'Peso_canal_fria': Peso_canal_fria, 'Consecutivo_Cercafe': Consecutivo_Cercafe, 'Codigo_granja': Codigo_granja, 'Remision': Remision, 'Valor': Valor, 'Cliente': Cliente, 'Planta_Beneficio': Planta_Beneficio, 'Granja': Granja, 'Nit_asociado': Nit_asociado, 'Asociado': Asociado, 'Grupo_Granja': Grupo_Granja, 'Retencion': Retencion, 'Valor_a_pagar_asociado': Valor_a_pagar_asociado, 'Valor_kilo': Valor_kilo} for Fecha_transformacion, Unidades, Peso_canal_fria, Consecutivo_Cercafe, Codigo_granja, Remision, Valor, Cliente, Planta_Beneficio, Granja, Nit_asociado, Asociado, Grupo_Granja, Retencion, Valor_a_pagar_asociado, Valor_kilo in compromisos]
 
     return JsonResponse({'data': data})
+
 def get_filtered_data(start_date, end_date):
     with connections['base_gaf'].cursor() as cursor:
         cursor.execute('''
@@ -213,7 +217,6 @@ def export_excel(request):
         response['Content-Disposition'] = 'attachment; filename="reporte.xlsx"'
         return response
 
-from django.views.decorators.csrf import csrf_protect
 
 @csrf_protect
 def save_changes(request):
