@@ -9,8 +9,6 @@
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="/static/admin-lte/plugins/fontawesome-free/css/all.min.css">
-    <!-- Ionicons -->
-    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <!-- DataTables -->
     <link rel="stylesheet" href="/static/admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="/static/admin-lte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
@@ -20,16 +18,6 @@
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
     <!-- DataTables Buttons CSS -->
     <link rel="stylesheet" href="/static/admin-lte/plugins/datatables-buttons/css/buttons.dataTables.min.css">
-
-    <!-- DataTables Buttons JS -->
-    <script src="/../../plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="/../../plugins/jszip/jszip.min.js"></script>
-    <script src="/../../plugins/pdfmake/pdfmake.min.js"></script>
-    <script src="/../../plugins/pdfmake/vfs_fonts.js"></script>
-    <script src="/../../plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-    <script src="/../../plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-
-
 </head>
 
 <body>
@@ -46,10 +34,9 @@
 
                     <!-- /.card-header -->
                     <div class="card-body">
-
                         <label>Search:<input type="search" class="form-control form-control-sm" placeholder=""
                                 aria-controls="example1"></label>
-                        <!-- <button class="btn btn-success" type="submit">actualizar</button> -->
+                        <button id="exportToPDF" class="btn btn-primary">Exportar a PDF</button>
 
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
@@ -63,10 +50,7 @@
                             <tbody>
                                 <!-- Los datos se llenarán aquí -->
                             </tbody>
-                            <button id="exportToPDF" class="btn btn-primary">Exportar a PDF</button>
                         </table>
-
-
                     </div>
                     <!-- /.card-body -->
                 </div>
@@ -79,6 +63,17 @@
     <!-- /.content -->
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/static/admin-lte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="/static/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="/static/admin-lte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="/static/admin-lte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="/static/admin-lte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="/static/admin-lte/plugins/jszip/jszip.min.js"></script>
+    <script src="/static/admin-lte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="/static/admin-lte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="/static/admin-lte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="/static/admin-lte/dist/js/adminlte.min.js"></script>
+
     <script>
         $(document).ready(function () {
             $.ajax({
@@ -90,9 +85,7 @@
                     });
                 }
             });
-        });
 
-        $(document).ready(function () {
             var table = $('#example1').DataTable({
                 "searching": true,
                 "dom": 'Bfrtip',
@@ -105,37 +98,7 @@
                 table.button('.buttons-pdfHtml5').trigger();
             });
         });
-
     </script>
-    <script src="plugins/jquery/jquery.min.js"></script>
-    <!-- Bootstrap -->
-    <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- AdminLTE -->
-    <script src="dist/js/adminlte.js"></script>
-
-    <!-- OPTIONAL SCRIPTS -->
-    <script src="plugins/chart.js/Chart.min.js"></script>
-    <script src="dist/js/demo.js"></script>
-    <script src="dist/js/pages/dashboard3.js"></script>
-    <script src="/static/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <script src="/static/admin-lte/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="/static/admin-lte/plugins/jszip/jszip.min.js"></script>
-    <script src="/static/admin-lte/plugins/pdfmake/pdfmake.min.js"></script>
-    <script src="/static/admin-lte/plugins/pdfmake/vfs_fonts.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
-
-    <script src="/static/admin-lte/dist/js/adminlte.min.js?v=3.2.0"></script>
-
-    <script src="/static/admin-lte/dist/js/demo.js"></script>
-    <script src="/static/admin-lte/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="/static/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 </body>
 
-</html
+</html>

@@ -56,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'centrodeservicios.urls'
@@ -100,33 +101,31 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306',
     },
-    
-    'proveeduria': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'proveeduria',
-        'USER': 'root',
-        'PASSWORD': '1234',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    },
-    'base_ca': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'b_ca',
-        'USER': 'DEV_USER',
-        'PASSWORD': 'DEV-USER12345',
-        'HOST': '192.168.9.200',
-        'PORT': '3308',
-    },
-    'base_gaf': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'b_gaf',
-        'USER': 'DEV_USER',
-        'PASSWORD': 'DEV-USER12345',
-        'HOST': '192.168.9.200',
-        'PORT': '3308',
-    },
-    
 }
+
+# Lista de nombres de esquemas adicionales
+esquemas = [
+    'B_GC', 'B_GT', 'B_CA', 'B_GAB', 'B_CI',
+    'B_M', 'B_C', 'B_GD', 'B_GAF', 'B_GH',
+    'B_TI', 'B_SAC', 'B_SIG', 'B_GG'
+]
+
+# Configuración base para todas las bases de datos adicionales
+base_config = {
+    'ENGINE': 'django.db.backends.mysql',
+    'USER': 'DEV_USER',
+    'PASSWORD': 'DEV-USER12345',
+    'HOST': '192.168.9.200',
+    'PORT': '3308',
+}
+
+# Crear la configuración para cada esquema adicional
+for esquema in esquemas:
+    DATABASES[esquema] = {
+        'NAME': esquema,
+        **base_config,
+    }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -177,3 +176,8 @@ LOGIN_URL='/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+CACHE_MIDDLEWARE_ALIAS = 'default'
+CACHE_MIDDLEWARE_SECONDS = 0
+CACHE_MIDDLEWARE_KEY_PREFIX = ''
+CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True

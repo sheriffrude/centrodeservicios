@@ -2,26 +2,27 @@
 {%load static %}
 <!-- Left side column. contains the sidebar -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-     <!-- Brand Logo -->
+    <!-- Brand Logo -->
     {% block logo %}
-        <a href="" class="brand-link">
-            <img src="{%static 'admin-lte/dist/img/logoside.png' size=90 %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-            {% block logo_text %}<span class="brand-text font-weight-dark">CERCAFE CS </span>{% endblock %}
-        </a>
+    <a href="" class="brand-link">
+        <img src="{%static 'admin-lte/dist/img/logoside.png' size=90 %}" alt="AdminLTE Logo"
+            class="brand-image img-circle elevation-3" style="opacity: .8">
+        {% block logo_text %}<span class="brand-text font-weight-dark">CERCAFE CS </span>{% endblock %}
+    </a>
     {% endblock %}
     <!-- sidebar: style can be found in sidebar.less -->
     <div class="sidebar">
         <!-- Sidebar user panel -->
         {% block user_panel %}
         <!-- Sidebar user panel (optional) -->
-      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="image">
-          <img src="{% avatar_url  %}" class="img-circle elevation-2" alt="User Image">
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <img src="{% avatar_url  %}" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info">
+                <a href="#" class="d-block">{% firstof request.user.get_full_name request.user.username %}</a>
+            </div>
         </div>
-        <div class="info">
-          <a href="#" class="d-block">{% firstof request.user.get_full_name request.user.username %}</a>
-        </div>
-      </div>
         {% endblock %}
 
         {% block form %}{% endblock %}
@@ -30,34 +31,112 @@
         {% block nav_links_ul %}
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-            {% block nav_links_outer %}
-            <li class="nav-header">{% block nav_heading %}SERVICIOS{% endblock %}</li>
+                {% block nav_links_outer %}
+                <li class="nav-header">{% block nav_heading %}SERVICIOS{% endblock %}</li>
 
-            {% block nav_links %}
-                <li class="nav-item">
-                    <a id="cargarContenido" ref="{% url 'granja' %}" class="nav-link">
-                        <i class="nav-icon fas fa-solid fa-piggy-bank"></i> 
-                        <p>Proveeduria</p>
-                    </a>
-                </li>
+                {% block nav_links %}
+                
                 <li class="nav-item">
                     <a id="cargarContenido" ref="{% url 'financiera' %}" class="nav-link">
-                            <i class="nav-icon fas fa-solid fa-comments-dollar"></i> 
-                            <p>Financiera</p>
-                        </a>
-                    </li>
+                        <i class="nav-icon fas fa-solid fa-comments-dollar"></i>
+                        <p>Financiera</p>
+                    </a>
+                </li>
+               
                 <li class="nav-item has-tree-view ">
-                    <a  class="nav-link">
-                        <i class="nav-icon fas fa-chart-pie"></i> <p>Reportes</p>
+                    <a class="nav-link">
+                        <i class="nav-icon fas fa-file-import"></i>
+                        <p>Carga De datos</p>
                         <p><i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview menu-open">
-                            <li class="nav-item">
-                                    <a id="cargarContenido" ref="{% url 'repoprove' %}" class="nav-link">
-                                        <i class="nav-icon fas fa-chart-line"></i>Proveeduria
-                                    </a>
-                                </li>
+                        <li class="nav-item">
+                            <a id="cargarContenido" ref="{% url 'gestioncomercial' %}" class="nav-link">
+                                <i class="nav-icon fas fa-cart-plus"></i>Gestion Comercial
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="cargarContenido" class="nav-link">
+                                <i class="nav-icon fas fa-tractor"></i>Gestion Tecnica
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="cargarContenido" ref="{% url 'cadenaabastecimiento' %}" class="nav-link">
+                                <i class="nav-icon fas fa-truck"></i>Cadena De Abastecimiento
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="cargarContenido" class="nav-link">
+                                <i class="nav-icon fas fa-industry"></i>G- Alimento Balanceado
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="cargarContenido" class="nav-link">
+                                <i class="nav-icon fas  fa-user-shield"></i>Control Interno
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="cargarContenido" class="nav-link">
+                                <i class="nav-icon fas fa-hammer"></i>Mantenimiento
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="cargarContenido" class="nav-link">
+                                <i class="nav-icon fas fa-medal"></i>Calidad
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="cargarContenido" class="nav-link">
+                                <i class="nav-icon fas fa-copy"></i>Gestion Documental
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="cargarContenido" class="nav-link">
+                                <i class="nav-icon fas fa-coins"></i>G- Admin y Financiera
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="cargarContenido" ref="{% url 'gestionhumana' %}" class="nav-link">
+                                <i class="nav-icon fas fa-people-arrows"></i>Gestion Humana
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="cargarContenido" class="nav-link">
+                                <i class="nav-icon fas fa-microchip"></i>T.I
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="cargarContenido" class="nav-link">
+                                <i class="nav-icon fas fa-user-check"></i>Servicio Al Cliente
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="cargarContenido" class="nav-link">
+                                <i class="nav-icon fas fa-spinner"></i>SIG
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="cargarContenido" class="nav-link">
+                                <i class="nav-icon fas fa-user-tie"></i>Gestion Gerencial
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+                <li class="nav-item has-tree-view ">
+                    <a class="nav-link">
+                        <i class="nav-icon fas fa-chart-pie"></i>
+                        <p>Reportes</p>
+                        <p><i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview menu-open">
+                        <li class="nav-item">
+                            <a id="cargarContenido" ref="{% url 'repoprove' %}" class="nav-link">
+                                <i class="nav-icon fas fa-chart-line"></i>Proveeduria
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a id="cargarContenido" ref="{% url 'repofina' %}" class="nav-link">
                                 <i class="nav-icon fas fa-file-invoice-dollar"></i>Financiera
@@ -65,10 +144,10 @@
                         </li>
                     </ul>
                 </li>
-            {% endblock nav_links %}
-            {% endblock nav_links_outer %}
+                {% endblock nav_links %}
+                {% endblock nav_links_outer %}
             </ul>
-            </nav>
+        </nav>
         {% endblock nav_links_ul %}
     </div>
     <!-- /.sidebar -->
