@@ -13,7 +13,7 @@
   <!-- SELECT2 EXAMPLE -->
   <div class="card card-default  collapsed collapsed-card">
     <div class="card-header bg-dark" data-card-widget="collapse">
-      <h3 class="card-title">Ingreso De Clientes Activos</h3>
+      <h3 class="card-title">Ingreso De Transformacion Digital</h3>
 
       <div class="card-tools">
         <button type="button" class="btn btn-tool"><i class="fas fa-minus"></i></button>
@@ -23,7 +23,7 @@
     <div class="card-body">
       <div class="row">
         <div class="col-md-6">
-          <form method="post" action="{% url 'cargar_excel_clientesactivos' %}" enctype="multipart/form-data">
+          <form method="post" action="{% url 'cargar_excel_transfordig' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="archivo_excel">Selecciona un archivo Excel:</label>
             <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
@@ -41,7 +41,7 @@
   <!------------------------------------------------------- carga 2do excel  -------------------------->
   <div class="card card-default  collapsed collapsed-card">
     <div class="card-header bg-dark" data-card-widget="collapse">
-      <h3 class="card-title">Ingreso de Ventas</h3>
+      <h3 class="card-title">Ingreso de Indicadores  Economicos  </h3>
 
       <div class="card-tools">
         <button type="button" class="btn btn-tool"><i class="fas fa-minus"></i></button>
@@ -51,7 +51,7 @@
     <div class="card-body">
       <div class="row">
         <div class="col-md-6">
-          <form method="post" action="{% url 'cargar_excel_ventas' %}" enctype="multipart/form-data">
+          <form method="post" action="{% url 'cargar_excel_inideco' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="archivo_excel">Selecciona un archivo Excel:</label>
             <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
@@ -65,7 +65,3 @@
       </div>
     </div>
   </div>
-
-</body>
-
-</html>

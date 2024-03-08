@@ -64,6 +64,30 @@ urlpatterns = [
     
     path('cargar_excel_alibal/', views.cargar_excel_alibal, name='cargar_excel_alibal'),
     
+     #--------------------------------- CALIDAD ------------------------------------------------
+    path('calidad/', views.calidad, name='calidad'),
+    path('calidad/', views.cargar_excel_avancepro, name='calidad'),
+    path('calidad/', views.cargar_excel_calidadpl, name='calidad'),
+    path('calidad/', views.cargar_excel_causasdes, name='calidad'),
+    path('calidad/', views.cargar_excel_pqrsf, name='calidad'),
+    
+    path('cargar_excel_avancepro/', views.cargar_excel_avancepro, name='cargar_excel_avancepro'),
+    path('cargar_excel_calidadpl/', views.cargar_excel_calidadpl, name='cargar_excel_calidadpl'),
+    path('cargar_excel_causasdes/', views.cargar_excel_causasdes, name='cargar_excel_causasdes'),
+    path('cargar_excel_pqrsf/', views.cargar_excel_pqrsf, name='cargar_excel_pqrsf'),
+    
+     #--------------------------------- T.I ------------------------------------------------
+    path('ti/', views.ti, name='ti'),
+    path('ti/', views.cargar_excel_transfordig, name='ti'),
+    path('ti/', views.cargar_excel_inideco, name='ti'),
+    
+    path('cargar_excel_transfordig/', views.cargar_excel_transfordig, name='cargar_excel_transfordig'),
+    path('cargar_excel_inideco/', views.cargar_excel_inideco, name='cargar_excel_inideco'),
+    
+    
+    
+    
+    
     
     
     

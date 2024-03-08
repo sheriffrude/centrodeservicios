@@ -4,16 +4,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Proveeduria</title>
+  <title>Calidad</title>
 </head>
 
 <body>
 
 
   <!-- SELECT2 EXAMPLE -->
-  <div class="card card-default  collapsed collapsed-card">
+  <div class="card card-default   collapsed collapsed-card">
     <div class="card-header bg-dark" data-card-widget="collapse">
-      <h3 class="card-title">Ingreso De Abastecimiento Hembras</h3>
+      <h3 class="card-title">Ingreso De Avance Proceso</h3>
 
       <div class="card-tools">
         <button type="button" class="btn btn-tool"><i class="fas fa-minus"></i></button>
@@ -23,7 +23,7 @@
     <div class="card-body">
       <div class="row">
         <div class="col-md-6">
-          <form method="post" action="{% url 'cargar_excel_abashem' %}" enctype="multipart/form-data">
+          <form method="post" action="{% url 'cargar_excel_avancepro' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="archivo_excel">Selecciona un archivo Excel:</label>
             <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
@@ -41,7 +41,7 @@
   <!------------------------------------------------------- carga 2do excel  -------------------------->
   <div class="card card-default  collapsed collapsed-card">
     <div class="card-header bg-dark" data-card-widget="collapse">
-      <h3 class="card-title">Ingreso de Fortuitos </h3>
+      <h3 class="card-title">Ingreso de Calidad Planta </h3>
 
       <div class="card-tools">
         <button type="button" class="btn btn-tool"><i class="fas fa-minus"></i></button>
@@ -51,7 +51,7 @@
     <div class="card-body">
       <div class="row">
         <div class="col-md-6">
-          <form method="post" action="{% url 'cargar_excel_fortuitos' %}" enctype="multipart/form-data">
+          <form method="post" action="{% url 'cargar_excel_calidadpl' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="archivo_excel">Selecciona un archivo Excel:</label>
             <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
@@ -68,7 +68,7 @@
   <!------------------------------------------------------- carga 3er excel  -------------------------->
   <div class="card card-default  collapsed collapsed-card">
     <div class="card-header bg-dark" data-card-widget="collapse">
-      <h3 class="card-title">Ingreso de Kg Vendidos Hembra </h3>
+      <h3 class="card-title">Ingreso de Causa Desviaciones </h3>
 
       <div class="card-tools">
         <button type="button" class="btn btn-tool"><i class="fas fa-minus"></i></button>
@@ -78,7 +78,7 @@
     <div class="card-body">
       <div class="row">
         <div class="col-md-6">
-          <form method="post" action="{% url 'cargar_excel_kgvend' %}" enctype="multipart/form-data">
+          <form method="post" action="{% url 'cargar_excel_causasdes' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="archivo_excel">Selecciona un archivo Excel:</label>
             <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
@@ -95,7 +95,7 @@
   <!------------------------------------------------------- carga 4to excel  -------------------------->
   <div class="card card-default  collapsed collapsed-card">
     <div class="card-header bg-dark" data-card-widget="collapse">
-      <h3 class="card-title">Ingreso de Peso Final Conversion </h3>
+      <h3 class="card-title">Ingreso de PQRSF </h3>
 
       <div class="card-tools">
         <button type="button" class="btn btn-tool"><i class="fas fa-minus"></i></button>
@@ -105,61 +105,7 @@
     <div class="card-body">
       <div class="row">
         <div class="col-md-6">
-          <form method="post" action="{% url 'cargar_excel_pesofinconver' %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            <label for="archivo_excel">Selecciona un archivo Excel:</label>
-            <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
-            <br>
-            <button class="btn btn-success" type="submit">Cargar Datos</button>
-          </form>
-        </div>
-      </div>
-      <div class="card-footer">
-        Los valores ingresados aquí no pueden ser cambiados luego de ingresarlos.
-      </div>
-    </div>
-  </div>
-  <!------------------------------------------------------- carga 5to excel  -------------------------->
-  <div class="card card-default  collapsed collapsed-card">
-    <div class="card-header bg-dark" data-card-widget="collapse">
-      <h3 class="card-title">Ingreso de Proyeccion Hembras </h3>
-
-      <div class="card-tools">
-        <button type="button" class="btn btn-tool"><i class="fas fa-minus"></i></button>
-      </div>
-    </div>
-    <!-- /.card-header -->
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-6">
-          <form method="post" action="{% url 'cargar_excel_proyhem' %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            <label for="archivo_excel">Selecciona un archivo Excel:</label>
-            <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
-            <br>
-            <button class="btn btn-success" type="submit">Cargar Datos</button>
-          </form>
-        </div>
-      </div>
-      <div class="card-footer">
-        Los valores ingresados aquí no pueden ser cambiados luego de ingresarlos.
-      </div>
-    </div>
-  </div>
-  <!------------------------------------------------------- carga 6to excel  -------------------------->
-  <div class="card card-default  collapsed collapsed-card">
-    <div class="card-header bg-dark" data-card-widget="collapse">
-      <h3 class="card-title">Ingreso de Tecnica Cia </h3>
-
-      <div class="card-tools">
-        <button type="button" class="btn btn-tool"><i class="fas fa-minus"></i></button>
-      </div>
-    </div>
-    <!-- /.card-header -->
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-6">
-          <form method="post" action="{% url 'cargar_excel_tecnicacia' %}" enctype="multipart/form-data">
+          <form method="post" action="{% url 'cargar_excel_pqrsf' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="archivo_excel">Selecciona un archivo Excel:</label>
             <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
@@ -174,3 +120,5 @@
     </div>
   </div>
   
+</body>
+</html>

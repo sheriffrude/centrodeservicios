@@ -149,35 +149,36 @@
                 }
             });
         });
+        $(document).ready(function () {
 
-        // Evento click para el botón de guardar
-        $("body").on("click", ".save-btn", function () {
-            // Obtener el valor modificado
-            var newValue = $(this).closest("tr").find(".editable").text();
-            // Obtener el ID de la fila
-            var id = $(this).closest("tr").data("id");
+            // Evento click para el botón de guardar
+            $("body").on("click", ".save-btn", function () {
+                // Obtener el valor modificado
+                var newValue = $(this).closest("tr").find(".editable").text();
+                // Obtener el ID de la fila
+                var id = $(this).closest("tr").data("id");
 
-            var csrfToken = $("[name=csrfmiddlewaretoken]").val();
-            // Hacer la solicitud AJAX para guardar los cambios
-            $.ajax({
-                url: '/save-changes/',
-                type: 'POST',
-                data: {
-                    id: id,
-                    newValue: newValue,
-                    csrfmiddlewaretoken: csrfToken
-                },
-                success: function (response) {
-                    // Si la operación fue exitosa, actualizar la tabla
-                    if (response.success) {
-                        alert('Cambios guardados exitosamente.');
-                    } else {
-                        alert('Error al guardar los cambios.');
+                var csrfToken = $("[name=csrfmiddlewaretoken]").val();
+                // Hacer la solicitud AJAX para guardar los cambios
+                $.ajax({
+                    url: '/save-changes/',
+                    type: 'POST',
+                    data: {
+                        id: id,
+                        newValue: newValue,
+                        csrfmiddlewaretoken: csrfToken
+                    },
+                    success: function (response) {
+                        // Si la operación fue exitosa, actualizar la tabla
+                        if (response.success) {
+                            alert('Cambios guardados exitosamente.');
+                        } else {
+                            alert('Error al guardar los cambios.');
+                        }
                     }
-                }
+                });
             });
         });
-
         $(".editable").on("input", function () {
             // Obtener el valor actual del campo
             var currentValue = $(this).text();

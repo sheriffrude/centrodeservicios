@@ -83,6 +83,18 @@ def gestiontecnica(request):
 @login_required
 def gestionalbal(request):
    return render(request, 'gestionalimentobal.html')
+#---Define La Vistas del modulo Gestion CALIDAD-----
+
+@never_cache
+@login_required
+def calidad(request):
+   return render(request, 'calidad.html')
+#---Define La Vistas del modulo Gestion TI-----
+
+@never_cache
+@login_required
+def ti(request):
+   return render(request, 'tecnologia.html')
 
 #---Define La Vista del modulo financiera-----
 @never_cache
@@ -105,9 +117,10 @@ def carexitosa(request):
 @login_required
 def repofina(request):
    return render(request, 'report_finan.html')
-
-#---------------CADENA DE ABASTECIMIENTO -----------------------------------------------------------------------
-#------ vista para el cargue de excel en cadena de abastecimiento---------
+#------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------
+#---------------CADENA DE ABASTECIMIENTO --------------------------------------------------------------
+#------ vista para el cargue de excel en cadena de abastecimiento--------------------------------------
 @never_cache
 @login_required
 def cargar_excel_cadenaabastecimiento(request):
@@ -639,6 +652,190 @@ def cargar_excel_alibal(request):
             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
         return redirect('home')
     return render(request, '/home/')
+# ----------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------
+#--------------------------------- CARGA DE   CALIDAD ------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------
+#-------- vista para el cargue de excel en Avance Proceso --------------------------------------------------------
+@never_cache
+@login_required
+def cargar_excel_avancepro(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+
+            # Abre una conexión a la base de datos b_c
+            with connections['B_C'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    print(row)
+                    TIPO,PROCESO,DETALLE_PROCESO,AVANCE,META,FECHA_CORTE,_= row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla AVANCE_PROCESO
+                    cursor.execute(
+                        'INSERT INTO AVANCE_PROCESO (TIPO,PROCESO,DETALLE_PROCESO,AVANCE,META,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s)',
+                        (TIPO.value,PROCESO.value,DETALLE_PROCESO.value,AVANCE.value,META.value,FECHA_CORTE.value)
+                    )
+                messages.success(request, 'Carga de datos en AVANCE PROCESO exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+#-------- vista para el cargue de excel en Calidad Planta --------------------------------------------------------
+@never_cache
+@login_required
+def cargar_excel_calidadpl(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+
+            # Abre una conexión a la base de datos b_c
+            with connections['B_C'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    print(row)
+                    PORCENTAJE_DESVIACIONES_CALIDAD,TONELADAS_REPROCESADAS,TONELADAS_LIBERADAS_CONCESION,PORCENTAJE_RETENCION,PORCENTAJE_MEZCLA,PORCENTAJE_DURABILIDAD,PORCENTAJE_FINOS,PORCENTAJE_FORMULACION,CUMPLIMIENTO_BPM,FECHA_CORTE= row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla CALIDAD_PLANTA
+                    cursor.execute(
+                        'INSERT INTO CALIDAD_PLANTA (PORCENTAJE_DESVIACIONES_CALIDAD,TONELADAS_REPROCESADAS,TONELADAS_LIBERADAS_CONCESION,PORCENTAJE_RETENCION,PORCENTAJE_MEZCLA,PORCENTAJE_DURABILIDAD,PORCENTAJE_FINOS,PORCENTAJE_FORMULACION,CUMPLIMIENTO_BPM,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                        (PORCENTAJE_DESVIACIONES_CALIDAD.value,TONELADAS_REPROCESADAS.value,TONELADAS_LIBERADAS_CONCESION.value,PORCENTAJE_RETENCION.value,PORCENTAJE_MEZCLA.value,PORCENTAJE_DURABILIDAD.value,PORCENTAJE_FINOS.value,PORCENTAJE_FORMULACION.value,CUMPLIMIENTO_BPM.value,FECHA_CORTE.value)
+                    )
+                messages.success(request, 'Carga de datos en CALIDAD PLANTA exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+
+#-------- vista para el cargue de excel en CAUSAS DESVIACIONES --------------------------------------------------------
+@never_cache
+@login_required
+def cargar_excel_causasdes(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+
+            # Abre una conexión a la base de datos b_c
+            with connections['B_C'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    print(row)
+                    CAUSA,PLAN_ACCION,TON_REPROCESADAS,FECHA_CORTE= row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla CAUSAS_DESVIACIONES
+                    cursor.execute(
+                        'INSERT INTO CAUSAS_DESVIACIONES (CAUSA,PLAN_ACCION,TON_REPROCESADAS,FECHA_CORTE) VALUES (%s, %s, %s, %s)',
+                        (CAUSA.value,PLAN_ACCION.value,TON_REPROCESADAS.value,FECHA_CORTE.value)
+                    )
+                messages.success(request, 'Carga de datos en CAUSAS_DESVIACIONES exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+#-------- vista para el cargue de excel en PQRSF --------------------------------------------------------
+@never_cache
+@login_required
+def cargar_excel_pqrsf(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+
+            # Abre una conexión a la base de datos b_c
+            with connections['B_C'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    print(row)
+                    PROCESO,TIPO,ESTADO_MOTIVO,CANTIDAD,CATEGORIA,TIEMPO_RESPUESTA,FECHA_CORTE= row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla PQRSF
+                    cursor.execute(
+                        'INSERT INTO PQRSF (PROCESO,TIPO,ESTADO_MOTIVO,CANTIDAD,CATEGORIA,TIEMPO_RESPUESTA,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                        (PROCESO.value,TIPO.value,ESTADO_MOTIVO.value,CANTIDAD.value,CATEGORIA.value,TIEMPO_RESPUESTA.value,FECHA_CORTE.value)
+                    )
+                messages.success(request, 'Carga de datos en PQRSF exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+# ----------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------
+#--------------------------------- CARGA DE   T.I ------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------
+#-------- vista para el cargue de excel en Transformacion Digital --------------------------------------------------------
+@never_cache
+@login_required
+def cargar_excel_transfordig(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+
+             # Abre una conexión a la base de datos b_ti
+            with connections['B_TI'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    print(row)
+                    PROYECTO_ESTRATEGICO,CAPA_ARQUITECTURA,NOMBRE_PROYECTO,PESO_CAPA,PESO_PROYECTO_ESTRATEGICO,PORCENTAJE_AVANCE,PORCENTAJE_META,PORCENTAJE_META_PROYECTO,TAREAS_PROYECTO,TAREAS_PLANEADAS,TAREAS_EJECUTADAS,COSTO_PLANEADO,COSTO_EJECUTADO,FECHA_CORTE= row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla TRANSFORMACION_DIGITAL
+                    cursor.execute(
+                        'INSERT INTO TRANSFORMACION_DIGITAL (PROYECTO_ESTRATEGICO,CAPA_ARQUITECTURA,NOMBRE_PROYECTO,PESO_CAPA,PESO_PROYECTO_ESTRATEGICO,PORCENTAJE_AVANCE,PORCENTAJE_META,PORCENTAJE_META_PROYECTO,TAREAS_PROYECTO,TAREAS_PLANEADAS,TAREAS_EJECUTADAS,COSTO_PLANEADO,COSTO_EJECUTADO,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s)',
+                        (PROYECTO_ESTRATEGICO.value,CAPA_ARQUITECTURA.value,NOMBRE_PROYECTO.value,PESO_CAPA.value,PESO_PROYECTO_ESTRATEGICO.value,PORCENTAJE_AVANCE.value,PORCENTAJE_META.value,PORCENTAJE_META_PROYECTO.value,TAREAS_PROYECTO.value,TAREAS_PLANEADAS.value,TAREAS_EJECUTADAS.value,COSTO_PLANEADO.value,COSTO_EJECUTADO.value,FECHA_CORTE.value)
+                    )
+                messages.success(request, 'Carga de datos en TRANSFORMACION_DIGITAL exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+#-------- vista para el cargue de excel en Indicadores Economicos --------------------------------------------------------
+@never_cache
+@login_required
+def cargar_excel_inideco(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+
+             # Abre una conexión a la base de datos b_ti
+            with connections['B_TI'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    print(row)
+                    INDICADOR,VALOR,FUENTE,LINK,FECHA_CORTE= row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla TRANSFORMACION_DIGITAL
+                    cursor.execute(
+                        'INSERT INTO INDICADORES_ECONOMICOS (INDICADOR,VALOR,FUENTE,LINK,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s)',
+                        (INDICADOR.value,VALOR.value,FUENTE.value,LINK.value,FECHA_CORTE.value)
+                    )
+                messages.success(request, 'Carga de datos en Indicadores Economicos exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+
 
 
 
@@ -799,7 +996,7 @@ def save_changes(request):
         # Realizar la actualización en la base de datos
         try:
             # Actualizar el campo 'Valor Kilo'
-            with connections['b_gaf'].cursor() as cursor:
+            with connections['B_GAF'].cursor() as cursor:
                 cursor.execute('''
                     UPDATE B_GAF.OPERACION_DESPOSTE
                     SET Valor_kilo = %s
