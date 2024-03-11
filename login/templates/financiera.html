@@ -8,8 +8,21 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 
-
+    <style>
+        .valor-kilo {
+            background-color: #e9e9e9; 
+        }
+    </style>
 </head>
 
 <body>
@@ -42,32 +55,46 @@
             placeholder="Buscar ">
 
     </div>
+    <section class="content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                    </div>
 
-    <table id="example1" class="table table-bordered table-striped table-responsive">
-        <thead>
-            <tr>
-                <th>Fecha Transformación</th>
-                <th>Unidades</th>
-                <th>Peso Canal Fría</th>
-                <th>Consecutivo Cercafe</th>
-                <th>Código Granja</th>
-                <th>Remisión</th>
-                <th>Valor</th>
-                <th>Cliente</th>
-                <th>Planta Beneficio</th>
-                <th>Granja</th>
-                <th>Nit Asociado</th>
-                <th>Asociado</th>
-                <th>Grupo Granja</th>
-                <th>Retención</th>
-                <th>Valor a Pagar Asociado</th>
-                <th>Valor Kilo</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Los datos se llenarán aquí -->
-        </tbody>
-    </table>
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered  table-responsive table-hover text-uppercase">
+                            <thead>
+                                <tr>
+                                    <th>Fecha Transformación</th>
+                                    <th>Unidades</th>
+                                    <th>Peso Canal Fría</th>
+                                    <th>Consecutivo Cercafe</th>
+                                    <th>Código Granja</th>
+                                    <th>Remisión</th>
+                                    <th>Valor</th>
+                                    <th>Cliente</th>
+                                    <th>Planta Beneficio</th>
+                                    <th>Granja</th>
+                                    <th>Nit Asociado</th>
+                                    <th>Asociado</th>
+                                    <th>Grupo Granja</th>
+                                    <th>Retención</th>
+                                    <th>Valor a Pagar Asociado</th>
+                                    <th>Valor Kilo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Los datos se llenarán aquí -->
+                            </tbody>
+                        </table>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+            </div>
+        </div>
+    </section>
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
     <!-- Agrega la biblioteca jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -125,7 +152,7 @@
                             row += '<td>' + compromiso.Grupo_Granja + '</td>';
                             row += '<td>' + compromiso.Retencion + '</td>';
                             row += '<td>' + compromiso.Valor_a_pagar_asociado + '</td>';
-                            row += '<td contenteditable="true" class="editable">' + compromiso.Valor_kilo + '</td>';
+                            row += '<td contenteditable="true" class="editable valor-kilo font-weight-bold">' + compromiso.Valor_kilo + '</td>';
                             row += '<td><button class="save-btn">Guardar</button></td>';
                             row += '</tr>';
 
@@ -134,9 +161,12 @@
                         });
 
                     }
+
                 });
+
             });
         });
+
         $("#export-pdf").click(function () {
             $.ajax({
                 url: '/export-pdf/',
@@ -232,6 +262,10 @@
                 }
             });
         });
+        $("#example1").DataTable({
+            "responsive": true,
+            "autoWidth": false,
+        });
 
         // Evento click para el botón de generar informe en Excel
         $("#generate-report-btn").click(function () {
@@ -262,6 +296,15 @@
 
 
     </script>
+
+    <!-- jQuery -->
+    <script src="../../plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="../../dist/js/adminlte.min.js"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="../../dist/js/demo.js"></script>
 </body>
 
 </html>

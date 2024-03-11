@@ -9,6 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .forms import UploadFileForm
 from django.http import JsonResponse
 import openpyxl
+from openpyxl import load_workbook
 from django.contrib import messages
 from django.template.loader import render_to_string
 import xlsxwriter
@@ -988,24 +989,30 @@ def cargar_excel_pqrsf(request):
 #--------------------------------- CARGA DE   T.I ------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------
 #-------- vista para el cargue de excel en Transformacion Digital --------------------------------------------------------
-@never_cache
 @login_required
 def cargar_excel_transfordig(request):
     if request.method == 'POST':
         try:
             archivo_excel = request.FILES['archivo_excel']
-            wb = openpyxl.load_workbook(archivo_excel)
+            wb = load_workbook(archivo_excel)
             ws = wb.active
 
-             # Abre una conexión a la base de datos b_ti
+            # Abre una conexión a la base de datos b_ti
             with connections['B_TI'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
-                    print(row)
-                    PROYECTO_ESTRATEGICO,CAPA_ARQUITECTURA,NOMBRE_PROYECTO,PESO_CAPA,PESO_PROYECTO_ESTRATEGICO,PORCENTAJE_AVANCE,PORCENTAJE_META,PORCENTAJE_META_PROYECTO,TAREAS_PROYECTO,TAREAS_PLANEADAS,TAREAS_EJECUTADAS,COSTO_PLANEADO,COSTO_EJECUTADO,FECHA_CORTE= row
+                    valores = []
+                    for cell in row:
+                        if isinstance(cell.value, str):
+                            valores.append(cell.value.upper())
+                        elif isinstance(cell.value, int) or isinstance(cell.value, float):
+                            valores.append(str(cell.value))
+                        else:
+                            valores.append(None)
+
                     # Ejecuta una consulta SQL para insertar los datos en la tabla TRANSFORMACION_DIGITAL
                     cursor.execute(
                         'INSERT INTO TRANSFORMACION_DIGITAL (PROYECTO_ESTRATEGICO,CAPA_ARQUITECTURA,NOMBRE_PROYECTO,PESO_CAPA,PESO_PROYECTO_ESTRATEGICO,PORCENTAJE_AVANCE,PORCENTAJE_META,PORCENTAJE_META_PROYECTO,TAREAS_PROYECTO,TAREAS_PLANEADAS,TAREAS_EJECUTADAS,COSTO_PLANEADO,COSTO_EJECUTADO,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s)',
-                        (PROYECTO_ESTRATEGICO.value,CAPA_ARQUITECTURA.value,NOMBRE_PROYECTO.value,PESO_CAPA.value,PESO_PROYECTO_ESTRATEGICO.value,PORCENTAJE_AVANCE.value,PORCENTAJE_META.value,PORCENTAJE_META_PROYECTO.value,TAREAS_PROYECTO.value,TAREAS_PLANEADAS.value,TAREAS_EJECUTADAS.value,COSTO_PLANEADO.value,COSTO_EJECUTADO.value,FECHA_CORTE.value)
+                        tuple(valores)
                     )
                 messages.success(request, 'Carga de datos en TRANSFORMACION_DIGITAL exitosa')
         except KeyError:
@@ -1016,25 +1023,33 @@ def cargar_excel_transfordig(request):
             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
         return redirect('home')
     return render(request, '/home/')
+
 #-------- vista para el cargue de excel en Indicadores Economicos --------------------------------------------------------
-@never_cache
+
 @login_required
 def cargar_excel_inideco(request):
     if request.method == 'POST':
         try:
             archivo_excel = request.FILES['archivo_excel']
-            wb = openpyxl.load_workbook(archivo_excel)
+            wb = load_workbook(archivo_excel)
             ws = wb.active
 
-             # Abre una conexión a la base de datos b_ti
+            # Abre una conexión a la base de datos b_ti
             with connections['B_TI'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
-                    print(row)
-                    INDICADOR,VALOR,FUENTE,LINK,FECHA_CORTE= row
-                    # Ejecuta una consulta SQL para insertar los datos en la tabla TRANSFORMACION_DIGITAL
+                    valores = []
+                    for cell in row:
+                        if isinstance(cell.value, str):
+                            valores.append(cell.value.upper())
+                        elif isinstance(cell.value, int) or isinstance(cell.value, float):
+                            valores.append(str(cell.value))
+                        else:
+                            valores.append(None)
+
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla INDICADORES_ECONOMICOS
                     cursor.execute(
                         'INSERT INTO INDICADORES_ECONOMICOS (INDICADOR,VALOR,FUENTE,LINK,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s)',
-                        (INDICADOR.value,VALOR.value,FUENTE.value,LINK.value,FECHA_CORTE.value)
+                        tuple(valores)
                     )
                 messages.success(request, 'Carga de datos en Indicadores Economicos exitosa')
         except KeyError:
@@ -1045,30 +1060,35 @@ def cargar_excel_inideco(request):
             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
         return redirect('home')
     return render(request, '/home/')
-
 # ----------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------
 #--------------------------------- CARGA DE----G Admin Financiera ------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------
 #-------- vista para el cargue de excel en  Compras Materia Prima ------------------------------------------------
-@never_cache
 @login_required
 def cargar_excel_compramatprima(request):
     if request.method == 'POST':
         try:
             archivo_excel = request.FILES['archivo_excel']
-            wb = openpyxl.load_workbook(archivo_excel)
+            wb = load_workbook(archivo_excel)
             ws = wb.active
 
-             # Abre una conexión a la base de datos B_GAF
+            # Abre una conexión a la base de datos B_GAF
             with connections['B_GAF'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
-                    print(row)
-                    MATERIA_PRIMA,COSTO_PROMEDIO,CANTIDAD_COMPRADA,DIAS_INVENTARIO,FECHA_CORTE = row
+                    valores = []
+                    for cell in row:
+                        if isinstance(cell.value, str):
+                            valores.append(cell.value.upper())
+                        elif isinstance(cell.value, int) or isinstance(cell.value, float):
+                            valores.append(str(cell.value))
+                        else:
+                            valores.append(None)
+
                     # Ejecuta una consulta SQL para insertar los datos en la tabla COMPRAS_MATERIA_PRIMA
                     cursor.execute(
-                        'INSERT INTO COMPRAS_MATERIA_PRIMA (MATERIA_PRIMA,COSTO_PROMEDIO,CANTIDAD_COMPRADA,DIAS_INVENTARIO,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s)',
-                        (MATERIA_PRIMA.value,COSTO_PROMEDIO.value,CANTIDAD_COMPRADA.value,DIAS_INVENTARIO.value,FECHA_CORTE.value)
+                        'INSERT INTO COMPRAS_MATERIA_PRIMA (MATERIA_PRIMA, COSTO_PROMEDIO, CANTIDAD_COMPRADA, DIAS_INVENTARIO, FECHA_CORTE) VALUES (%s, %s, %s, %s, %s)',
+                        tuple(valores)
                     )
                 messages.success(request, 'Carga de datos en COMPRAS_MATERIA_PRIMA exitosa')
         except KeyError:
@@ -1080,24 +1100,31 @@ def cargar_excel_compramatprima(request):
         return redirect('home')
     return render(request, '/home/')
 #-------- vista para el cargue de excel en COMPRAS_MEDICAMENTOS --------------------------------------------------------
-@never_cache
+
 @login_required
 def cargar_excel_compramed(request):
     if request.method == 'POST':
         try:
             archivo_excel = request.FILES['archivo_excel']
-            wb = openpyxl.load_workbook(archivo_excel)
+            wb = load_workbook(archivo_excel)
             ws = wb.active
 
-             # Abre una conexión a la base de datos B_GAF
+            # Abre una conexión a la base de datos B_GAF
             with connections['B_GAF'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
-                    print(row)
-                    VALOR,MEDICAMENTO,CLASIFICACION,CANTIDAD,TIPO,FECHA_CORTE= row
+                    valores = []
+                    for cell in row:
+                        if isinstance(cell.value, str):
+                            valores.append(cell.value.upper())
+                        elif isinstance(cell.value, int) or isinstance(cell.value, float):
+                            valores.append(str(cell.value))
+                        else:
+                            valores.append(None)
+
                     # Ejecuta una consulta SQL para insertar los datos en la tabla COMPRAS_MEDICAMENTOS
                     cursor.execute(
-                        'INSERT INTO COMPRAS_MEDICAMENTOS (VALOR,MEDICAMENTO,CLASIFICACION,CANTIDAD,TIPO,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s)',
-                        (VALOR.value,MEDICAMENTO.value,CLASIFICACION.value,CANTIDAD.value,TIPO.value,FECHA_CORTE.value)
+                        'INSERT INTO COMPRAS_MEDICAMENTOS (VALOR, MEDICAMENTO, CLASIFICACION, CANTIDAD, TIPO, FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s)',
+                        tuple(valores)
                     )
                 messages.success(request, 'Carga de datos en COMPRAS_MEDICAMENTOS exitosa')
         except KeyError:
