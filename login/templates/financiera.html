@@ -20,26 +20,41 @@
 
     <style>
         .valor-kilo {
-            background-color: #e9e9e9; 
+            background-color: #e9e9e9;
         }
     </style>
 </head>
 
 <body>
-    <div>
-        <label for="datepicker-start">Desde:</label>
-        <input type="text" id="datepicker-start" placeholder="yyyy-mm-dd">
-        <label for="datepicker-end">Hasta:</label>
-        <input type="text" id="datepicker-end" placeholder="yyyy-mm-dd">
-        <button id="filter-btn">Filtrar</button>
-    </div>
+    <section class="container">
+        <div class="row align-items-start">
+            <div class='col-3'>
+                <label for="datepicker-start">Desde:</label>
+                <input type="text" id="datepicker-start" placeholder="yyyy-mm-dd" class="form-control">
+            </div>
+            <div class='col-3'>
+                <label for="datepicker-end">Hasta:</label>
+                <input type="text" id="datepicker-end" placeholder="yyyy-mm-dd" class="form-control">
+            </div>
+            <div>
+                <button id="filter-btn" class="btn btn-info"
+                    style="position: relative; top: 32px; left: 15px;">Filtrar</button>
+            </div>
 
-    <div>
-        <button id="export-pdf">Exportar a PDF</button>
-        <button id="export-excel">Exportar a Excel</button>
-    </div>
-    <div>
-        <select id="grupo-granja-selector">
+        </div>
+    </section>
+
+
+    <section class="container">
+        <div>
+            <div class='col-3'>
+                <button id="export-pdf" class="btn btn-danger" >Exportar a PDF</button>
+                <button id="export-excel" class="btn btn-success" >Exportar a Excel</button>
+            </div>
+        </div>
+    </section>
+    <div class="input-group col-3">
+        <select id="grupo-granja-selector" class="custom-select">
             <option value="Agrojabar">Agrojabar</option>
             <option value="Agrocerdos">Agrocerdos</option>
             <option value="campeon">campeon</option>
@@ -47,7 +62,7 @@
             <option value="CER">CER</option>
             <option value="HBM">HBM</option>
         </select>
-        <button id="generate-report-btn">Generar Reporte por grupo</button>
+        <button id="generate-report-btn" class="btn btn-outline-warning">Generar Reporte por grupo</button>
     </div>
 
     <div>
@@ -153,7 +168,7 @@
                             row += '<td>' + compromiso.Retencion + '</td>';
                             row += '<td>' + compromiso.Valor_a_pagar_asociado + '</td>';
                             row += '<td contenteditable="true" class="editable valor-kilo font-weight-bold">' + compromiso.Valor_kilo + '</td>';
-                            row += '<td><button class="save-btn">Guardar</button></td>';
+                            row += '<td><button class="save-btn btn btn-outline-secondary">Guardar</button></td>';
                             row += '</tr>';
 
                             // Agregar la fila a la tabla
