@@ -1143,7 +1143,7 @@ def reproved(request):
 logger = logging.getLogger(__name__)
 
 
-@never_cache
+
 def repfinan(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
@@ -1151,7 +1151,7 @@ def repfinan(request):
     
     with connections['B_GAF'].cursor() as cursor:
         cursor.execute('''
-            SELECT Fecha_transformacion,Unidades,Peso_canal_fria,Consecutivo_Cercafe,Codigo_granja,Remision,Valor,Cliente,Planta_Beneficio,Granja,Nit_asociado,Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado,Valor_kilo
+            SELECT Fecha_transformacion,Unidades,Peso_canal_fria,Consecutivo_Cercafe,Codigo_granja,Remision,Valor,Cliente,Planta_Beneficio,Granja,Nit_asociado,Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado,Valor_kilo,id
             FROM B_GAF.OPERACION_DESPOSTE
             WHERE Fecha_transformacion BETWEEN %s AND %s
         ''', [start_date, end_date])
@@ -1160,15 +1160,15 @@ def repfinan(request):
     # Loguear los datos recuperados
     logger.info(compromisos)
 
-    data = [{'Fecha_transformacion': Fecha_transformacion, 'Unidades': Unidades, 'Peso_canal_fria': Peso_canal_fria, 'Consecutivo_Cercafe': Consecutivo_Cercafe, 'Codigo_granja': Codigo_granja, 'Remision': Remision, 'Valor': Valor, 'Cliente': Cliente, 'Planta_Beneficio': Planta_Beneficio, 'Granja': Granja, 'Nit_asociado': Nit_asociado, 'Asociado': Asociado, 'Grupo_Granja': Grupo_Granja, 'Retencion': Retencion, 'Valor_a_pagar_asociado': Valor_a_pagar_asociado, 'Valor_kilo': Valor_kilo} for Fecha_transformacion, Unidades, Peso_canal_fria, Consecutivo_Cercafe, Codigo_granja, Remision, Valor, Cliente, Planta_Beneficio, Granja, Nit_asociado, Asociado, Grupo_Granja, Retencion, Valor_a_pagar_asociado, Valor_kilo in compromisos]
+    data = [{'Fecha_transformacion': Fecha_transformacion, 'Unidades': Unidades, 'Peso_canal_fria': Peso_canal_fria, 'Consecutivo_Cercafe': Consecutivo_Cercafe, 'Codigo_granja': Codigo_granja, 'Remision': Remision, 'Valor': Valor, 'Cliente': Cliente, 'Planta_Beneficio': Planta_Beneficio, 'Granja': Granja, 'Nit_asociado': Nit_asociado, 'Asociado': Asociado, 'Grupo_Granja': Grupo_Granja, 'Retencion': Retencion, 'Valor_a_pagar_asociado': Valor_a_pagar_asociado, 'Valor_kilo': Valor_kilo, 'id': id } for Fecha_transformacion, Unidades, Peso_canal_fria, Consecutivo_Cercafe, Codigo_granja, Remision, Valor, Cliente, Planta_Beneficio, Granja, Nit_asociado, Asociado, Grupo_Granja, Retencion, Valor_a_pagar_asociado, Valor_kilo, id in compromisos]
 
     return JsonResponse({'data': data})
 
-@never_cache
+
 def get_filtered_data(start_date, end_date):
-    with connections['b_gaf'].cursor() as cursor:
+    with connections['B_GAF'].cursor() as cursor:
         cursor.execute('''
-            SELECT Fecha_transformacion,Unidades,Peso_canal_fria,Consecutivo_Cercafe,Codigo_granja,Remision,Valor,Cliente,Planta_Beneficio,Granja,Nit_asociado,Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado,Valor_kilo
+            SELECT Fecha_transformacion,Unidades,Peso_canal_fria,Consecutivo_Cercafe,Codigo_granja,Remision,Valor,Cliente,Planta_Beneficio,Granja,Nit_asociado,Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado,Valor_kilo,id
             FROM B_GAF.OPERACION_DESPOSTE
             WHERE Fecha_transformacion BETWEEN %s AND %s
         ''', [start_date, end_date])
@@ -1178,7 +1178,8 @@ def get_filtered_data(start_date, end_date):
     logger.info(compromisos)
 
     return compromisos
-@never_cache
+
+
 def export_pdf(request):
     # Obtener los datos para exportar
     start_date = request.GET.get('start_date')
@@ -1204,7 +1205,9 @@ def export_pdf(request):
     response['Content-Disposition'] = 'attachment; filename="reporte.pdf"'
     response['Content-Length'] = len(pdf)
     return redirect('financiera')
-@never_cache
+
+
+
 def export_excel(request):
     # Obtener los datos para exportar
     start_date = request.GET.get('start_date')
@@ -1273,7 +1276,7 @@ def save_changes(request):
                 cursor.execute('''
                     UPDATE B_GAF.OPERACION_DESPOSTE
                     SET Valor_kilo = %s
-                    WHERE Consecutivo_Cercafe = %s
+                    WHERE id = %s
                 ''', [newValue, id])
             # Devolver una respuesta de éxito
             return JsonResponse({'success': True})

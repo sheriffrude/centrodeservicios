@@ -102,14 +102,37 @@
 
                     },
                     success: function (response) {
+                        console.log(response);
                         // Limpiar la tabla
                         $('#example1 tbody').empty();
 
                         // Agregar las filas con los datos
                         response.data.forEach(function (compromiso) {
-                            $('#example1 tbody').append('<tr data-id="' + compromiso.Consecutivo_Cercafe + '"><td>' + compromiso.Fecha_transformacion + '</td><td>' + compromiso.Unidades + '</td><td>' + compromiso.Peso_canal_fria + '</td><td>' + compromiso.Consecutivo_Cercafe + '</td><td>' + compromiso.Codigo_granja + '</td><td>' + compromiso.Remision + '</td><td>' + compromiso.Valor + '</td><td>' + compromiso.Cliente + '</td><td>' + compromiso.Planta_Beneficio + '</td><td>' + compromiso.Granja + '</td><td>' + compromiso.Nit_asociado + '</td><td>' + compromiso.Asociado + '</td><td>' + compromiso.Grupo_Granja + '</td><td>' + compromiso.Retencion + '</td><td>' + compromiso.Valor_a_pagar_asociado + '</td> <td contenteditable=true class="editable">' + compromiso.Valor_kilo + '</td><td><button class="save-btn">Guardar</button></td></tr>');
+                            // Construir la fila de la tabla y establecer el ID como un atributo de datos
+                            var row = '<tr data-id="' + compromiso.id + '">';
+                            row += '<td>' + compromiso.Fecha_transformacion + '</td>';
+                            row += '<td>' + compromiso.Unidades + '</td>';
+                            row += '<td>' + compromiso.Peso_canal_fria + '</td>';
+                            row += '<td>' + compromiso.Consecutivo_Cercafe + '</td>';
+                            row += '<td>' + compromiso.Codigo_granja + '</td>';
+                            row += '<td>' + compromiso.Remision + '</td>';
+                            row += '<td>' + compromiso.Valor + '</td>';
+                            row += '<td>' + compromiso.Cliente + '</td>';
+                            row += '<td>' + compromiso.Planta_Beneficio + '</td>';
+                            row += '<td>' + compromiso.Granja + '</td>';
+                            row += '<td>' + compromiso.Nit_asociado + '</td>';
+                            row += '<td>' + compromiso.Asociado + '</td>';
+                            row += '<td>' + compromiso.Grupo_Granja + '</td>';
+                            row += '<td>' + compromiso.Retencion + '</td>';
+                            row += '<td>' + compromiso.Valor_a_pagar_asociado + '</td>';
+                            row += '<td contenteditable="true" class="editable">' + compromiso.Valor_kilo + '</td>';
+                            row += '<td><button class="save-btn">Guardar</button></td>';
+                            row += '</tr>';
 
+                            // Agregar la fila a la tabla
+                            $('#example1 tbody').append(row);
                         });
+
                     }
                 });
             });
@@ -149,7 +172,12 @@
                 }
             });
         });
+
         $(document).ready(function () {
+            // Evento focus para vaciar el campo editable al seleccionarlo
+            $("body").on("focus", ".editable", function () {
+                $(this).text(""); // Vaciar el contenido del campo editable
+            });
 
             // Evento click para el botón de guardar
             $("body").on("click", ".save-btn", function () {
@@ -157,6 +185,7 @@
                 var newValue = $(this).closest("tr").find(".editable").text();
                 // Obtener el ID de la fila
                 var id = $(this).closest("tr").data("id");
+                console.log("ID:", id);
 
                 var csrfToken = $("[name=csrfmiddlewaretoken]").val();
                 // Hacer la solicitud AJAX para guardar los cambios
@@ -175,20 +204,14 @@
                         } else {
                             alert('Error al guardar los cambios.');
                         }
+                    },
+                    error: function () {
+                        alert('Error al guardar los cambios.');
                     }
                 });
             });
         });
-        $(".editable").on("input", function () {
-            // Obtener el valor actual del campo
-            var currentValue = $(this).text();
 
-            // Eliminar todos los caracteres que no sean números
-            var newValue = currentValue.replace(/[^0-9]/g, '');
-
-            // Establecer el nuevo valor en el campo
-            $(this).text(newValue);
-        });
 
         $("#search-input").on("input", function () {
             // Obtener el texto de búsqueda
