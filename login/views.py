@@ -96,11 +96,18 @@ def calidad(request):
 def ti(request):
    return render(request, 'tecnologia.html')
 
+#---Define La Vista del modulo Gestion admin y finan-----
+@never_cache
+@login_required
+def adminfinan(request):
+   return render(request, 'gestionadminfinan.html')
+
 #---Define La Vista del modulo financiera-----
 @never_cache
 @login_required
 def financiera(request):
    return render(request, 'financiera.html')
+
 
 #---Define La Vista del modulo reportes-----
 @never_cache
@@ -148,6 +155,209 @@ def cargar_excel_cadenaabastecimiento(request):
             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
         return redirect('home')
     return render(request, '/home/')
+#------ vista para el cargue de excel en produccion  cerdos  beneficiados--------------------------------------
+@never_cache
+@login_required
+def cargar_excel_cerdosbeneficiados(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+
+            # Abre una conexión a la base de datos b_ca
+            with connections['B_CA'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    CER_BENEF_COLOMBIA,CER_BENEF_EJE_CAFETERO,PARTICIPACION_EJE_CAFETERO,CER_BENEF_CERCAFE,PARTICIPACION_EJE_CAF_CERCAFE,PARTICIPACION_NACIONAL_CERCAFE,FECHA_CORTE = row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla PROD_CARNICA_CERDOS_BENEFICIADOS
+                    cursor.execute(
+                        'INSERT INTO PROD_CARNICA_CERDOS_BENEFICIADOS (CER_BENEF_COLOMBIA,CER_BENEF_EJE_CAFETERO,PARTICIPACION_EJE_CAFETERO,CER_BENEF_CERCAFE,PARTICIPACION_EJE_CAF_CERCAFE,PARTICIPACION_NACIONAL_CERCAFE,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                        (CER_BENEF_COLOMBIA.value,CER_BENEF_EJE_CAFETERO.value,PARTICIPACION_EJE_CAFETERO.value,CER_BENEF_CERCAFE.value,PARTICIPACION_EJE_CAF_CERCAFE.value,PARTICIPACION_NACIONAL_CERCAFE.value,FECHA_CORTE.value)
+                    )
+            messages.success(request, 'Carga de datos en PROD_CARNICA_CERDOS_BENEFICIADOS exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+#------ vista para el cargue de excel en comparatico plantas--------------------------------------
+@never_cache
+@login_required
+def cargar_excel_compaplanta(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+
+            # Abre una conexión a la base de datos b_ca
+            with connections['B_CA'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    PARAMETRO,VALOR,EMPRESA,FECHA_CORTE = row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla PROD_CARNICA_COMPARATIVO_PLANTAS
+                    cursor.execute(
+                        'INSERT INTO PROD_CARNICA_COMPARATIVO_PLANTAS (PARAMETRO,VALOR,EMPRESA,FECHA_CORTE) VALUES (%s, %s, %s, %s)',
+                        (PARAMETRO.value,VALOR.value,EMPRESA.value,FECHA_CORTE.value)
+                    )
+            messages.success(request, 'Carga de datos en PROD_CARNICA_COMPARATIVO_PLANTAS exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+#------ vista para el cargue de excel en COSTO DESPOSTE--------------------------------------
+@never_cache
+@login_required
+def cargar_excel_costodespos(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+
+            # Abre una conexión a la base de datos b_ca
+            with connections['B_CA'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    TIPO_CLIENTE,NUM_CERDOS_DESPOSTADOS,KG_DESPOSTADOS,PESO_PROM_CERDOS,PRECIO_PROM_KG,COSTO_MATERIA_PRIMA,COSTO_MAQUILA,COSTO_KG_MAQUILADO,MAQUILA_SIN_MP,FECHA_CORTE = row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla PROD_CARNICA_COSTO_DESPOSTE
+                    cursor.execute(
+                        'INSERT INTO PROD_CARNICA_COSTO_DESPOSTE (TIPO_CLIENTE,NUM_CERDOS_DESPOSTADOS,KG_DESPOSTADOS,PESO_PROM_CERDOS,PRECIO_PROM_KG,COSTO_MATERIA_PRIMA,COSTO_MAQUILA,COSTO_KG_MAQUILADO,MAQUILA_SIN_MP,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                        (TIPO_CLIENTE.value,NUM_CERDOS_DESPOSTADOS.value,KG_DESPOSTADOS.value,PESO_PROM_CERDOS.value,PRECIO_PROM_KG.value,COSTO_MATERIA_PRIMA.value,COSTO_MAQUILA.value,COSTO_KG_MAQUILADO.value,MAQUILA_SIN_MP.value,FECHA_CORTE.value)
+                    )
+            messages.success(request, 'Carga de datos en PROD_CARNICA_COSTO_DESPOSTE exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+#------ vista para el cargue de excel enKG_BENEFICIO--------------------------------------
+@never_cache
+@login_required
+def cargar_excel_kgbeneficio(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+
+            # Abre una conexión a la base de datos b_ca
+            with connections['B_CA'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    CER_BENEF_COLOMBIA,CER_BENEF_EJE_CAFETERO,PARTICIPACION_EJE_CAFETERO,CER_BENEF_CERCAFE,PARTICIPACION_EJE_CAF_CERCAFE,PARTICIPACION_NACIONAL_CERCAFE,PESO_CF_NACIONAL,PESO_EJE_CAFETERO,PESO_CF_CERCAFE,KG_NACIONAL,KG_EJE_CAFETERO,KG_CERCAFE,FECHA_CORTE = row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla PROD_CARNICA_KG_BENEFICIO
+                    cursor.execute(
+                        'INSERT INTO PROD_CARNICA_KG_BENEFICIO (CER_BENEF_COLOMBIA,CER_BENEF_EJE_CAFETERO,PARTICIPACION_EJE_CAFETERO,CER_BENEF_CERCAFE,PARTICIPACION_EJE_CAF_CERCAFE,PARTICIPACION_NACIONAL_CERCAFE,PESO_CF_NACIONAL,PESO_EJE_CAFETERO,PESO_CF_CERCAFE,KG_NACIONAL,KG_EJE_CAFETERO,KG_CERCAFE,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                        (CER_BENEF_COLOMBIA.value,CER_BENEF_EJE_CAFETERO.value,PARTICIPACION_EJE_CAFETERO.value,CER_BENEF_CERCAFE.value,PARTICIPACION_EJE_CAF_CERCAFE.value,
+                          PARTICIPACION_NACIONAL_CERCAFE.value,PESO_CF_NACIONAL.value,PESO_EJE_CAFETERO.value,PESO_CF_CERCAFE.value,KG_NACIONAL.value,KG_EJE_CAFETERO.value,KG_CERCAFE.value,FECHA_CORTE.value)
+                    )
+            messages.success(request, 'Carga de datos en PROD_CARNICA_KG_BENEFICIO exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+#------ vista para el cargue de excel en KG_DESPOSTADOS--------------------------------------
+@never_cache 
+@login_required
+def cargar_excel_kgdesposte(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+
+            # Abre una conexión a la base de datos b_ca
+            with connections['B_CA'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    KG_PRODUCIDOS_CERCAFE,KG_DESPOSTADOS_CERCAFE,PORCENTAJE_PARTICIPACION,TRIMESTRE_2022_CERCAFE,TRIMESTRE_2022_DESPOSTE,TRIMESTRE_2023_CERCAFE,TRIMESTRE_2023_DESPOSTE,CERCIMIENTO_22_23,FECHA_CORTE = row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla PROD_CARNICA_KG_DESPOSTADOS
+                    cursor.execute(
+                        'INSERT INTO PROD_CARNICA_KG_DESPOSTADOS (KG_PRODUCIDOS_CERCAFE,KG_DESPOSTADOS_CERCAFE,PORCENTAJE_PARTICIPACION,TRIMESTRE_2022_CERCAFE,TRIMESTRE_2022_DESPOSTE,TRIMESTRE_2023_CERCAFE,TRIMESTRE_2023_DESPOSTE,CERCIMIENTO_22_23,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                        (KG_PRODUCIDOS_CERCAFE.value,KG_DESPOSTADOS_CERCAFE.value,PORCENTAJE_PARTICIPACION.value,TRIMESTRE_2022_CERCAFE.value,TRIMESTRE_2022_DESPOSTE.value,TRIMESTRE_2023_CERCAFE.value,
+                          TRIMESTRE_2023_DESPOSTE.value,CERCIMIENTO_22_23.value,FECHA_CORTE.value)
+                    )
+            messages.success(request, 'Carga de datos en PROD_CARNICA_KG_DESPOSTADOS exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+#------ vista para el cargue de excel en PARTICIPACION_CORTES--------------------------------------
+@never_cache 
+@login_required
+def cargar_excel_particortes(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+
+            # Abre una conexión a la base de datos b_ca
+            with connections['B_CA'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    CORTE,PORCENTAJE_PARTICIPACION,PORCENTAJE_META,PESO_PROM_CANAL,CANTIDAD_CANALES,FECHA_CORTE = row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla PROD_CARNICA_PARTICIPACION_CORTES
+                    cursor.execute(
+                        'INSERT INTO PROD_CARNICA_PARTICIPACION_CORTES (CORTE,PORCENTAJE_PARTICIPACION,PORCENTAJE_META,PESO_PROM_CANAL,CANTIDAD_CANALES,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s)',
+                        (CORTE.value,PORCENTAJE_PARTICIPACION.value,PORCENTAJE_META.value,PESO_PROM_CANAL.value,CANTIDAD_CANALES.value,FECHA_CORTE.value)
+                    )
+            messages.success(request, 'Carga de datos en PROD_CARNICA_PARTICIPACION_CORTES exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+#------ vista para el cargue de excel en TON_IMPORTADAS--------------------------------------
+@never_cache 
+@login_required
+def cargar_excel_toneladasimport(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+
+            # Abre una conexión a la base de datos b_ca
+            with connections['B_CA'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    CER_BENEF_COLOMBIA,TON_BENEF_COLOMBIA,TON_IMPORT_COLOMBIA,CERDOS_IMPORTADOS,ENE_FEB_22_TON_BENEF,ENE_FEB_23_TON_BENEF,CRECIMIENTO_22_23,ENE_FEB_MAR_22_TON_IMPORT,ENE_FEB_MAR_23_TON_IMPORT,CRECIMIENTO_OMPORT_22_23,FECHA_CORTE = row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla PROD_CARNICA_TON_IMPORTADAS
+                    cursor.execute(
+                        'INSERT INTO PROD_CARNICA_TON_IMPORTADAS (CER_BENEF_COLOMBIA,TON_BENEF_COLOMBIA,TON_IMPORT_COLOMBIA,CERDOS_IMPORTADOS,ENE_FEB_22_TON_BENEF,ENE_FEB_23_TON_BENEF,CRECIMIENTO_22_23,ENE_FEB_MAR_22_TON_IMPORT,ENE_FEB_MAR_23_TON_IMPORT,CRECIMIENTO_OMPORT_22_23,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                        (CER_BENEF_COLOMBIA.value,TON_BENEF_COLOMBIA.value,TON_IMPORT_COLOMBIA.value,CERDOS_IMPORTADOS.value,ENE_FEB_22_TON_BENEF.value,ENE_FEB_23_TON_BENEF.value,CRECIMIENTO_22_23.value,ENE_FEB_MAR_22_TON_IMPORT.value,ENE_FEB_MAR_23_TON_IMPORT.value,CRECIMIENTO_OMPORT_22_23.value,FECHA_CORTE.value)
+                    )
+            messages.success(request, 'Carga de datos en PROD_CARNICA_TON_IMPORTADAS exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+
+
+
+
+
 
 #------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------
@@ -827,6 +1037,69 @@ def cargar_excel_inideco(request):
                         (INDICADOR.value,VALOR.value,FUENTE.value,LINK.value,FECHA_CORTE.value)
                     )
                 messages.success(request, 'Carga de datos en Indicadores Economicos exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+
+# ----------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------
+#--------------------------------- CARGA DE----G Admin Financiera ------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------
+#-------- vista para el cargue de excel en  Compras Materia Prima ------------------------------------------------
+@never_cache
+@login_required
+def cargar_excel_compramatprima(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+
+             # Abre una conexión a la base de datos B_GAF
+            with connections['B_GAF'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    print(row)
+                    MATERIA_PRIMA,COSTO_PROMEDIO,CANTIDAD_COMPRADA,DIAS_INVENTARIO,FECHA_CORTE = row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla COMPRAS_MATERIA_PRIMA
+                    cursor.execute(
+                        'INSERT INTO COMPRAS_MATERIA_PRIMA (MATERIA_PRIMA,COSTO_PROMEDIO,CANTIDAD_COMPRADA,DIAS_INVENTARIO,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s)',
+                        (MATERIA_PRIMA.value,COSTO_PROMEDIO.value,CANTIDAD_COMPRADA.value,DIAS_INVENTARIO.value,FECHA_CORTE.value)
+                    )
+                messages.success(request, 'Carga de datos en COMPRAS_MATERIA_PRIMA exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+#-------- vista para el cargue de excel en COMPRAS_MEDICAMENTOS --------------------------------------------------------
+@never_cache
+@login_required
+def cargar_excel_compramed(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+
+             # Abre una conexión a la base de datos B_GAF
+            with connections['B_GAF'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    print(row)
+                    VALOR,MEDICAMENTO,CLASIFICACION,CANTIDAD,TIPO,FECHA_CORTE= row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla COMPRAS_MEDICAMENTOS
+                    cursor.execute(
+                        'INSERT INTO COMPRAS_MEDICAMENTOS (VALOR,MEDICAMENTO,CLASIFICACION,CANTIDAD,TIPO,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s)',
+                        (VALOR.value,MEDICAMENTO.value,CLASIFICACION.value,CANTIDAD.value,TIPO.value,FECHA_CORTE.value)
+                    )
+                messages.success(request, 'Carga de datos en COMPRAS_MEDICAMENTOS exitosa')
         except KeyError:
             messages.error(request, 'No se ha proporcionado un archivo Excel.')
         except IntegrityError as e:

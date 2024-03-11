@@ -14,8 +14,16 @@ urlpatterns = [
     
     #----------------------cadena de abastecimiento ----------------------------------
     path('cadenaabastecimiento/', views.cadenaabastecimiento, name='cadenaabastecimiento'),
-    path('cadenaabastecimiento/', views.cargar_excel_cadenaabastecimiento, name='cadenaabastecimiento'),
+  
     path('cargar_excel_cadenaabastecimiento/', views.cargar_excel_cadenaabastecimiento, name='cargar_excel_cadenaabastecimiento'),
+    path('cargar_excel_cerdosbeneficiados/', views.cargar_excel_cerdosbeneficiados, name='cargar_excel_cerdosbeneficiados'),
+    path('cargar_excel_compaplanta/', views.cargar_excel_compaplanta, name='cargar_excel_compaplanta'), 
+    path('cargar_excel_costodespos/', views.cargar_excel_costodespos, name='cargar_excel_costodespos'), 
+    path('cargar_excel_kgbeneficio/', views.cargar_excel_kgbeneficio, name='cargar_excel_kgbeneficio'), 
+    path('cargar_excel_kgdesposte/', views.cargar_excel_kgdesposte, name='cargar_excel_kgdesposte'), 
+    path('cargar_excel_particortes/', views.cargar_excel_particortes, name='cargar_excel_particortes'), 
+    path('cargar_excel_toneladasimport/', views.cargar_excel_toneladasimport, name='cargar_excel_toneladasimport'), 
+    
     # -----------------------gestion comercial-------------------------------------------
     path('gestioncomercial/', views.gestioncomercial, name='gestioncomercial'),
     path('gestioncomercial/', views.cargar_excel_clientesactivos, name='gestioncomercial'),
@@ -24,15 +32,7 @@ urlpatterns = [
     path('cargar_excel_ventas/', views.cargar_excel_ventas, name='cargar_excel_ventas'),
     #------------------------gestion humana ------------------------------------------------
     path('gestionhumana/', views.gestionhumana, name='gestionhumana'),
-    path('gestionhumana/', views.cargar_excel_nomina, name='gestionhumana'),
-    path('gestionhumana/', views.cargar_excel_promo, name='gestionhumana'),
-    path('gestionhumana/', views.cargar_excel_prosele, name='gestionhumana'),
-    path('gestionhumana/', views.cargar_excel_retencion, name='gestionhumana'),
-    path('gestionhumana/', views.cargar_excel_rotacion, name='gestionhumana'),
-    path('gestionhumana/', views.cargar_excel_sstdiag, name='gestionhumana'),
-    path('gestionhumana/', views.cargar_excel_sstindi, name='gestionhumana'),
-    path('gestionhumana/', views.cargar_excel_sstseveridad, name='gestionhumana'),
-    
+
     path('cargar_excel_nomina/', views.cargar_excel_nomina, name='cargar_excel_nomina'),
     path('cargar_excel_promo/', views.cargar_excel_promo, name='cargar_excel_promo'),
     path('cargar_excel_prosele/', views.cargar_excel_prosele, name='cargar_excel_prosele'),
@@ -44,13 +44,7 @@ urlpatterns = [
     
     #------------------------gestion Tecnica ------------------------------------------------
     path('gestiontecnica/', views.gestiontecnica, name='gestiontecnica'),
-    path('gestiontecnica/', views.cargar_excel_abashem, name='gestiontecnica'),
-    path('gestiontecnica/', views.cargar_excel_fortuitos, name='gestiontecnica'),
-    path('gestiontecnica/', views.cargar_excel_kgvend, name='gestiontecnica'),
-    path('gestiontecnica/', views.cargar_excel_pesofinconver, name='gestiontecnica'),
-    path('gestiontecnica/', views.cargar_excel_proyhem, name='gestiontecnica'),
-    path('gestiontecnica/', views.cargar_excel_tecnicacia, name='gestiontecnica'),
-    
+  
     path('cargar_excel_abashem/', views.cargar_excel_abashem, name='cargar_excel_abashem'),
     path('cargar_excel_fortuitos/', views.cargar_excel_fortuitos, name='cargar_excel_fortuitos'),
     path('cargar_excel_kgvend/', views.cargar_excel_kgvend, name='cargar_excel_kgvend'),
@@ -60,17 +54,13 @@ urlpatterns = [
     
     #------------------------gestion Alimento Balanceado ------------------------------------------------
     path('gestionalbal/', views.gestionalbal, name='gestionalbal'),
-    path('gestionalbal/', views.cargar_excel_alibal, name='gestionalbal'),
+    
     
     path('cargar_excel_alibal/', views.cargar_excel_alibal, name='cargar_excel_alibal'),
     
      #--------------------------------- CALIDAD ------------------------------------------------
     path('calidad/', views.calidad, name='calidad'),
-    path('calidad/', views.cargar_excel_avancepro, name='calidad'),
-    path('calidad/', views.cargar_excel_calidadpl, name='calidad'),
-    path('calidad/', views.cargar_excel_causasdes, name='calidad'),
-    path('calidad/', views.cargar_excel_pqrsf, name='calidad'),
-    
+   
     path('cargar_excel_avancepro/', views.cargar_excel_avancepro, name='cargar_excel_avancepro'),
     path('cargar_excel_calidadpl/', views.cargar_excel_calidadpl, name='cargar_excel_calidadpl'),
     path('cargar_excel_causasdes/', views.cargar_excel_causasdes, name='cargar_excel_causasdes'),
@@ -78,12 +68,15 @@ urlpatterns = [
     
      #--------------------------------- T.I ------------------------------------------------
     path('ti/', views.ti, name='ti'),
-    path('ti/', views.cargar_excel_transfordig, name='ti'),
-    path('ti/', views.cargar_excel_inideco, name='ti'),
+  
     
     path('cargar_excel_transfordig/', views.cargar_excel_transfordig, name='cargar_excel_transfordig'),
     path('cargar_excel_inideco/', views.cargar_excel_inideco, name='cargar_excel_inideco'),
     
+     #--------------------------------- Admin y Financiera ------------------------------------------------
+    path('adminfinan/', views.adminfinan, name='adminfinan'),
+    path('cargar_excel_compramatprima/', views.cargar_excel_compramatprima, name='cargar_excel_compramatprima'),
+    path('cargar_excel_compramed/', views.cargar_excel_compramed, name='cargar_excel_compramed'),
     
     
     
