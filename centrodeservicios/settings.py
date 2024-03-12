@@ -80,8 +80,8 @@ TEMPLATES = [
 CSRF_COOKIE_SECURE = True  
 CSRF_COOKIE_HTTPONLY = True 
 #---------cierre de sesion a los 5 minutos --------
-
-SESSION_COOKIE_AGE = 300
+AUTO_LOGOUT_DELAY = 5 
+SESSION_COOKIE_AGE = 600
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 WSGI_APPLICATION = 'centrodeservicios.wsgi.application'

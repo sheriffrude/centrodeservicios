@@ -20,6 +20,7 @@ import logging
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
+from uuid import uuid4
 
 #---Define La Vista del login-----
 def signin(request):
@@ -1105,9 +1106,13 @@ def cargar_excel_compramatprima(request):
 def cargar_excel_compramed(request):
     if request.method == 'POST':
         try:
+            usuario = request.user
+            
             archivo_excel = request.FILES['archivo_excel']
             wb = load_workbook(archivo_excel)
             ws = wb.active
+            
+            guid = str(uuid4())
 
             # Abre una conexión a la base de datos B_GAF
             with connections['B_GAF'].cursor() as cursor:
@@ -1123,8 +1128,8 @@ def cargar_excel_compramed(request):
 
                     # Ejecuta una consulta SQL para insertar los datos en la tabla COMPRAS_MEDICAMENTOS
                     cursor.execute(
-                        'INSERT INTO COMPRAS_MEDICAMENTOS (VALOR, MEDICAMENTO, CLASIFICACION, CANTIDAD, TIPO, FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s)',
-                        tuple(valores)
+                        'INSERT INTO COMPRAS_MEDICAMENTOS (VALOR, MEDICAMENTO, CLASIFICACION, CANTIDAD, TIPO, FECHA_CORTE, USUARIO, GUID) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
+                        valores + [usuario.username, guid]
                     )
                 messages.success(request, 'Carga de datos en COMPRAS_MEDICAMENTOS exitosa')
         except KeyError:
@@ -1315,7 +1320,7 @@ def save_changes(request):
         return JsonResponse({'success': False, 'error': 'Método de solicitud no permitido'})
     
 def get_filtered_data_by_group(start_date, end_date, selected_group):
-    with connections['b_gaf'].cursor() as cursor:
+    with connections['B_GAF'].cursor() as cursor:
         cursor.execute('''
             SELECT Granja,Cliente,Unidades,Peso_canal_fria,Valor_kilo,Valor,Retencion,Valor_a_pagar_asociado
             FROM B_GAF.OPERACION_DESPOSTE
