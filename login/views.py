@@ -1069,40 +1069,7 @@ def cargar_excel_inideco(request):
 #--------------------------------- CARGA DE----G Admin Financiera ------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------
 #-------- vista para el cargue de excel en  Compras Materia Prima ------------------------------------------------
-# @login_required
-# def cargar_excel_compramatprima(request):
-#     if request.method == 'POST':
-#         try:
-#             archivo_excel = request.FILES['archivo_excel']
-#             wb = load_workbook(archivo_excel)
-#             ws = wb.active
 
-#             # Abre una conexión a la base de datos B_GAF
-#             with connections['B_GAF'].cursor() as cursor:
-#                 for row in ws.iter_rows(min_row=2):
-#                     valores = []
-#                     for cell in row:
-#                         if isinstance(cell.value, str):
-#                             valores.append(cell.value.upper())
-#                         elif isinstance(cell.value, int) or isinstance(cell.value, float):
-#                             valores.append(str(cell.value))
-#                         else:
-#                             valores.append(None)
-
-#                     # Ejecuta una consulta SQL para insertar los datos en la tabla COMPRAS_MATERIA_PRIMA
-#                     cursor.execute(
-#                         'INSERT INTO COMPRAS_MATERIA_PRIMA (MATERIA_PRIMA, COSTO_PROMEDIO, CANTIDAD_COMPRADA, DIAS_INVENTARIO, FECHA_CORTE) VALUES (%s, %s, %s, %s, %s)',
-#                         tuple(valores)
-#                     )
-#                 messages.success(request, 'Carga de datos en COMPRAS_MATERIA_PRIMA exitosa')
-#         except KeyError:
-#             messages.error(request, 'No se ha proporcionado un archivo Excel.')
-#         except IntegrityError as e:
-#             messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
-#         except Exception as e:
-#             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
-#         return redirect('home')
-#     return render(request, '/home/')
 @login_required
 def cargar_excel_compramatprima(request):
     if request.method == 'POST':
@@ -1119,7 +1086,7 @@ def cargar_excel_compramatprima(request):
                     # Ejecuta una consulta SQL para insertar los datos en la tabla COMPRAS_MATERIA_PRIMA
                     cursor.execute(
                         'INSERT INTO COMPRAS_MATERIA_PRIMA (MATERIA_PRIMA, COSTO_PROMEDIO, CANTIDAD_COMPRADA, DIAS_INVENTARIO, FECHA_CORTE) VALUES (%s, %s, %s, %s, %s)',
-                        (MATERIA_PRIMA , COSTO_PROMEDIO.value, CANTIDAD_COMPRADA.value, DIAS_INVENTARIO.value, FECHA_CORTE.value, FECHA_CORTE.value)
+                        (MATERIA_PRIMA.value , COSTO_PROMEDIO.value, CANTIDAD_COMPRADA.value, DIAS_INVENTARIO.value,FECHA_CORTE.value)
                     )
                 messages.success(request, 'Carga de datos en COMPRAS_MATERIA_PRIMA exitosa')
         except KeyError:
