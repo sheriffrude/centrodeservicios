@@ -1049,7 +1049,7 @@ def cargar_excel_inideco(request):
                             valores.append(str(cell.value))
                         else:
                             valores.append(None)
-
+                    
                     # Ejecuta una consulta SQL para insertar los datos en la tabla INDICADORES_ECONOMICOS
                     cursor.execute(
                         'INSERT INTO INDICADORES_ECONOMICOS (INDICADOR,VALOR,FUENTE,LINK,FECHA_CORTE) VALUES (%s, %s, %s, %s, %s)',
@@ -1105,34 +1105,62 @@ def cargar_excel_compramatprima(request):
     return render(request, '/home/')
 #-------- vista para el cargue de excel en COMPRAS_MEDICAMENTOS --------------------------------------------------------
 
+# @login_required
+# def cargar_excel_compramed(request):
+#     if request.method == 'POST':
+#         try:
+#             usuario = request.user
+            
+#             archivo_excel = request.FILES['archivo_excel']
+#             wb = load_workbook(archivo_excel)
+#             ws = wb.active
+            
+#             guid = str(uuid4())
+
+#             # Abre una conexión a la base de datos B_GAF
+#             with connections['B_GAF'].cursor() as cursor:
+#                 for row in ws.iter_rows(min_row=2):
+#                     valores = []
+#                     for cell in row:
+#                         if isinstance(cell.value, str):
+#                             valores.append(cell.value.upper())
+#                         elif isinstance(cell.value, int) or isinstance(cell.value, float):
+#                             valores.append(str(cell.value))
+#                         else:
+#                             valores.append(None)
+#                     print(valores)
+#                     # Ejecuta una consulta SQL para insertar los datos en la tabla COMPRAS_MEDICAMENTOS
+#                     cursor.execute(
+#                         'INSERT INTO COMPRAS_MEDICAMENTOS (VALOR, MEDICAMENTO, CLASIFICACION, CANTIDAD, TIPO, FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s)',
+#                        tuple(valores)
+#                     )
+#                 messages.success(request, 'Carga de datos en COMPRAS_MEDICAMENTOS exitosa')
+#         except KeyError:
+#             messages.error(request, 'No se ha proporcionado un archivo Excel.')
+#         except IntegrityError as e:
+#             messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+#         except Exception as e:
+#             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+#         return redirect('home')
+#     return render(request, '/home/')
+
 @login_required
 def cargar_excel_compramed(request):
     if request.method == 'POST':
         try:
-            usuario = request.user
-            
             archivo_excel = request.FILES['archivo_excel']
-            wb = load_workbook(archivo_excel)
+            wb = openpyxl.load_workbook(archivo_excel)
             ws = wb.active
-            
-            guid = str(uuid4())
 
-            # Abre una conexión a la base de datos B_GAF
+            # Abre una conexión a la base de datos b_c
             with connections['B_GAF'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
-                    valores = []
-                    for cell in row:
-                        if isinstance(cell.value, str):
-                            valores.append(cell.value.upper())
-                        elif isinstance(cell.value, int) or isinstance(cell.value, float):
-                            valores.append(str(cell.value))
-                        else:
-                            valores.append(None)
-
+                    print(row)
+                    VALOR, MEDICAMENTO, CLASIFICACION, CANTIDAD, TIPO, FECHA_CORTE= row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla COMPRAS_MEDICAMENTOS
                     cursor.execute(
-                        'INSERT INTO COMPRAS_MEDICAMENTOS (VALOR, MEDICAMENTO, CLASIFICACION, CANTIDAD, TIPO, FECHA_CORTE, USUARIO, GUID) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
-                        valores + [usuario.username, guid]
+                        'INSERT INTO COMPRAS_MEDICAMENTOS (VALOR, MEDICAMENTO, CLASIFICACION, CANTIDAD, TIPO, FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s)',
+                        (VALOR.value, MEDICAMENTO.value, CLASIFICACION.value, CANTIDAD.value, TIPO.value, FECHA_CORTE.value)
                     )
                 messages.success(request, 'Carga de datos en COMPRAS_MEDICAMENTOS exitosa')
         except KeyError:
@@ -1148,16 +1176,11 @@ def cargar_excel_compramed(request):
 
 
 
-
-
-
-
-
-
-
-
-
-
+# ------------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------------------------
+#----------------------------Funciones   internas utilizadas por los html-------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------------------------
 
 @never_cache
 @login_required

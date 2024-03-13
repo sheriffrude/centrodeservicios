@@ -341,6 +341,19 @@
             // Evento click para el botón de generar informe en Excel
 
         });
+        $(document).ready(function () {
+            // Configurar DataTables
+            $('#example1').DataTable({
+                "paging": true, // Habilitar paginación
+                "pageLength": 20, // Establecer el número de filas por página
+                "lengthChange": false, // Deshabilitar el control de cambio de número de filas por página
+                "searching": false, // Deshabilitar la función de búsqueda
+                "info": false, // Deshabilitar la información de la paginación
+                "ordering": true, // Habilitar la ordenación de columnas
+                "responsive": true // Habilitar la funcionalidad responsive
+                 
+            });
+        });
 
 
 
