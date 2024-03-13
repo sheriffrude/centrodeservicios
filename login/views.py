@@ -1263,9 +1263,12 @@ def export_excel(request):
     worksheet = workbook.add_worksheet()
 
     # Escribir los encabezados
-    headers = ['Fecha Transformación', 'Unidades', 'Peso Canal Fría', 'Consecutivo_Cercafe', 'Código Granja', 'Remisión', 'Valor', 'Cliente', 'Planta Beneficio', 'Granja', 'Nit Asociado', 'Asociado', 'Grupo Granja', 'Retención', 'Valor a Pagar Asociado', 'Valor Kilo','ID']
+    headers = ['Fecha Transformación', 'Unidades', 'Peso Canal Fría', 'Consecutivo_Cercafe', 'Código Granja', 'Remisión', 'Valor', 'Cliente', 'Planta Beneficio', 'Granja', 'Nit Asociado', 'Asociado', 'Grupo Granja', 'Retención', 'Valor a Pagar Asociado', 'Valor Kilo','id']
     for i, header in enumerate(headers):
         worksheet.write(0, i, header)
+
+    # Obtener el índice de la columna 'id'
+    id_column_index = headers.index('id') if 'id' in headers else None
 
     # Escribir los datos
     for row, compromiso in enumerate(compromisos, start=1):
@@ -1273,7 +1276,9 @@ def export_excel(request):
             # Formatear la fecha como un string
             if isinstance(value, datetime.date):
                 value = value.strftime('%Y-%m-%d')
-            worksheet.write(row, col, value)
+            # Verificar si la columna actual no es 'id'
+            if id_column_index is None or col != id_column_index:
+                worksheet.write(row, col, value)
 
     # Cerrar el archivo Excel
     workbook.close()
@@ -1283,6 +1288,8 @@ def export_excel(request):
         response = HttpResponse(file.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
         return response
+
+
     
     
 @csrf_protect
