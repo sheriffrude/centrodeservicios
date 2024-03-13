@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError, connections
 import pandas as pd
 from django.http import HttpResponse, HttpResponseRedirect
+
+from centrodeservicios import settings
 from .forms import UploadFileForm
 from django.http import JsonResponse
 import openpyxl
@@ -21,7 +23,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
 from uuid import uuid4
-
+import os
+import datetime
 #---Define La Vista del login-----
 def signin(request):
    if request.method == 'GET' :
@@ -1220,7 +1223,7 @@ def export_pdf(request):
     # Obtener los datos filtrados
     compromisos = get_filtered_data(start_date, end_date)
 
-    # Crear el PDF
+    # Crear el HTML con los datos filtrados
     html = '<html><body><table><thead><tr><th>Fecha Transformación</th><th>Unidades</th><th>Peso Canal Fría</th><th>Consecutivo Cercafe</th><th>Código Granja</th><th>Remisión</th><th>Valor</th><th>Cliente</th><th>Planta Beneficio</th><th>Granja</th><th>Nit Asociado</th><th>Asociado</th><th>Grupo Granja</th><th>Retención</th><th>Valor a Pagar Asociado</th><th>Valor Kilo</th></tr></thead><tbody>'
     for compromiso in compromisos:
         html += '<tr>'
@@ -1229,14 +1232,14 @@ def export_pdf(request):
         html += '</tr>'
     html += '</tbody></table></body></html>'
 
-    # Convertir HTML a PDF
+    # Convertir el HTML a PDF
     pdf = pdfkit.from_string(html, False, configuration=pdfkit.configuration(wkhtmltopdf='C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'))
 
-    # Enviar el PDF como respuesta
+    # Enviar el PDF como respuesta de descarga
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="reporte.pdf"'
-    response['Content-Length'] = len(pdf)
-    return redirect('financiera')
+    return response
+
 
 
 
@@ -1248,48 +1251,40 @@ def export_excel(request):
     # Obtener los datos filtrados
     compromisos = get_filtered_data(start_date, end_date)
 
-    # Crear el archivo Excel
-    workbook = xlsxwriter.Workbook('reporte.xlsx')
+    # Obtener el directorio de descargas del usuario actual
+    downloads_dir = os.path.join(settings.BASE_DIR, 'tmp')
+
+    # Crear el archivo Excel en el directorio de descargas
+    filename = 'reporte.xlsx'
+    file_path = os.path.join(downloads_dir, filename)
+
+    # Escribir los datos en el archivo Excel
+    workbook = xlsxwriter.Workbook(file_path)
     worksheet = workbook.add_worksheet()
 
     # Escribir los encabezados
-    headers = ['Fecha Transformación', 'Unidades', 'Peso Canal Fría', 'Consecutivo_Cercafe', 'Código Granja', 'Remisión', 'Valor', 'Cliente', 'Planta Beneficio', 'Granja', 'Nit Asociado', 'Asociado', 'Grupo Granja', 'Retención', 'Valor a Pagar Asociado', 'Valor Kilo']
+    headers = ['Fecha Transformación', 'Unidades', 'Peso Canal Fría', 'Consecutivo_Cercafe', 'Código Granja', 'Remisión', 'Valor', 'Cliente', 'Planta Beneficio', 'Granja', 'Nit Asociado', 'Asociado', 'Grupo Granja', 'Retención', 'Valor a Pagar Asociado', 'Valor Kilo','ID']
     for i, header in enumerate(headers):
         worksheet.write(0, i, header)
 
     # Escribir los datos
     for row, compromiso in enumerate(compromisos, start=1):
-        # Formatear la fecha como un string
-        fecha_transformacion = compromiso[0].strftime('%Y-%m-%d')
-        # Escribir la fecha en la columna 0
-        worksheet.write(row, 0, fecha_transformacion)
-        # Escribir los demás valores en las columnas correspondientes
-        worksheet.write(row, 1, compromiso[1])  # Unidades
-        worksheet.write(row, 2, compromiso[2])  # Peso Canal Fría
-        worksheet.write(row, 3, compromiso[3])  # Consecutivo_Cercafe
-        worksheet.write(row, 4, compromiso[4])  # Código Granja
-        worksheet.write(row, 5, compromiso[5])  # Remisión
-        worksheet.write(row, 6, compromiso[6])  # Valor
-        worksheet.write(row, 7, compromiso[7])  # Cliente
-        worksheet.write(row, 8, compromiso[8])  # Planta Beneficio
-        worksheet.write(row, 9, compromiso[9])  # Granja
-        worksheet.write(row, 10, compromiso[10])  # Nit Asociado
-        worksheet.write(row, 11, compromiso[11])  # Asociado
-        worksheet.write(row, 12, compromiso[12])  # Grupo Granja
-        worksheet.write(row, 13, compromiso[13])  # Retención
-        worksheet.write(row, 14, compromiso[14])  # Valor a Pagar Asociado
-        worksheet.write(row, 15, compromiso[15])  # Valor Kilo
+        for col, value in enumerate(compromiso):
+            # Formatear la fecha como un string
+            if isinstance(value, datetime.date):
+                value = value.strftime('%Y-%m-%d')
+            worksheet.write(row, col, value)
 
     # Cerrar el archivo Excel
     workbook.close()
 
-    # Enviar el archivo Excel como respuesta
-    with open('reporte.xlsx', 'rb') as file:
+    # Enviar el archivo Excel como respuesta de descarga
+    with open(file_path, 'rb') as file:
         response = HttpResponse(file.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'attachment; filename="reporte.xlsx"'
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
         return response
-
-
+    
+    
 @csrf_protect
 def save_changes(request):
     if request.method == 'POST':

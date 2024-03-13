@@ -225,69 +225,47 @@
 
 
         $("#export-pdf").click(function () {
-            $.ajax({
-                url: '/export-pdf/',
-                type: 'GET',
-                data: {
-                    start_date: $("#datepicker-start").val(),
-                    end_date: $("#datepicker-end").val(),
+            // Obtener los valores seleccionados
+            var startDate = $("#datepicker-start").val();
+            var endDate = $("#datepicker-end").val();
 
-                },
-                success: function (response) {
-                    // Abrir el PDF en una nueva pestaña
-                    window.open(response.url, '_blank');
-                }
-            });
+            // Crear un formulario dinámicamente
+            var form = $('<form action="/export-pdf/" method="GET"></form>');
+            form.append('<input type="hidden" name="start_date" value="' + startDate + '">');
+            form.append('<input type="hidden" name="end_date" value="' + endDate + '">');
+
+            // Agregar el formulario al cuerpo del documento
+            $('body').append(form);
+
+            // Enviar el formulario
+            form.submit();
+
+            // Eliminar el formulario después de enviarlo
+            form.remove();
         });
+
+
 
         // Exportar a Excel
         $("#export-excel").click(function () {
-            $.ajax({
-                url: '/export-excel/',
-                type: 'GET',
-                data: {
-                    start_date: $("#datepicker-start").val(),
-                    end_date: $("#datepicker-end").val(),
+            // Obtener las fechas seleccionadas
+            var startDate = $("#datepicker-start").val();
+            var endDate = $("#datepicker-end").val();
 
-                },
-                success: function (response) {
-                    // Descargar el archivo Excel
-                    var a = document.createElement('a');
-                    a.href = response.url;
-                    a.download = 'reporte.xlsx';
-                    a.click();
-                }
-            });
+            // Redireccionar al usuario a la vista export_excel con las fechas como parámetros
+            window.location.href = '/export-excel/?start_date=' + startDate + '&end_date=' + endDate;
         });
+
         $("#generate-report-btn").click(function () {
-            console.log("Evento de clic activado");
-            // Obtener el valor seleccionado del selector de opciones
+            // Obtener los valores seleccionados
             var selectedGroup = $("#grupo-granja-selector").val();
-            console.log('Start Date:', $("#datepicker-start").val());
-            console.log('End Date:', $("#datepicker-end").val());
-            console.log('Selected Group:', $("#grupo-granja-selector").val());
+            var startDate = $("#datepicker-start").val();
+            var endDate = $("#datepicker-end").val();
 
-
-            // Hacer la solicitud AJAX para generar el informe en Excel
-            $.ajax({
-                url: '/generate_excel_report/',
-                type: 'GET',
-                data: {
-                    start_date: $("#datepicker-start").val(),
-                    end_date: $("#datepicker-end").val(),
-                    selected_group: selectedGroup
-                },
-                success: function (response) {
-                    // Descargar el archivo Excel
-                    var a = document.createElement('a');
-                    a.href = response.url;
-                    a.download = 'reporte_grupo_' + selectedGroup + '.xlsx';
-                    a.click();
-
-
-                }
-            });
+            // Redireccionar al usuario a la vista generate_excel_report con los parámetros
+            window.location.href = '/generate_excel_report/?start_date=' + startDate + '&end_date=' + endDate + '&selected_group=' + selectedGroup;
         });
+
 
         $(document).ready(function () {
             // Evento focus para vaciar el campo editable al seleccionarlo
