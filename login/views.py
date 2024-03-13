@@ -142,11 +142,11 @@ def cargar_excel_cadenaabastecimiento(request):
             # Abre una conexión a la base de datos b_ca
             with connections['B_CA'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
-                    granja, mes, semana, cantidad_cerdos = row
+                    granja, mes, semana, cantidad_cerdos, año = row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla compromiso_mes
                     cursor.execute(
-                        'INSERT INTO compromiso_mes (granja, mes, semana, cantidad_cerdos) VALUES (%s, %s, %s, %s)',
-                        (granja.value, mes.value, semana.value, cantidad_cerdos.value)
+                        'INSERT INTO compromiso_mes (granja, mes, semana, cantidad_cerdos, año) VALUES (%s, %s, %s, %s, %s, %s)',
+                        (granja.value, mes.value, semana.value, cantidad_cerdos.value, año.value)
                     )
             messages.success(request, 'Carga de datos en VENTAS exitosa')
         except KeyError:
