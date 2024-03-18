@@ -111,7 +111,9 @@ def adminfinan(request):
 @never_cache
 @login_required
 def financiera(request):
-   return render(request, 'financiera.html')
+    grupos = grupos_asociados(request)  
+    return render(request, 'financiera.html', {'grupos_asociados': grupos})
+
 
 
 #---Define La Vista del modulo reportes-----
@@ -1407,5 +1409,5 @@ def grupos_asociados(request):
     with connections['DHC'].cursor() as cursor:
         cursor.execute('''SELECT GRUPO_ASOCIADO FROM DHC.grupo_asociado''')
         grupos_asociados = [row[0] for row in cursor.fetchall()]
-        print(grupos_asociados)  # Esto imprimirá los grupos asociados en la consola del servidor
-    return render(request, 'financiera.html', {'grupos_asociados': grupos_asociados})
+        print(grupos_asociados)  
+    return grupos_asociados  

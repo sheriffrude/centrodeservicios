@@ -59,11 +59,13 @@
                                 src="/static/images/icons8-excel-48.png" height="35" width="35" /></button>
                     </div>
                 </div>
+
             </section>
 
             <div class="container mb-12">
                 <div class="input-group col-6">
                     <select id="grupo-granja-selector" class="custom-select">
+
                         {% for grupo_asociado in grupos_asociados %}
                         <option value="{{ grupo_asociado }}">{{ grupo_asociado }}</option>
                         {% endfor %}
@@ -123,6 +125,9 @@
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 
     <script>
+
+
+
         $(document).ready(function () {
             // Inicializar los datepickers
             $("#datepicker-start").datepicker({
@@ -131,6 +136,7 @@
             $("#datepicker-end").datepicker({
                 dateFormat: 'yy/mm/dd'
             });
+
 
             // Al hacer clic en el botón Filtrar
             $("#filter-btn").click(function () {
@@ -351,7 +357,12 @@
 
             });
         });
-
+        $(document).ready(function () {
+            $("select#grupo-granja-selector").change(function () {
+                var selectedGroup = $(this).val();
+                console.log(selectedGroup);
+            });
+        });
 
 
     </script>
