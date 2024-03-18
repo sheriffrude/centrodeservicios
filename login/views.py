@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from django.db import IntegrityError, connections
+from django.db import IntegrityError, connection, connections
 import pandas as pd
 from django.http import HttpResponse, HttpResponseRedirect
 
@@ -1403,3 +1403,9 @@ def generate_excel_report(request):
         response['Content-Disposition'] = 'attachment; filename="reporte_grupo_' + selected_group + '.xlsx"'
         return response
 
+def grupos_asociados(request):
+    with connections['DHC'].cursor() as cursor:
+        cursor.execute('''SELECT GRUPO_ASOCIADO FROM DHC.grupo_asociado''')
+        grupos_asociados = [row[0] for row in cursor.fetchall()]
+        print(grupos_asociados)  # Esto imprimirá los grupos asociados en la consola del servidor
+    return render(request, 'financiera.html', {'grupos_asociados': grupos_asociados})

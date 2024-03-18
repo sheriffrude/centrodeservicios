@@ -64,12 +64,9 @@
             <div class="container mb-12">
                 <div class="input-group col-6">
                     <select id="grupo-granja-selector" class="custom-select">
-                        <option value="Agrojabar">Agrojabar</option>
-                        <option value="Agrocerdos">Agrocerdos</option>
-                        <option value="campeon">campeon</option>
-                        <option value="Gamm">Gamm</option>
-                        <option value="CER">CER</option>
-                        <option value="HBM">HBM</option>
+                        {% for grupo_asociado in grupos_asociados %}
+                        <option value="{{ grupo_asociado }}">{{ grupo_asociado }}</option>
+                        {% endfor %}
                     </select>
                     <button id="generate-report-btn" class="btn btn-success">Generar Reporte por grupo</button>
                 </div>
@@ -351,7 +348,7 @@
                 "info": false, // Deshabilitar la información de la paginación
                 "ordering": true, // Habilitar la ordenación de columnas
                 "responsive": true // Habilitar la funcionalidad responsive
-                 
+
             });
         });
 

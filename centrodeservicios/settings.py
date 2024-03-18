@@ -112,7 +112,7 @@ DATABASES = {
 esquemas = [
     'B_GC', 'B_GT', 'B_CA', 'B_GAB', 'B_CI',
     'B_M', 'B_C', 'B_GD', 'B_GAF', 'B_GH',
-    'B_TI', 'B_SAC', 'B_SIG', 'B_GG'
+    'B_TI', 'B_SAC', 'B_SIG', 'B_GG', 'DHC'
 ]
 
 # Configuración base para todas las bases de datos adicionales
