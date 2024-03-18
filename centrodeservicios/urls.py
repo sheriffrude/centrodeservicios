@@ -79,12 +79,6 @@ urlpatterns = [
     path('cargar_excel_compramed/', views.cargar_excel_compramed, name='cargar_excel_compramed'),
     
     
-    
-    
-    
-    
-    
-    
     path('financiera/', views.financiera, name='financiera'),
     path('repoprove/', views.repoprove, name='repoprove'),
     path('repofina/', views.repofina, name='repofina'),
@@ -100,5 +94,20 @@ urlpatterns = [
     path('grupos/', views.grupos_asociados, name='grupos_asociados'),
     
     
+
+#--------------------------------- REPORTES------------------------------------------------
     
+    
+    path('repgcomercial/', views.repgcomercial, name='repgcomercial'),
+
+
+
+
+
+
+
+
+
+
+
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

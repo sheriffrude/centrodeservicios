@@ -171,7 +171,7 @@
                         
                         {% if request.user|user_belongs_to_group:'comercial' %}
                         <li class="nav-item">
-                            <a id="cargarContenido"  class="nav-link">
+                            <a id="cargarContenido" href="{% url 'repgcomercial' %}" class="nav-link">
                                 <i class="nav-icon fas fa-cart-plus"></i>Gestion Comercial
                             </a>
                         </li>

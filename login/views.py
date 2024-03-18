@@ -50,6 +50,13 @@ def signin(request):
 def home(request):
     return render(request, 'home.html')
 
+#---Define La Vista Rep-gestion comercial----
+@never_cache
+@login_required
+def repgcomercial(request):
+    return render(request, 'report_gcomercial.html')
+
+
 
 #---Define La Vista del logout-----
 @never_cache

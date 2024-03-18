@@ -5,6 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Proveeduria</title>
+  <style>
+    .btn-info1 {
+      background-color: #CFCCCC;
+    }
+  </style>
 </head>
 
 <body>
@@ -26,9 +31,9 @@
           <form method="post" action="{% url 'cargar_excel_abashem' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="archivo_excel">Selecciona un archivo Excel:</label>
-            <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
+            <input class="btn btn-info1" type="file" name="archivo_excel" accept=".xlsx, .xls">
             <br>
-            <button class="btn btn-success" type="submit">Cargar Datos</button>
+            <button class="btn bg-gradient-primary " type="submit">Cargar Datos</button>
           </form>
         </div>
       </div>
@@ -54,9 +59,9 @@
           <form method="post" action="{% url 'cargar_excel_fortuitos' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="archivo_excel">Selecciona un archivo Excel:</label>
-            <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
+            <input class="btn btn-info1" type="file" name="archivo_excel" accept=".xlsx, .xls">
             <br>
-            <button class="btn btn-success" type="submit">Cargar Datos</button>
+            <button class="btn bg-gradient-primary " type="submit">Cargar Datos</button>
           </form>
         </div>
       </div>
@@ -81,9 +86,9 @@
           <form method="post" action="{% url 'cargar_excel_kgvend' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="archivo_excel">Selecciona un archivo Excel:</label>
-            <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
+            <input class="btn btn-info1" type="file" name="archivo_excel" accept=".xlsx, .xls">
             <br>
-            <button class="btn btn-success" type="submit">Cargar Datos</button>
+            <button class="btn bg-gradient-primary " type="submit">Cargar Datos</button>
           </form>
         </div>
       </div>
@@ -108,9 +113,9 @@
           <form method="post" action="{% url 'cargar_excel_pesofinconver' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="archivo_excel">Selecciona un archivo Excel:</label>
-            <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
+            <input class="btn btn-info1" type="file" name="archivo_excel" accept=".xlsx, .xls">
             <br>
-            <button class="btn btn-success" type="submit">Cargar Datos</button>
+            <button class="btn bg-gradient-primary " type="submit">Cargar Datos</button>
           </form>
         </div>
       </div>
@@ -135,9 +140,9 @@
           <form method="post" action="{% url 'cargar_excel_proyhem' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="archivo_excel">Selecciona un archivo Excel:</label>
-            <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
+            <input class="btn btn-info1" type="file" name="archivo_excel" accept=".xlsx, .xls">
             <br>
-            <button class="btn btn-success" type="submit">Cargar Datos</button>
+            <button class="btn bg-gradient-primary " type="submit">Cargar Datos</button>
           </form>
         </div>
       </div>
@@ -162,9 +167,9 @@
           <form method="post" action="{% url 'cargar_excel_tecnicacia' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="archivo_excel">Selecciona un archivo Excel:</label>
-            <input class="btn btn-info" type="file" name="archivo_excel" accept=".xlsx, .xls">
+            <input class="btn btn-info1" type="file" name="archivo_excel" accept=".xlsx, .xls">
             <br>
-            <button class="btn btn-success" type="submit">Cargar Datos</button>
+            <button class="btn bg-gradient-primary " type="submit">Cargar Datos</button>
           </form>
         </div>
       </div>
