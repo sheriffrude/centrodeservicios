@@ -5,7 +5,7 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     {% block logo %}
-    <a href="" class="brand-link">
+    <a href="/home/" class="brand-link">
         <img src="{%static 'admin-lte/dist/img/logoside.png' size=90 %}" alt="AdminLTE Logo"
             class="brand-image img-circle elevation-3" style="opacity: .8">
         {% block logo_text %}<span class="brand-text font-weight-dark">CERCAFE CS </span>{% endblock %}
@@ -37,11 +37,16 @@
                 <li class="nav-header">{% block nav_heading %}SERVICIOS{% endblock %}</li>
 
                 {% block nav_links %}
-                
                 <li class="nav-item">
                     <a id="cargarContenido" href="{% url 'financiera' %}" class="nav-link">
                         <i class="nav-icon fas fa-solid fa-comments-dollar"></i>
                         <p>Financiera</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a id="cargarContenido" href="{% url 'frigorificos' %}" class="nav-link">
+                        <i class="nav-icon fas fa-solid fa-industry"></i>
+                        <p>Frigorificos</p>
                     </a>
                 </li>
                {% if request.user.is_authenticated%}
@@ -171,7 +176,7 @@
                         
                         {% if request.user|user_belongs_to_group:'comercial' %}
                         <li class="nav-item">
-                            <a id="cargarContenido" href="{% url 'repgcomercial' %}" class="nav-link">
+                            <a  href="{% url 'repgcomercial' %}" >
                                 <i class="nav-icon fas fa-cart-plus"></i>Gestion Comercial
                             </a>
                         </li>

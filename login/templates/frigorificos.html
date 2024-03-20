@@ -1,0 +1,49 @@
+{% load adminlte_helpers i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frigorificos</title>
+</head>
+
+<body>
+    {% block content_wrapper %}
+    <div class="content-wrapper">
+        {% block content_header %}
+        <section class="content-header">
+            {% block no_heading %}
+            <h1>
+                {% block page_name %}{% endblock %}
+                <div class="header-actions">
+                    {% block page_actions %}{% endblock %}
+                </div>
+                {% block no_description %}
+                <small>{% block page_description %}{% endblock %}</small>
+                {% endblock %}
+            </h1>
+            {% block breadcrumbs %}
+            {# Breadcrumb implementation left to developers #}
+            {% endblock %}
+            {% endblock no_heading %}
+            
+        </section>
+        <h1>Enlaces a Los Frigorificos</h1>
+        <section>
+            <h5>Para dirigirte a cualquier frigorifico, haz clic en el logo:</h5>
+            <button class="btn btn-secondary1 btn-circle btn-xl"
+                onclick="window.location.href='http://181.49.60.154:8086/Vistas/Privado/Login.aspx'"
+                style="display: flex; justify-content: center; align-items: center; width: 150px; height: 150px; border-radius: 50%;">
+                <img src="{% static '/images/logo_OINCC.png' %}" alt="Logo oinc" height="125" width="125">
+            </button>
+        </section>
+
+        {% endblock %}
+{% endblock %}
+        
+
+</body>
+
+</html>

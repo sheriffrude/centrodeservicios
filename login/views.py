@@ -54,7 +54,9 @@ def home(request):
 @never_cache
 @login_required
 def repgcomercial(request):
-    return render(request, 'report_gcomercial.html')
+    clientes = tablarepclient(request)
+    ventas = tablarepventas(request) 
+    return render(request, 'report_gcomercial.html', {'clientes_act': clientes, 'repventas': ventas})
 
 
 
@@ -101,6 +103,12 @@ def gestionalbal(request):
 @login_required
 def calidad(request):
    return render(request, 'calidad.html')
+#---Define La Vistas del modulo Gestion frigorificos-----
+
+@never_cache
+@login_required
+def frigorificos(request):
+   return render(request, 'frigorificos.html')
 #---Define La Vistas del modulo Gestion TI-----
 
 @never_cache
@@ -1417,4 +1425,20 @@ def grupos_asociados(request):
         cursor.execute('''SELECT GRUPO_ASOCIADO FROM DHC.grupo_asociado''')
         grupos_asociados = [row[0] for row in cursor.fetchall()]
         print(grupos_asociados)  
-    return grupos_asociados  
+    return grupos_asociados
+
+
+
+#---------------- TABLAS DE REPORTES G COMERCIAL------------------------------------------
+def tablarepclient(request):
+    with connections['B_GC'].cursor() as cursor:
+        cursor.execute('''SELECT FECHA_CORTE,CANTIDAD_CLIENTES,ZONA_CLIENTE,KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE FROM B_GC.CLIENTES_ACTIVOS ''')
+        clientes_act = cursor.fetchall()   
+    return clientes_act
+
+def tablarepventas(request):
+    with connections['B_GC'].cursor() as cursor:
+        cursor.execute('''SELECT FECHA_CORTE,LINEA_NEGOCIO,PRESUPUESTO_UNIDADES,PRESUPUESTO_KG,UNIDADES_VENDIDAS,KG_VENDIDO,VALOR_VENTA,PRESUPUESTO_VENTA FROM B_GC.VENTAS ''')
+        repventas = cursor.fetchall()   
+    return repventas
+

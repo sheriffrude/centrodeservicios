@@ -92,7 +92,8 @@ urlpatterns = [
     path('save-changes/', views.save_changes, name='save_changes'),
     path('generate_excel_report/', views.generate_excel_report, name='generate_excel_report'),
     path('grupos/', views.grupos_asociados, name='grupos_asociados'),
-    
+    path('tabla/', views.tablarepclient, name='tablarepclient'),
+    path('frigorificos/', views.frigorificos, name='frigorificos'),
     
 
 #--------------------------------- REPORTES------------------------------------------------
