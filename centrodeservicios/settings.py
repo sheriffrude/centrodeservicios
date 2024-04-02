@@ -77,8 +77,10 @@ TEMPLATES = [
         },
     },
 ]
-CSRF_COOKIE_SECURE = True  
+  
 CSRF_COOKIE_HTTPONLY = True 
+
+
 #---------cierre de sesion a los 5 minutos --------
 AUTO_LOGOUT_DELAY = 5 
 SESSION_COOKIE_AGE = 600
