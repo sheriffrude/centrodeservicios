@@ -1,0 +1,433 @@
+{% load adminlte_helpers i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TECNICA</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+
+    {% block meta %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% endblock %}
+
+    {% block stylesheets %}
+    {% include 'adminlte/lib/_styles.html' %}
+    <style type="text/css">
+        .btn-circle.btn-xl {
+            width: 130px;
+            height: 130px;
+            padding: 13px 18px;
+            border-radius: 100px;
+            font-size: 15px;
+            text-align: center;
+            margin-left: 50px;
+        }
+
+        .btn-repor {
+            background-color: #651410;
+            color: aliceblue;
+        }
+    </style>
+    {% endblock %}
+
+    {% block extra_head %}{% endblock %}
+</head>
+</head>
+
+<body class="hold-transition sidebar-mini {% block body_class %}{% block bodyclass %}{% endblock %}{% endblock %}">
+    <div class="wrapper">
+        {% block nav_header %}
+        {% include '_main_header.html' %}
+        {% endblock %}
+
+        {% block nav_sidebar %}
+        {% include '_main_sidebar.html' %}
+        {% endblock %}
+
+        {% block content_wrapper %}
+        <div class="content-wrapper">
+            {% block content_header %}
+            <section class="content-header">
+                {% block no_heading %}
+                <h1>
+                    {% block page_name %}{% endblock %}
+                    <div class="header-actions">
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                    {% block no_description %}
+                    <small>{% block page_description %}{% endblock %}</small>
+                    {% endblock %}
+                </h1>
+                {% block breadcrumbs %}
+                {# Breadcrumb implementation left to developers #}
+                {% endblock %}
+                {% endblock no_heading %}
+                <h1>Reportes Gestion Tecnica</h1>
+            </section>
+            {% endblock %}{% endblock %}
+            <section>
+                <div>
+                    <button id="btn_abhembras" class="btn btn-repor btn-lg" onclick="mostrarabhembras()">Reporte
+                        Abastecimiento De Hembras</button>
+                    <button id="btn_fortuitos" class="btn btn-repor btn-lg" onclick="mostrarfortuitos()">Reporte
+                        Fortuitos</button>
+                    <button id="btn_kgvendidos" class="btn btn-repor btn-lg" onclick="mostrarakgvendidos()">Reporte Kg
+                        Vendidos Hembras</button>
+                    <button id="btn_pfinalcon" class="btn btn-repor btn-lg" onclick="mostrarpfinalcon()">Reporte Peso
+                        Final Conversion</button>
+                    <button id="btn_abhembras" class="btn btn-repor btn-lg" onclick="mostrarprohembras()">Reporte
+                        Proyeccion Hembras</button>
+                    <button id="btn_ventas" class="btn btn-repor btn-lg" onclick="mostrartecnicacia()">Reporte Tecnica
+                        Cia</button>
+                </div>
+            </section>
+
+            <!-- Contenido principal -->
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="abhembras_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE ABASTECIMIENTO DE HEMBRAS</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_abhembras" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>GRANJA</th>
+                                        <th>CANTIDAD ENTREGADA</th>
+                                        <th>PORCENTAJE CUMPLIMIENTO</th>
+                                        <th>FECHA CORTE</th>
+
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for abhembra in abhembras %}
+                                    <tr>
+                                        <td>{{ abhembra.0 }}</td>
+                                        <td>{{ abhembra.1 }}</td>
+                                        <td>{{ abhembra.2 }}</td>
+                                        <td>{{ abhembra.3 }}</td>
+
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="fortuitos_table" style="display:none;">
+                        <div class="card-header">
+                            <h2 class="card-title">REPORTE DE FORTUITOS</h2>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_fortuitos" class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>FECHA CORTE</th>
+                                        <th>GRANJA</th>
+                                        <th>CANTIDAD</th>
+                                        <th>ESTADO</th>
+                                        <th>NUMERO ORDEN</th>
+                                        <th>CANTIDAD MUERTE TRANSPORTE</th>
+                                        <th>CANTIDAD MUERTE REPOSO</th>
+                                        <th>CANTIDAD RETOMAS</th>
+                                        <th>NUMERO TIQUETE</th>
+                                        <th>REGISTRO FOTO</th>
+                                        <th>DESTINO</th>
+
+                                </thead>
+                                <tbody>
+                                    {% for fortuito in fortuitos %}
+                                    <tr>
+                                        <td>{{fortuito.0}}</td>
+                                        <td>{{fortuito.1}}</td>
+                                        <td>{{fortuito.2}}</td>
+                                        <td>{{fortuito.3}}</td>
+                                        <td>{{fortuito.4}}</td>
+                                        <td>{{fortuito.5}}</td>
+                                        <td>{{fortuito.6}}</td>
+                                        <td>{{fortuito.7}}</td>
+                                        <td>{{fortuito.8}}</td>
+                                        <td>{{fortuito.9}}</td>
+                                        <td>{{fortuito.10}}</td>
+
+                                    </tr>
+                                    {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="contener">
+                <section class="content">
+                    <div class="card" id="kgvendidos_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE ABASTECIMIENTO DE HEMBRAS</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_kgvendidos" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>GRANJA</th>
+                                        <th>KG VEND HEMBRA AÑO</th>
+                                        <th>ASOCIADO</th>
+                                        <th>FECHA CORTE</th>
+
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for kgvendido in kgvendidos %}
+                                    <tr>
+                                        <td>{{ kgvendido.0 }}</td>
+                                        <td>{{ kgvendido.1 }}</td>
+                                        <td>{{ kgvendido.2 }}</td>
+                                        <td>{{ kgvendido.3 }}</td>
+
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="contener">
+                <section class="content">
+                    <div class="card" id="pfinalcon_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE PESO FINAL CONVERSION</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_pfinalcon" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>GRANJA</th>
+                                        <th>PESO</th>
+                                        <th>META PESO</th>
+                                        <th>CONVERSION META</th>
+                                        <th>CONVERSION</th>
+                                        <th>FECHA CORTE</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for pfinalco in pfinalcon %}
+                                    <tr>
+                                        <td>{{ pfinalco.0 }}</td>
+                                        <td>{{ pfinalco.1 }}</td>
+                                        <td>{{ pfinalco.2 }}</td>
+                                        <td>{{ pfinalco.3 }}</td>
+                                        <td>{{ pfinalco.4 }}</td>
+                                        <td>{{ pfinalco.5 }}</td>
+
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="contener">
+                <section class="content">
+                    <div class="card" id="prohembras_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE PROYECCION HEMBRAS</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_prohembras" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>PARTOS</th>
+                                        <th>TASA PARTOS</th>
+                                        <th>CUMPLIMIENTO PROYECTADO</th>
+                                        <th>CUMPLIMIENTO REAL</th>
+                                        <th>AÑO SERVICIO</th>
+                                        <th>OBSERVACIONES</th>
+                                        <th>FECHA CORTE</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for prohembra in prohembras %}
+                                    <tr>
+                                        <td>{{ prohembra.0 }}</td>
+                                        <td>{{ prohembra.1 }}</td>
+                                        <td>{{ prohembra.2 }}</td>
+                                        <td>{{ prohembra.3 }}</td>
+                                        <td>{{ prohembra.4 }}</td>
+                                        <td>{{ prohembra.5 }}</td>
+                                        <td>{{ prohembra.6 }}</td>
+
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="contener">
+                <section class="content">
+                    <div class="card" id="tecnicacia_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE TECNICA CIA</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_tecnicacia" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>LINEA GENETICA</th>
+                                        <th>CANTIDAD MACHOS</th>
+                                        <th>PORCENTAJE DISTRIBUCION MACHOS</th>
+                                        <th>CANTIDAD DESECHADO</th>
+                                        <th>PORCENTAJE DESCECHADO</th>
+                                        <th>DOSIS PRODUCIDAS</th>
+                                        <th>DOSIS VENDIDAS</th>
+                                        <th>PROMEDIO MORFOLOGIA</th>
+                                        <th>OBSERVACION</th>
+                                        <th>FECHA CORTE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for tecnicaci in tecnicacia %}
+                                    <tr>
+                                        <td>{{ tecnicaci.0 }}</td>
+                                        <td>{{ tecnicaci.1 }}</td>
+                                        <td>{{ tecnicaci.2 }}</td>
+                                        <td>{{ tecnicaci.3 }}</td>
+                                        <td>{{ tecnicaci.4 }}</td>
+                                        <td>{{ tecnicaci.5 }}</td>
+                                        <td>{{ tecnicaci.6 }}</td>
+                                        <td>{{ tecnicaci.7 }}</td>
+                                        <td>{{ tecnicaci.8 }}</td>
+                                        <td>{{ tecnicaci.9 }}</td>
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <!-- /.content -->
+        
+        <!-- /.content-wrapper -->
+
+
+
+
+        {% block javascript %}
+        {% include 'adminlte/lib/_scripts.html' %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+        <script>
+            function mostrarabhembras() {
+                document.getElementById("abhembras_table").style.display = "block";
+                document.getElementById("fortuitos_table").style.display = "none";
+                document.getElementById("kgvendidos_table").style.display = "none";
+                document.getElementById("pfinalcon_table").style.display = "none";
+                document.getElementById("prohembras_table").style.display = "none";
+                document.getElementById("tecnicacia_table").style.display = "none";
+
+            }
+
+            function mostrarfortuitos() {
+                document.getElementById("abhembras_table").style.display = "none";
+                document.getElementById("fortuitos_table").style.display = "block";
+                document.getElementById("kgvendidos_table").style.display = "none";
+                document.getElementById("pfinalcon_table").style.display = "none";
+                document.getElementById("prohembras_table").style.display = "none";
+                document.getElementById("tecnicacia_table").style.display = "none";
+
+            }
+            function mostrarakgvendidos() {
+                document.getElementById("abhembras_table").style.display = "none";
+                document.getElementById("fortuitos_table").style.display = "none";
+                document.getElementById("kgvendidos_table").style.display = "block";
+                document.getElementById("pfinalcon_table").style.display = "none";
+                document.getElementById("prohembras_table").style.display = "none";
+                document.getElementById("tecnicacia_table").style.display = "none";
+
+            }
+            function mostrarpfinalcon() {
+                document.getElementById("abhembras_table").style.display = "none";
+                document.getElementById("fortuitos_table").style.display = "none";
+                document.getElementById("kgvendidos_table").style.display = "none";
+                document.getElementById("pfinalcon_table").style.display = "block";
+                document.getElementById("prohembras_table").style.display = "none";
+                document.getElementById("tecnicacia_table").style.display = "none";
+
+            }
+            function mostrarprohembras() {
+                document.getElementById("abhembras_table").style.display = "none";
+                document.getElementById("fortuitos_table").style.display = "none";
+                document.getElementById("kgvendidos_table").style.display = "none";
+                document.getElementById("pfinalcon_table").style.display = "none";
+                document.getElementById("prohembras_table").style.display = "block";
+                document.getElementById("tecnicacia_table").style.display = "none";
+
+            }
+            function mostrartecnicacia() {
+                document.getElementById("abhembras_table").style.display = "none";
+                document.getElementById("fortuitos_table").style.display = "none";
+                document.getElementById("kgvendidos_table").style.display = "none";
+                document.getElementById("pfinalcon_table").style.display = "none";
+                document.getElementById("prohembras_table").style.display = "none";
+                document.getElementById("tecnicacia_table").style.display = "block";
+
+            }
+            $(document).ready(function () {
+                $('#tabla_abhembras').DataTable();
+                $("#tabla_fortuitos").DataTable();
+                $("#tabla_kgvendidos").DataTable();
+                $("#tabla_pfinalcon").DataTable();
+                $("#tabla_prohembras").DataTable();
+                $("#tabla_tecnicacia").DataTable();
+
+            });
+        </script>
+        <!-- script para llamar los html en el contenido -->
+        <script src="{% static 'custom.js' %}"></script>
+        {% endblock %}
+
+</body>
+
+</html>

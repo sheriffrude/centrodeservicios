@@ -50,13 +50,7 @@ def signin(request):
 def home(request):
     return render(request, 'home.html')
 
-#---Define La Vista Rep-gestion comercial----
-@never_cache
-@login_required
-def repgcomercial(request):
-    clientes = tablarepclient(request)
-    ventas = tablarepventas(request) 
-    return render(request, 'report_gcomercial.html', {'clientes_act': clientes, 'repventas': ventas})
+
 
 
 
@@ -1214,7 +1208,35 @@ def cargar_excel_compramed(request):
             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
         return redirect('home')
     return render(request, '/home/')
+@login_required
+def cargar_excel_preciocanal(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+            guid = str(uuid4())
+            usuario = request.user
 
+            # Abre una conexión a la base de datos b_c
+            with connections['B_GAF'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    
+                    NIT,CLIENTE,ZONA,VALOR,= row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla precio_canales_semana
+                    cursor.execute(
+                        'INSERT INTO precio_canales_semana (NIT,CLIENTE,ZONA,VALOR,GUID,USUARIO) VALUES (%s, %s, %s, %s, %s, %s)',
+                        (NIT.value, CLIENTE.value, ZONA.value, VALOR.value,guid, usuario.username)
+                    )
+                messages.success(request, 'Carga de datos en precio canal exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
 
 
 
@@ -1460,6 +1482,14 @@ def grupos_asociados(request):
 
 
 #---------------- TABLAS DE REPORTES G COMERCIAL------------------------------------------
+#---Define La Vista Rep-gestion comercial----
+@never_cache
+@login_required
+def repgcomercial(request):
+    clientes = tablarepclient(request)
+    ventas = tablarepventas(request) 
+    return render(request, 'report_gcomercial.html', {'clientes_act': clientes, 'repventas': ventas})
+
 def tablarepclient(request):
     with connections['B_GC'].cursor() as cursor:
         cursor.execute('''SELECT FECHA_CORTE,CANTIDAD_CLIENTES,ZONA_CLIENTE,KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE FROM B_GC.CLIENTES_ACTIVOS ''')
@@ -1471,4 +1501,105 @@ def tablarepventas(request):
         cursor.execute('''SELECT FECHA_CORTE,LINEA_NEGOCIO,PRESUPUESTO_UNIDADES,PRESUPUESTO_KG,UNIDADES_VENDIDAS,KG_VENDIDO,VALOR_VENTA,PRESUPUESTO_VENTA FROM B_GC.VENTAS ''')
         repventas = cursor.fetchall()   
     return repventas
+#---------------- TABLAS DE REPORTES G TECNICA------------------------------------------
+@never_cache
+@login_required
+def repgtecnica(request):
+    abhembras = tablarepabhembras(request)
+    fortuitos = tablarepfortuitos(request) 
+    kgvendidos = tablarepkgvendidos(request) 
+    pfinalcon = tablareppfinalcon(request) 
+    prohembras = tablarepprohembras(request) 
+    tecnicacia = tablareptecnicacia(request) 
+    return render(request, 'report_gtecnica.html', {'abhembras': abhembras,'fortuitos':fortuitos,'kgvendidos':kgvendidos,'pfinalcon':pfinalcon,'prohembras':prohembras,'tecnicacia':tecnicacia})
 
+def tablarepabhembras(request):
+    with connections['B_GT'].cursor() as cursor:
+        cursor.execute('''SELECT GRANJA,CANTIDAD_ENTREGADA,PORCENTAJE_CUMPLIMIENTO,FECHA_CORTE FROM B_GT.ABASTECIMIENTO_HEMBRAS ''')
+        abhembras = cursor.fetchall()   
+    return abhembras
+
+def tablarepfortuitos(request):
+    with connections['B_GT'].cursor() as cursor:
+        cursor.execute('''SELECT FECHA_CORTE,GRANJA,CANTIDAD,ESTADO,NUMERO_ORDEN,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,CANTIDAD_RETOMAS,NUMERO_TIQUETE,REGISTRO_FOTO,DESTINO FROM B_GT.FORTUITOS ''')
+        fortuitos = cursor.fetchall()   
+    return fortuitos
+
+def tablarepkgvendidos(request):
+    with connections['B_GT'].cursor() as cursor:
+        cursor.execute('''SELECT GRANJA,KG_V_H_A,ASOCIADO,FECHA_CORTE FROM B_GT.KG_VENDIDOS_HEMBRA''')
+        kgvendidos = cursor.fetchall()   
+    return kgvendidos
+
+def tablareppfinalcon(request):
+    with connections['B_GT'].cursor() as cursor:
+        cursor.execute('''SELECT GRANJA,PESO,META_PESO,CONVERSION_META,CONVERSION,FECHA_CORTE FROM B_GT.PESO_FINAL_CONVERSION ''')
+        pfinalcon = cursor.fetchall()   
+    return pfinalcon
+
+def tablarepprohembras(request):
+    with connections['B_GT'].cursor() as cursor:
+        cursor.execute('''SELECT PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE FROM B_GT.PROYECCION_HEMBRAS ''')
+        prohembras = cursor.fetchall()   
+    return prohembras
+
+def tablareptecnicacia(request):
+    with connections['B_GT'].cursor() as cursor:
+        cursor.execute('''SELECT LINEA_GENETICA,CANTIDAD_MACHOS,PORCENTAJE_DISTRIBUCION_MACHOS,CANTIDAD_DESECHADO,PORCENTAJE_DESCECHADO,DOSIS_PRODUCIDAS,DOSIS_VENDIDAS,PROMEDIO_MORFOLOGIA,OBSERVACION,FECHA_CORTE FROM B_GT.TECNICA_CIA ''')
+        tecnicacia = cursor.fetchall()   
+    return tecnicacia
+#---------------- TABLAS DE REPORTES CADENA DE ABASTECIMIENTO------------------------------------------
+@never_cache
+@login_required
+def repcadabastecimiento(request):
+    compgranja = tablarepcompgranja(request)
+    cerdosbenef = tablarepcerdosbenef(request) 
+    comparativopl = tablarepcomparativopl(request) 
+    costodespo = tablarepcostodespo(request) 
+    kgbenef = tablarepkgbenef(request) 
+    kgdespos = tablarepkgdespos(request) 
+    particortes = tablarepparticortes(request) 
+    toneladasimport = tablareptoneladasimport(request) 
+    return render(request, 'report_cadabastecimiento.html', {'compgranja': compgranja,'cerdosbenef':cerdosbenef,'comparativopl':comparativopl,'costodespo':costodespo,'kgbenef':kgbenef,'kgdespos':kgdespos,'particortes':particortes,'toneladasimport':toneladasimport})
+
+def tablarepcompgranja(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''select  granja,mes,semana,cantidad_cerdos,año from B_CA.compromiso_mes''')
+        compgranja = cursor.fetchall()
+      
+    return compgranja
+def tablarepcerdosbenef(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''SELECT CER_BENEF_COLOMBIA,CER_BENEF_EJE_CAFETERO,PARTICIPACION_EJE_CAFETERO,CER_BENEF_CERCAFE,PARTICIPACION_EJE_CAF_CERCAFE,PARTICIPACION_NACIONAL_CERCAFE,FECHA_CORTE FROM B_CA.PROD_CARNICA_CERDOS_BENEFICIADOS ''')
+        cerdosbenef = cursor.fetchall()   
+    return cerdosbenef
+def tablarepcomparativopl(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''SELECT PARAMETRO,VALOR,EMPRESA,FECHA_CORTE FROM B_CA.PROD_CARNICA_COMPARATIVO_PLANTAS''')
+        comparativopl = cursor.fetchall()   
+    return comparativopl
+def tablarepcostodespo(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''SELECT TIPO_CLIENTE,NUM_CERDOS_DESPOSTADOS,KG_DESPOSTADOS,PESO_PROM_CERDOS,PRECIO_PROM_KG,COSTO_MATERIA_PRIMA,COSTO_MAQUILA,COSTO_KG_MAQUILADO,MAQUILA_SIN_MP,FECHA_CORTE FROM B_CA.PROD_CARNICA_COSTO_DESPOSTE''')
+        costodespo = cursor.fetchall()   
+    return costodespo
+def tablarepkgbenef(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''SELECT CER_BENEF_COLOMBIA,CER_BENEF_EJE_CAFETERO,PARTICIPACION_EJE_CAFETERO,CER_BENEF_CERCAFE,PARTICIPACION_EJE_CAF_CERCAFE,PARTICIPACION_NACIONAL_CERCAFE,PESO_CF_NACIONAL,PESO_EJE_CAFETERO,PESO_CF_CERCAFE,KG_NACIONAL,KG_EJE_CAFETERO,KG_CERCAFE,FECHA_CORTE FROM B_CA.PROD_CARNICA_KG_BENEFICIO ''')
+        kgbenef = cursor.fetchall()   
+    return kgbenef
+def tablarepkgdespos(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''SELECT KG_PRODUCIDOS_CERCAFE,KG_DESPOSTADOS_CERCAFE,PORCENTAJE_PARTICIPACION,TRIMESTRE_2022_CERCAFE,TRIMESTRE_2022_DESPOSTE,TRIMESTRE_2023_CERCAFE,TRIMESTRE_2023_DESPOSTE,CERCIMIENTO_22_23,FECHA_CORTE FROM B_CA.PROD_CARNICA_KG_DESPOSTADOS ''')
+        kgdespos = cursor.fetchall()   
+    return kgdespos
+def tablarepparticortes(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''SELECT CORTE,PORCENTAJE_PARTICIPACION,PORCENTAJE_META,PESO_PROM_CANAL,CANTIDAD_CANALES,FECHA_CORTE FROM B_CA.PROD_CARNICA_PARTICIPACION_CORTES ''')
+        particortes = cursor.fetchall()   
+    return particortes
+def tablareptoneladasimport(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''SELECT CER_BENEF_COLOMBIA,TON_BENEF_COLOMBIA,TON_IMPORT_COLOMBIA,CERDOS_IMPORTADOS,ENE_FEB_22_TON_BENEF,ENE_FEB_23_TON_BENEF,CRECIMIENTO_22_23,ENE_FEB_MAR_22_TON_IMPORT,ENE_FEB_MAR_23_TON_IMPORT,CRECIMIENTO_OMPORT_22_23,FECHA_CORTE FROM B_CA.PROD_CARNICA_TON_IMPORTADAS ''')
+        toneladasimport = cursor.fetchall()   
+    return toneladasimport

@@ -77,7 +77,7 @@ urlpatterns = [
     path('adminfinan/', views.adminfinan, name='adminfinan'),
     path('cargar_excel_compramatprima/', views.cargar_excel_compramatprima, name='cargar_excel_compramatprima'),
     path('cargar_excel_compramed/', views.cargar_excel_compramed, name='cargar_excel_compramed'),
-    
+    path('cargar_excel_preciocanal/', views.cargar_excel_preciocanal, name='cargar_excel_preciocanal'),
     
     path('financiera/', views.financiera, name='financiera'),
     path('repoprove/', views.repoprove, name='repoprove'),
@@ -100,7 +100,8 @@ urlpatterns = [
     
     
     path('repgcomercial/', views.repgcomercial, name='repgcomercial'),
-
+    path('repgtecnica/', views.repgtecnica, name='repgtecnica'),
+    path('repcadabastecimiento/', views.repcadabastecimiento, name='repcadabastecimiento'),
 
 
 

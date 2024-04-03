@@ -37,18 +37,13 @@
                 <li class="nav-header">{% block nav_heading %}SERVICIOS{% endblock %}</li>
 
                 {% block nav_links %}
-                <li class="nav-item">
-                    <a id="cargarContenido" href="{% url 'financiera' %}" class="nav-link">
-                        <i class="nav-icon fas fa-solid fa-comments-dollar"></i>
-                        <p>Financiera</p>
-                    </a>
-                </li>
-                <li class="nav-item">
+                
+                <!-- <li class="nav-item">
                     <a id="cargarContenido" href="{% url 'frigorificos' %}" class="nav-link">
                         <i class="nav-icon fas fa-solid fa-industry"></i>
                         <p>Frigorificos</p>
                     </a>
-                </li>
+                </li> -->
                {% if request.user.is_authenticated%}
                
                 <li class="nav-item has-tree-view ">
@@ -175,100 +170,101 @@
                     <ul class="nav nav-treeview menu-open"> 
                         
                         {% if request.user|user_belongs_to_group:'comercial' %}
-                        <li class="nav-item">
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
                             <a  href="{% url 'repgcomercial' %}" >
                                 <i class="nav-icon fas fa-cart-plus"></i>Gestion Comercial
                             </a>
                         </li>
                         
                         {% endif %}
+                        <li class="nav-item empty-space"></li>
                         {% if request.user|user_belongs_to_group:'tecnica' %}
-                        <li class="nav-item">
-                            <a id="cargarContenido"  class="nav-link">
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
+                            <a  href="{% url 'repgtecnica' %}"  >
                                 <i class="nav-icon fas fa-tractor"></i>Gestion Tecnica
                             </a>
                         </li>
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'abastecimiento' %}
-                        <li class="nav-item">
-                            <a id="cargarContenido" class="nav-link">
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
+                            <a href="{% url 'repcadabastecimiento' %}"  >
                                 <i class="nav-icon fas fa-truck"></i>Cadena De Abastecimiento
                             </a>
                         </li>
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'alimentobal' %}
-                        <li class="nav-item">
-                            <a id="cargarContenido" class="nav-link">
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
+                            <a id="cargarContenido">
                                 <i class="nav-icon fas fa-industry"></i>G- Alimento Balanceado
                             </a>
                         </li>
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'control' %}
-                        <li class="nav-item">
-                            <a id="cargarContenido" class="nav-link">
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
+                            <a id="cargarContenido">
                                 <i class="nav-icon fas  fa-user-shield"></i>Control Interno
                             </a>
                         </li>
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'mantenimietno' %}
-                        <li class="nav-item">
-                            <a id="cargarContenido" class="nav-link">
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
+                            <a id="cargarContenido">
                                 <i class="nav-icon fas fa-hammer"></i>Mantenimiento
                             </a>
                         </li>
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'calidad' %}
-                        <li class="nav-item">
-                            <a id="cargarContenido"  class="nav-link">
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
+                            <a id="cargarContenido" >
                                 <i class="nav-icon fas fa-medal"></i>Calidad
                             </a>
                         </li>
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'documental' %}
-                        <li class="nav-item">
-                            <a id="cargarContenido" class="nav-link">
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
+                            <a id="cargarContenido">
                                 <i class="nav-icon fas fa-copy"></i>Gestion Documental
                             </a>
                         </li>
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'adminfinan' %}
-                        <li class="nav-item">
-                            <a id="cargarContenido"  class="nav-link">
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
+                            <a id="cargarContenido" >
                                 <i class="nav-icon fas fa-coins"></i>G- Admin y Financiera
                             </a>
                         </li>
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'rrhh' %}
-                        <li class="nav-item">
-                            <a id="cargarContenido"  class="nav-link">
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
+                            <a id="cargarContenido" >
                                 <i class="nav-icon fas fa-people-arrows"></i>Gestion Humana
                             </a>
                         </li>
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'ti' %}
-                        <li class="nav-item">
-                            <a id="cargarContenido" class="nav-link">
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
+                            <a id="cargarContenido">
                                 <i class="nav-icon fas fa-microchip"></i>T.I
                             </a>
                         </li>
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'serviciocliente' %}
-                        <li class="nav-item">
-                            <a id="cargarContenido" class="nav-link">
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
+                            <a id="cargarContenido">
                                 <i class="nav-icon fas fa-user-check"></i>Servicio Al Cliente
                             </a>
                         </li>
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'sig' %}
-                        <li class="nav-item">
-                            <a id="cargarContenido" class="nav-link">
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
+                            <a id="cargarContenido">
                                 <i class="nav-icon fas fa-spinner"></i>SIG
                             </a>
                         </li>
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'gerencia' %}
-                        <li class="nav-item">
-                            <a id="cargarContenido" class="nav-link">
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
+                            <a id="cargarContenido">
                                 <i class="nav-icon fas fa-user-tie"></i>Gestion Gerencial
                             </a>
                         </li>
