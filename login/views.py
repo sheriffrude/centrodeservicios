@@ -1238,6 +1238,36 @@ def cargar_excel_preciocanal(request):
         return redirect('home')
     return render(request, '/home/')
 
+@login_required
+def cargar_excel_clientes(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+            guid = str(uuid4())
+            usuario = request.user
+
+            # Abre una conexión a la base de datos b_c
+            with connections['B_GAF'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    
+                    NIT,CLIENTE,ZONA,VALOR,= row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla precio_canales_semana
+                    cursor.execute(
+                        'INSERT INTO precio_canales_semana (NIT,CLIENTE,ZONA,VALOR,GUID,USUARIO) VALUES (%s, %s, %s, %s, %s, %s)',
+                        (NIT.value, CLIENTE.value, ZONA.value, VALOR.value,guid, usuario.username)
+                    )
+                messages.success(request, 'Carga de datos en clientes exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+
 
 
 

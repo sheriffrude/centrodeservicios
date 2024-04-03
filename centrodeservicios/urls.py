@@ -78,6 +78,9 @@ urlpatterns = [
     path('cargar_excel_compramatprima/', views.cargar_excel_compramatprima, name='cargar_excel_compramatprima'),
     path('cargar_excel_compramed/', views.cargar_excel_compramed, name='cargar_excel_compramed'),
     path('cargar_excel_preciocanal/', views.cargar_excel_preciocanal, name='cargar_excel_preciocanal'),
+    path('cargar_excel_clientes/', views.cargar_excel_clientes, name='cargar_excel_clientes'),
+    
+    
     
     path('financiera/', views.financiera, name='financiera'),
     path('repoprove/', views.repoprove, name='repoprove'),
