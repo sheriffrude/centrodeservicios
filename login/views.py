@@ -1238,6 +1238,10 @@ def cargar_excel_compramed(request):
             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
         return redirect('home')
     return render(request, '/home/')
+
+
+from django.db import connections
+
 @login_required
 def cargar_excel_preciocanal(request):
     if request.method == 'POST':
@@ -1248,17 +1252,39 @@ def cargar_excel_preciocanal(request):
             guid = str(uuid4())
             usuario = request.user
 
-            # Abre una conexión a la base de datos b_c
+            # Abre una conexión a la base de datos DHC
+            with connections['DHC'].cursor() as dhc_cursor:
+                # Obtener todos los NITs existentes en la tabla clientes de DHC
+                dhc_cursor.execute('''SELECT NIT FROM dhc.clientes''')
+                nits_existentes = [row[0] for row in dhc_cursor.fetchall()]
+
+            # Conjunto para almacenar NITs vistos en el archivo
+            nits_vistos = set()
+
+            # Abre una conexión a la base de datos B_GAF
             with connections['B_GAF'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
+                    NIT, CLIENTE, ZONA, VALOR = row
                     
-                    NIT,CLIENTE,ZONA,VALOR,= row
+                    # Verificar si el NIT existe en la lista de NITs existentes
+                    if int(NIT.value) not in map(int, nits_existentes):
+                        messages.error(request, f'Error: El NIT {NIT.value} no existe en la base de datos de clientes.')
+                        return redirect('home')
+
+                    # Verificar si el NIT está repetido en el archivo subido
+                    if NIT.value in nits_vistos:
+                        messages.error(request, f'Error: El NIT {NIT.value} está repetido en el archivo.')
+                        return redirect('home')
+                    
+                    # Añadir el NIT al conjunto de NITs vistos
+                    nits_vistos.add(NIT.value)
+
                     # Ejecuta una consulta SQL para insertar los datos en la tabla precio_canales_semana
                     cursor.execute(
-                        'INSERT INTO precio_canales_semana (NIT,CLIENTE,ZONA,VALOR,GUID,USUARIO) VALUES (%s, %s, %s, %s, %s, %s)',
-                        (NIT.value, CLIENTE.value, ZONA.value, VALOR.value,guid, usuario.username)
+                        'INSERT INTO precio_canales_semana (NIT, CLIENTE, ZONA, VALOR, GUID, USUARIO) VALUES (%s, %s, %s, %s, %s, %s)',
+                        (NIT.value, CLIENTE.value, ZONA.value, VALOR.value, guid, usuario.username)
                     )
-                messages.success(request, 'Carga de datos en precio canal exitosa')
+                messages.success(request, 'Carga de datos en precio canales exitosa')
         except KeyError:
             messages.error(request, 'No se ha proporcionado un archivo Excel.')
         except IntegrityError as e:
@@ -1267,6 +1293,11 @@ def cargar_excel_preciocanal(request):
             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
         return redirect('home')
     return render(request, '/home/')
+
+
+
+
+
 
 @login_required
 def cargar_excel_clientes(request):
@@ -1279,15 +1310,17 @@ def cargar_excel_clientes(request):
             usuario = request.user
 
             # Abre una conexión a la base de datos b_c
-            with connections['B_GAF'].cursor() as cursor:
+            with connections['DHC'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                     
-                    NIT,CLIENTE,ZONA,VALOR,= row
+                    NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION,ID_VENDEDOR,ID_SEGMENTO,ID_MIX_VENTAS, = row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla precio_canales_semana
                     cursor.execute(
-                        'INSERT INTO precio_canales_semana (NIT,CLIENTE,ZONA,VALOR,GUID,USUARIO) VALUES (%s, %s, %s, %s, %s, %s)',
-                        (NIT.value, CLIENTE.value, ZONA.value, VALOR.value,guid, usuario.username)
+                        'INSERT INTO clientes (NIT, RAZON_SOCIAL, CUPO, DIRECCION_SEDE_PRINCIPAL, DIRECCION_EXPENDIO, ID_CLASIFICACION, ID_MUNICIPIO, ID_DEPARTAMENTO, ID_REGION, ID_VENDEDOR, ID_SEGMENTO, ID_MIX_VENTAS, GUID, USUARIO) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                        (NIT.value, RAZON_SOCIAL.value, CUPO.value, DIRECCION_SEDE_PRINCIPAL.value, DIRECCION_EXPENDIO.value, ID_CLASIFICACION.value, ID_MUNICIPIO.value, ID_DEPARTAMENTO.value, ID_REGION.value, ID_VENDEDOR.value, ID_SEGMENTO.value, ID_MIX_VENTAS.value, guid, usuario.username)
                     )
+
+                    print(row)
                 messages.success(request, 'Carga de datos en clientes exitosa')
         except KeyError:
             messages.error(request, 'No se ha proporcionado un archivo Excel.')
