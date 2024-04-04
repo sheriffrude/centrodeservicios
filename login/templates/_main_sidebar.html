@@ -67,7 +67,7 @@
                         {% if request.user|user_belongs_to_group:'tecnica' %}
                         <li class="nav-item">
                             <a id="cargarContenido" href="{% url 'gestiontecnica' %}" class="nav-link">
-                                <i class="nav-icon fas fa-tractor"></i>Gestion Tecnica
+                                <i class="nav-icon fas fa-piggy-bank"></i>Gestion Tecnica
                             </a>
                         </li>
                         {% endif %}
@@ -181,7 +181,7 @@
                         {% if request.user|user_belongs_to_group:'tecnica' %}
                         <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
                             <a  href="{% url 'repgtecnica' %}"  >
-                                <i class="nav-icon fas fa-tractor"></i>Gestion Tecnica
+                                <i class="nav-icon fas fa-piggy-bank"></i>Gestion Tecnica
                             </a>
                         </li>
                         {% endif %}
@@ -194,7 +194,7 @@
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'alimentobal' %}
                         <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
-                            <a id="cargarContenido">
+                            <a href="{% url 'repplantaalibal' %}"  >
                                 <i class="nav-icon fas fa-industry"></i>G- Alimento Balanceado
                             </a>
                         </li>
@@ -215,7 +215,7 @@
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'calidad' %}
                         <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
-                            <a id="cargarContenido" >
+                            <a href="{% url 'repcalidad' %}"  >
                                 <i class="nav-icon fas fa-medal"></i>Calidad
                             </a>
                         </li>

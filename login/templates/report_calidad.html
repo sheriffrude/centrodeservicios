@@ -1,0 +1,317 @@
+{% load adminlte_helpers i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cad abastecimiento</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+
+    {% block meta %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% endblock %}
+
+    {% block stylesheets %}
+    {% include 'adminlte/lib/_styles.html' %}
+    <style type="text/css">
+        .btn-circle.btn-xl {
+            width: 130px;
+            height: 130px;
+            padding: 13px 18px;
+            border-radius: 100px;
+            font-size: 15px;
+            text-align: center;
+            margin-left: 50px;
+        }
+
+        .btn-repor {
+            background-color: #651410;
+            color: aliceblue;
+        }
+    </style>
+    {% endblock %}
+
+    {% block extra_head %}{% endblock %}
+</head>
+</head>
+
+<body class="hold-transition sidebar-mini {% block body_class %}{% block bodyclass %}{% endblock %}{% endblock %}">
+    <div class="wrapper">
+        {% block nav_header %}
+        {% include '_main_header.html' %}
+        {% endblock %}
+
+        {% block nav_sidebar %}
+        {% include '_main_sidebar.html' %}
+        {% endblock %}
+
+        {% block content_wrapper %}
+        <div class="content-wrapper">
+            {% block content_header %}
+            <section class="content-header">
+                {% block no_heading %}
+                <h1>
+                    {% block page_name %}{% endblock %}
+                    <div class="header-actions">
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                    {% block no_description %}
+                    <small>{% block page_description %}{% endblock %}</small>
+                    {% endblock %}
+                </h1>
+                {% block breadcrumbs %}
+                {# Breadcrumb implementation left to developers #}
+                {% endblock %}
+                {% endblock no_heading %}
+                <h1>Reportes Cadena De Abastecimiento</h1>
+            </section>
+            {% endblock %}{% endblock %}
+            <section>
+                <div>
+                    <button id="btn_avancepro" class="btn btn-repor btn-lg" onclick="mostraravancepro()">Reporte Avance
+                        Proceso</button>
+                    <button id="btn_calidadpla" class="btn btn-repor btn-lg" onclick="mostrarcalidadpla()">Reporte
+                        Calidad Planta</button>
+                    <button id="btn_causadesvia" class="btn btn-repor btn-lg" onclick="mostrarcausadesvia()">Reporte
+                        Causa Desviaciones</button>
+                    <button id="btn_pqrsf" class="btn btn-repor btn-lg" onclick="mostrarpqrsf()">Reporte PQRSF</button>
+
+                </div>
+            </section>
+
+            <!-- Contenido principal -->
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="avancepro_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE COMPROMISO GRANJA</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_avancepro" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>TIPO</th>
+                                        <th>PROCESO</th>
+                                        <th>DETALLE PROCESO</th>
+                                        <th>AVANCE</th>
+                                        <th>META</th>
+                                        <th>FECHA CORTE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for avancepr in avancepro %}
+                                    <tr>
+                                        <td>{{ avancepr.0 }}</td>
+                                        <td>{{ avancepr.1 }}</td>
+                                        <td>{{ avancepr.2 }}</td>
+                                        <td>{{ avancepr.3 }}</td>
+                                        <td>{{ avancepr.4 }}</td>
+                                        <td>{{ avancepr.5 }}</td>
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="cerdosbenef_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE CERDOS BENEFICIADOS</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_cerdosbenef" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>CER BENEF COLOMBIA</th>
+                                        <th>CER BENEF EJE CAFETERO</th>
+                                        <th>PARTICIPACION EJE CAFETERO</th>
+                                        <th>CER BENEF CERCAFE</th>
+                                        <th>PARTICIPACION EJE CAF CERCAFE</th>
+                                        <th>PARTICIPACION NACIONAL CERCAFE</th>
+                                        <th>FECHA CORTE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for cerdosbene in cerdosbenef %}
+                                    <tr>
+                                        <td>{{ cerdosbene.0 }}</td>
+                                        <td>{{ cerdosbene.1 }}</td>
+                                        <td>{{ cerdosbene.2 }}</td>
+                                        <td>{{ cerdosbene.3 }}</td>
+                                        <td>{{ cerdosbene.4 }}</td>
+                                        <td>{{ cerdosbene.5 }}</td>
+                                        <td>{{ cerdosbene.6 }}</td>
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="comparativopl_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE COMPARATIVO PLANTAS</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_comparativopl" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>PARAMETRO</th>
+                                        <th>VALOR</th>
+                                        <th>EMPRESA</th>
+                                        <th>FECHA CORTE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for comparativop in comparativopl %}
+                                    <tr>
+                                        <td>{{ comparativop.0 }}</td>
+                                        <td>{{ comparativop.1 }}</td>
+                                        <td>{{ comparativop.2 }}</td>
+                                        <td>{{ comparativop.3 }}</td>
+
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="costodespo_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE COSTO DESPOSTE</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_costodespo" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>TIPO CLIENTE</th>
+                                        <th>NUM CERDOS DESPOSTADOS</th>
+                                        <th>KG DESPOSTADOS</th>
+                                        <th>PESO PROM CERDOS</th>
+                                        <th>PRECIO PROM KG</th>
+                                        <th>COSTO MATERIA PRIMA</th>
+                                        <th>COSTO MAQUILA</th>
+                                        <th>COSTO KG MAQUILADO</th>
+                                        <th>MAQUILA SIN MP</th>
+                                        <th>FECHA CORTE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for costodesp in costodespo %}
+                                    <tr>
+                                        <td>{{ costodesp.0 }}</td>
+                                        <td>{{ costodesp.1 }}</td>
+                                        <td>{{ costodesp.2 }}</td>
+                                        <td>{{ costodesp.3 }}</td>
+                                        <td>{{ costodesp.4 }}</td>
+                                        <td>{{ costodesp.5 }}</td>
+                                        <td>{{ costodesp.6 }}</td>
+                                        <td>{{ costodesp.7 }}</td>
+                                        <td>{{ costodesp.8 }}</td>
+                                        <td>{{ costodesp.9 }}</td>
+
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+
+            <!-- /.content -->
+
+            <!-- /.content-wrapper -->
+
+
+
+
+            {% block javascript %}
+            {% include 'adminlte/lib/_scripts.html' %}
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+            <script>
+                function mostraravancepro() {
+                    document.getElementById("avancepro_table").style.display = "block";
+                    document.getElementById("calidadpla_table").style.display = "none";
+                    document.getElementById("causadesvia_table").style.display = "none";
+                    document.getElementById("pqrsf_table").style.display = "none";
+
+
+                }
+                function mostrarcalidadpla() {
+                    document.getElementById("avancepro_table").style.display = "none";
+                    document.getElementById("calidadpla_table").style.display = "block";
+                    document.getElementById("causadesvia_table").style.display = "none";
+                    document.getElementById("pqrsf_table").style.display = "none";
+
+                }
+                function mostrarcausadesvia() {
+                    document.getElementById("avancepro_table").style.display = "none";
+                    document.getElementById("calidadpla_table").style.display = "none";
+                    document.getElementById("causadesvia_table").style.display = "block";
+                    document.getElementById("pqrsf_table").style.display = "none";
+
+                }
+                function mostrarpqrsf() {
+                    document.getElementById("avancepro_table").style.display = "none";
+                    document.getElementById("calidadpla_table").style.display = "none";
+                    document.getElementById("causadesvia_table").style.display = "none";
+                    document.getElementById("pqrsf_table").style.display = "block";
+
+                }
+
+                $(document).ready(function () {
+                    $('#tabla_avancepro').DataTable();
+                    $("#tabla_calidadpla").DataTable();
+                    $("#tabla_causadesvia").DataTable();
+                    $("#tabla_pqrsf").DataTable();
+
+                });
+            </script>
+            <!-- script para llamar los html en el contenido -->
+            <script src="{% static 'custom.js' %}"></script>
+            {% endblock %}
+
+</body>
+
+</html>

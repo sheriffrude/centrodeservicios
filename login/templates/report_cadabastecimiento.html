@@ -73,14 +73,15 @@
             {% endblock %}{% endblock %}
             <section>
                 <div>
-                    <button id="btn_compgranja" class="btn btn-repor btn-lg" onclick="mostrarcompgranja()">ReporteCompromiso por granja</button>
+                    <button id="btn_compgranja" class="btn btn-repor btn-lg" onclick="mostrarcompgranja()">Reporte Compromiso por granja</button>
+                    <button id="btn_disposemana" class="btn btn-repor btn-lg" onclick="mostrardisposemana()">Reporte Disponibilidad Semanal</button>
                     <button id="btn_cerdosbenef" class="btn btn-repor btn-lg" onclick="mostrarcerdosbenef()">ReporteCerdos Beneficiados</button>
                     <button id="btn_comparativopl" class="btn btn-repor btn-lg" onclick="mostrarcomparativopl()">Reporte Comparativo Planta</button>
                     <button id="btn_costodespo" class="btn btn-repor btn-lg" onclick="mostrarcostodespo()">Reporte Costo Desposte</button>
                     <button id="btn_kgbenef" class="btn btn-repor btn-lg" onclick="mostrarkgbenef()">Reporte Kg Beneficiados</button>
                     <button id="btn_kgdespos" class="btn btn-repor btn-lg" onclick="mostrarkgdespos()">Reporte kg Despostados</button>
-                    <button id="btn_particortes" class="btn btn-repor btn-lg" onclick="mostrarparticortes()" style="margin-top: 15px;">Reporte Participacion Cortes</button>
-                    <button id="btn_toneladasimport" class="btn btn-repor btn-lg" onclick="mostrartoneladasimport()"style="margin-top: 15px;">Reporte Toneladas Importadas</button>
+                    <button id="btn_particortes" class="btn btn-repor btn-lg" onclick="mostrarparticortes()" style="margin-top: 8px;">Reporte Participacion Cortes</button>
+                    <button id="btn_toneladasimport" class="btn btn-repor btn-lg" onclick="mostrartoneladasimport()"style="margin-top: 8px;">Reporte Toneladas Importadas</button>
                 </div>
             </section>
   
@@ -115,6 +116,47 @@
                                         <td>{{ compgranj.2 }}</td>
                                         <td>{{ compgranj.3 }}</td>
                                         <td>{{ compgranj.4 }}</td>
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="disposemana_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE DISPONIBILIDAD SEMANAL</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_disposemana" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>GRANJA</th>
+                                        <th>MES</th>
+                                        <th>SEMANA</th>
+                                        <th>CANTIDAD CERDOS</th>
+                                        <th>AÑO</th>
+
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for disposeman in disposemana %}
+                                    <tr>
+                                        <td>{{ disposeman.0 }}</td>
+                                        <td>{{ disposeman.1 }}</td>
+                                        <td>{{ disposeman.2 }}</td>
+                                        <td>{{ disposeman.3 }}</td>
+                                        <td>{{ disposeman.4 }}</td>
                                     </tr>
                                     {% endfor %}
 
@@ -474,6 +516,7 @@
             <script>
                 function mostrarcompgranja() {
                     document.getElementById("compgranja_table").style.display = "block";
+                    document.getElementById("disposemana_table").style.display = "none";
                     document.getElementById("cerdosbenef_table").style.display = "none";
                     document.getElementById("comparativopl_table").style.display = "none";
                     document.getElementById("costodespo_table").style.display = "none";
@@ -486,6 +529,7 @@
 
                 function mostrarcerdosbenef() {
                     document.getElementById("compgranja_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "none";
                     document.getElementById("cerdosbenef_table").style.display = "block";
                     document.getElementById("comparativopl_table").style.display = "none";
                     document.getElementById("costodespo_table").style.display = "none";
@@ -498,6 +542,7 @@
                 function mostrarcomparativopl() {
                     document.getElementById("compgranja_table").style.display = "none";
                     document.getElementById("cerdosbenef_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "none";
                     document.getElementById("comparativopl_table").style.display = "block";
                     document.getElementById("costodespo_table").style.display = "none";
                     document.getElementById("kgbenef_table").style.display = "none";
@@ -509,6 +554,7 @@
                 function mostrarcostodespo() {
                     document.getElementById("compgranja_table").style.display = "none";
                     document.getElementById("cerdosbenef_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "none";
                     document.getElementById("comparativopl_table").style.display = "none";
                     document.getElementById("costodespo_table").style.display = "block";
                     document.getElementById("kgbenef_table").style.display = "none";
@@ -520,6 +566,7 @@
                 function mostrarkgbenef() {
                     document.getElementById("compgranja_table").style.display = "none";
                     document.getElementById("cerdosbenef_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "none";
                     document.getElementById("comparativopl_table").style.display = "none";
                     document.getElementById("costodespo_table").style.display = "none";
                     document.getElementById("kgbenef_table").style.display = "block";
@@ -531,6 +578,7 @@
                 function mostrarkgdespos() {
                     document.getElementById("compgranja_table").style.display = "none";
                     document.getElementById("cerdosbenef_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "none";
                     document.getElementById("comparativopl_table").style.display = "none";
                     document.getElementById("costodespo_table").style.display = "none";
                     document.getElementById("kgbenef_table").style.display = "none";
@@ -542,6 +590,7 @@
                 function mostrarparticortes() {
                     document.getElementById("compgranja_table").style.display = "none";
                     document.getElementById("cerdosbenef_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "none";
                     document.getElementById("comparativopl_table").style.display = "none";
                     document.getElementById("costodespo_table").style.display = "none";
                     document.getElementById("kgbenef_table").style.display = "none";
@@ -553,6 +602,7 @@
                 function mostrartoneladasimport() {
                     document.getElementById("compgranja_table").style.display = "none";
                     document.getElementById("cerdosbenef_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "none";
                     document.getElementById("comparativopl_table").style.display = "none";
                     document.getElementById("costodespo_table").style.display = "none";
                     document.getElementById("kgbenef_table").style.display = "none";
@@ -561,9 +611,22 @@
                     document.getElementById("toneladasimport_table").style.display = "block";
 
                 }
+                function mostrardisposemana() {
+                    document.getElementById("compgranja_table").style.display = "none";
+                    document.getElementById("cerdosbenef_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "block";
+                    document.getElementById("comparativopl_table").style.display = "none";
+                    document.getElementById("costodespo_table").style.display = "none";
+                    document.getElementById("kgbenef_table").style.display = "none";
+                    document.getElementById("kgdespos_table").style.display = "none";
+                    document.getElementById("particortes_table").style.display = "none";
+                    document.getElementById("toneladasimport_table").style.display = "none";
+
+                }
                 $(document).ready(function () {
                     $('#tabla_compgranja').DataTable();
                     $("#tabla_cerdosbenef").DataTable();
+                    $("#tabla_disposemana").DataTable();
                     $("#tabla_comparativopl").DataTable();
                     $("#tabla_costodespo").DataTable();
                     $("#tabla_kgbenef").DataTable();

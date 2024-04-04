@@ -14,7 +14,7 @@ urlpatterns = [
     
     #----------------------cadena de abastecimiento ----------------------------------
     path('cadenaabastecimiento/', views.cadenaabastecimiento, name='cadenaabastecimiento'),
-  
+    path('cargar_excel_disponibilidad/', views.cargar_excel_disponibilidad, name='cargar_excel_disponibilidad'),
     path('cargar_excel_cadenaabastecimiento/', views.cargar_excel_cadenaabastecimiento, name='cargar_excel_cadenaabastecimiento'),
     path('cargar_excel_cerdosbeneficiados/', views.cargar_excel_cerdosbeneficiados, name='cargar_excel_cerdosbeneficiados'),
     path('cargar_excel_compaplanta/', views.cargar_excel_compaplanta, name='cargar_excel_compaplanta'), 
@@ -105,8 +105,8 @@ urlpatterns = [
     path('repgcomercial/', views.repgcomercial, name='repgcomercial'),
     path('repgtecnica/', views.repgtecnica, name='repgtecnica'),
     path('repcadabastecimiento/', views.repcadabastecimiento, name='repcadabastecimiento'),
-
-
+    path('repplantaalibal/', views.repplantaalibal, name='repplantaalibal'),
+    path('repcalidad/', views.repcalidad, name='repcalidad'),
 
 
 

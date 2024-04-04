@@ -42,7 +42,33 @@
       </div>
     </div>
   </div>
+ <!-- SELECT2 EXAMPLE -->
+ <div class="card card-default collapsed collapsed-card">
+  <div class="card-header bg-dark" data-card-widget="collapse">
+    <h3 class="card-title">Ingreso De Disponibilidad Semanal</h3>
 
+    <div class="card-tools">
+      <button type="button" class="btn btn-tool"><i class="fas fa-minus"></i></button>
+    </div>
+  </div>
+  <!-- /.card-header -->
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <form method="post" action="{% url 'cargar_excel_disponibilidad' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <label for="archivo_excel">Selecciona un archivo Excel:</label>
+          <input class="btn btn-info1" type="file" name="archivo_excel" accept=".xlsx, .xls">
+          <br>
+          <button class="btn bg-gradient-primary " type="submit">Cargar Datos</button>
+        </form>
+      </div>
+    </div>
+    <div class="card-footer">
+      Los valores ingresados aquí no pueden ser cambiados luego de ingresarlos.
+    </div>
+  </div>
+</div>
   <!------------------------------------------------------- carga 2do excel  -------------------------->
   <div class="card card-default  collapsed collapsed-card">
     <div class="card-header bg-dark" data-card-widget="collapse">

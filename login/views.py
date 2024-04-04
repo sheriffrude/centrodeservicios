@@ -172,6 +172,35 @@ def cargar_excel_cadenaabastecimiento(request):
             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
         return redirect('home')
     return render(request, '/home/')
+
+@never_cache
+@login_required
+def cargar_excel_disponibilidad(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+            guid = str(uuid4())
+            usuario = request.user
+            # Abre una conexión a la base de datos b_ca
+            with connections['B_CA'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    granja, mes, semana, cantidad_cerdos, año = row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla disponibilidad_semanal
+                    cursor.execute(
+                        'INSERT INTO disponibilidad_semanal (granja, mes, semana, cantidad_cerdos, año, GUID, USUARIO) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                        (granja.value, mes.value, semana.value, cantidad_cerdos.value, año.value,guid,usuario.username)
+                    )
+            messages.success(request, 'Carga de datos en Disponibilidad semanal exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
 #------ vista para el cargue de excel en produccion  cerdos  beneficiados--------------------------------------
 @never_cache
 @login_required
@@ -521,10 +550,11 @@ def cargar_excel_prosele(request):
             # Abre una conexión a la base de datos b_gh
             with connections['B_GH'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
-                    NUM_REQUISICION,FECHA_APROBACION,AREA_CENTRO_COSTO,FECHA_RETIRO,NOMBRE_RETIRADO,CARGO,CUBRIMIENTO_ESPERADO_DIAS,NOMBRE_CANDIDATO,TIPO_INGRESO_PROMO_INT,EXAMEN_MEDICO,VISITA_DOMICILIARIA,POLIGRAFIA,FECHA_INGRESO= row
+                    
+                    NUM_REQUISICION,FECHA_APROBACION,AREA_CENTRO_COSTO,FECHA_RETIRO,NOMBRE_RETIRADO,CARGO,CUBRIMIENTO_ESPERADO_DIAS,NOMBRE_CANDIDATO,TIPO_INGRESO_PROMO_INT,EXAMEN_MEDICO,VISITA_DOMICILIARIA,POLIGRAFIA,FECHA_INGRESO = row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla PROCESO_SELECCION
                     cursor.execute(
-                        'INSERT INTO PROCESO_SELECCION (NUM_REQUISICION,FECHA_APROBACION,AREA_CENTRO_COSTO,FECHA_RETIRO,NOMBRE_RETIRADO,CARGO,CUBRIMIENTO_ESPERADO_DIAS,NOMBRE_CANDIDATO,TIPO_INGRESO_PROMO_INT,EXAMEN_MEDICO,VISITA_DOMICILIARIA,POLIGRAFIA,FECHA_INGRESO;GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                        'INSERT INTO PROCESO_SELECCION (NUM_REQUISICION,FECHA_APROBACION,AREA_CENTRO_COSTO,FECHA_RETIRO,NOMBRE_RETIRADO,CARGO,CUBRIMIENTO_ESPERADO_DIAS,NOMBRE_CANDIDATO,TIPO_INGRESO_PROMO_INT,EXAMEN_MEDICO,VISITA_DOMICILIARIA,POLIGRAFIA,FECHA_INGRESO,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                         (NUM_REQUISICION.value,FECHA_APROBACION.value,AREA_CENTRO_COSTO.value,FECHA_RETIRO.value,NOMBRE_RETIRADO.value,CARGO.value,CUBRIMIENTO_ESPERADO_DIAS.value,NOMBRE_CANDIDATO.value,TIPO_INGRESO_PROMO_INT.value,EXAMEN_MEDICO.value,VISITA_DOMICILIARIA.value,POLIGRAFIA.value,FECHA_INGRESO.value,guid,usuario.username)
                     )
             messages.success(request, 'Carga de datos en PROCESO SELECCION exitosa')
@@ -1548,31 +1578,26 @@ def tablarepabhembras(request):
         cursor.execute('''SELECT GRANJA,CANTIDAD_ENTREGADA,PORCENTAJE_CUMPLIMIENTO,FECHA_CORTE FROM B_GT.ABASTECIMIENTO_HEMBRAS ''')
         abhembras = cursor.fetchall()   
     return abhembras
-
 def tablarepfortuitos(request):
     with connections['B_GT'].cursor() as cursor:
         cursor.execute('''SELECT FECHA_CORTE,GRANJA,CANTIDAD,ESTADO,NUMERO_ORDEN,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,CANTIDAD_RETOMAS,NUMERO_TIQUETE,REGISTRO_FOTO,DESTINO FROM B_GT.FORTUITOS ''')
         fortuitos = cursor.fetchall()   
     return fortuitos
-
 def tablarepkgvendidos(request):
     with connections['B_GT'].cursor() as cursor:
         cursor.execute('''SELECT GRANJA,KG_V_H_A,ASOCIADO,FECHA_CORTE FROM B_GT.KG_VENDIDOS_HEMBRA''')
         kgvendidos = cursor.fetchall()   
     return kgvendidos
-
 def tablareppfinalcon(request):
     with connections['B_GT'].cursor() as cursor:
         cursor.execute('''SELECT GRANJA,PESO,META_PESO,CONVERSION_META,CONVERSION,FECHA_CORTE FROM B_GT.PESO_FINAL_CONVERSION ''')
         pfinalcon = cursor.fetchall()   
     return pfinalcon
-
 def tablarepprohembras(request):
     with connections['B_GT'].cursor() as cursor:
         cursor.execute('''SELECT PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE FROM B_GT.PROYECCION_HEMBRAS ''')
         prohembras = cursor.fetchall()   
     return prohembras
-
 def tablareptecnicacia(request):
     with connections['B_GT'].cursor() as cursor:
         cursor.execute('''SELECT LINEA_GENETICA,CANTIDAD_MACHOS,PORCENTAJE_DISTRIBUCION_MACHOS,CANTIDAD_DESECHADO,PORCENTAJE_DESCECHADO,DOSIS_PRODUCIDAS,DOSIS_VENDIDAS,PROMEDIO_MORFOLOGIA,OBSERVACION,FECHA_CORTE FROM B_GT.TECNICA_CIA ''')
@@ -1583,6 +1608,7 @@ def tablareptecnicacia(request):
 @login_required
 def repcadabastecimiento(request):
     compgranja = tablarepcompgranja(request)
+    disposemana = tablarepdisposem(request)
     cerdosbenef = tablarepcerdosbenef(request) 
     comparativopl = tablarepcomparativopl(request) 
     costodespo = tablarepcostodespo(request) 
@@ -1590,7 +1616,7 @@ def repcadabastecimiento(request):
     kgdespos = tablarepkgdespos(request) 
     particortes = tablarepparticortes(request) 
     toneladasimport = tablareptoneladasimport(request) 
-    return render(request, 'report_cadabastecimiento.html', {'compgranja': compgranja,'cerdosbenef':cerdosbenef,'comparativopl':comparativopl,'costodespo':costodespo,'kgbenef':kgbenef,'kgdespos':kgdespos,'particortes':particortes,'toneladasimport':toneladasimport})
+    return render(request, 'report_cadabastecimiento.html', {'compgranja': compgranja,'disposemana': disposemana,'cerdosbenef':cerdosbenef,'comparativopl':comparativopl,'costodespo':costodespo,'kgbenef':kgbenef,'kgdespos':kgdespos,'particortes':particortes,'toneladasimport':toneladasimport})
 
 def tablarepcompgranja(request):
     with connections['B_CA'].cursor() as cursor:
@@ -1598,6 +1624,12 @@ def tablarepcompgranja(request):
         compgranja = cursor.fetchall()
       
     return compgranja
+
+def tablarepdisposem(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''select  granja,mes,semana,cantidad_cerdos,año from B_CA.disponibilidad_semanal''')
+        disposemana = cursor.fetchall()
+    return disposemana
 def tablarepcerdosbenef(request):
     with connections['B_CA'].cursor() as cursor:
         cursor.execute('''SELECT CER_BENEF_COLOMBIA,CER_BENEF_EJE_CAFETERO,PARTICIPACION_EJE_CAFETERO,CER_BENEF_CERCAFE,PARTICIPACION_EJE_CAF_CERCAFE,PARTICIPACION_NACIONAL_CERCAFE,FECHA_CORTE FROM B_CA.PROD_CARNICA_CERDOS_BENEFICIADOS ''')
@@ -1633,3 +1665,47 @@ def tablareptoneladasimport(request):
         cursor.execute('''SELECT CER_BENEF_COLOMBIA,TON_BENEF_COLOMBIA,TON_IMPORT_COLOMBIA,CERDOS_IMPORTADOS,ENE_FEB_22_TON_BENEF,ENE_FEB_23_TON_BENEF,CRECIMIENTO_22_23,ENE_FEB_MAR_22_TON_IMPORT,ENE_FEB_MAR_23_TON_IMPORT,CRECIMIENTO_OMPORT_22_23,FECHA_CORTE FROM B_CA.PROD_CARNICA_TON_IMPORTADAS ''')
         toneladasimport = cursor.fetchall()   
     return toneladasimport
+
+#---------------- TABLAS DE REPORTES  ALIMENTO BALANCEADO ------------------------------------------
+@never_cache
+@login_required
+def repplantaalibal(request):
+    plantaalib = tablarepplantab(request)
+    return render(request, 'report_galimento.html', {'plantaalib': plantaalib})
+
+def tablarepplantab(request):
+    with connections['B_GAB'].cursor() as cursor:
+        cursor.execute('''SELECT TONELADAS_PRODUCIDAS_MES,TONELADAS_PRESUPUESTO_MES,PORCENTAJE_VARIACION_MES,PORCENTAJE_CUMPLIMIENTO_MES,OBSERVACION_VARIACION,PORCENTAJE_BULTO_MES,PORCENTAJE_GRANEL_MES,SACK_OFF,PORCENTAJE_OTIF,OBSERVACION_OTIF,PRESUPUESTO_MO_CIF,MO_CIF,TIEMPO_MUERTO,COSTO_TIEMPO_MUERTO,OBSERVACION_TIEMPO_MUERTO,FECHA_CORTE FROM B_GAB.PLANTA_ALIMENTOS_BALANCEADOS ''')
+        plantaalib = cursor.fetchall()   
+    return plantaalib
+
+#---------------- TABLAS DE REPORTES CALIDAD------------------------------------------
+@never_cache
+@login_required
+def repcalidad(request):
+    avancepro = tablarepavancepro(request)
+    calidadpla = tablarepcalidadpla(request) 
+    causadesvia = tablarepcausadesvia(request) 
+    pqrsf = tablareppqrsf(request) 
+    return render(request, 'report_calidad.html', {'avancepro': avancepro,'calidadpla':calidadpla,'causadesvia':causadesvia,'pqrsf':pqrsf})
+
+def tablarepavancepro(request):
+    with connections['B_C'].cursor() as cursor:
+        cursor.execute('''SELECT TIPO,PROCESO,DETALLE_PROCESO,AVANCE,META,FECHA_CORTE FROM B_C.AVANCE_PROCESO ''')
+        avancepro = cursor.fetchall()   
+    return avancepro
+def tablarepplantab(request):
+    with connections['B_GAB'].cursor() as cursor:
+        cursor.execute('''SELECT TONELADAS_PRODUCIDAS_MES,TONELADAS_PRESUPUESTO_MES,PORCENTAJE_VARIACION_MES,PORCENTAJE_CUMPLIMIENTO_MES,OBSERVACION_VARIACION,PORCENTAJE_BULTO_MES,PORCENTAJE_GRANEL_MES,SACK_OFF,PORCENTAJE_OTIF,OBSERVACION_OTIF,PRESUPUESTO_MO_CIF,MO_CIF,TIEMPO_MUERTO,COSTO_TIEMPO_MUERTO,OBSERVACION_TIEMPO_MUERTO,FECHA_CORTE FROM B_GAB.PLANTA_ALIMENTOS_BALANCEADOS ''')
+        plantaalib = cursor.fetchall()   
+    return plantaalib
+def tablarepplantab(request):
+    with connections['B_GAB'].cursor() as cursor:
+        cursor.execute('''SELECT TONELADAS_PRODUCIDAS_MES,TONELADAS_PRESUPUESTO_MES,PORCENTAJE_VARIACION_MES,PORCENTAJE_CUMPLIMIENTO_MES,OBSERVACION_VARIACION,PORCENTAJE_BULTO_MES,PORCENTAJE_GRANEL_MES,SACK_OFF,PORCENTAJE_OTIF,OBSERVACION_OTIF,PRESUPUESTO_MO_CIF,MO_CIF,TIEMPO_MUERTO,COSTO_TIEMPO_MUERTO,OBSERVACION_TIEMPO_MUERTO,FECHA_CORTE FROM B_GAB.PLANTA_ALIMENTOS_BALANCEADOS ''')
+        plantaalib = cursor.fetchall()   
+    return plantaalib
+def tablarepplantab(request):
+    with connections['B_GAB'].cursor() as cursor:
+        cursor.execute('''SELECT TONELADAS_PRODUCIDAS_MES,TONELADAS_PRESUPUESTO_MES,PORCENTAJE_VARIACION_MES,PORCENTAJE_CUMPLIMIENTO_MES,OBSERVACION_VARIACION,PORCENTAJE_BULTO_MES,PORCENTAJE_GRANEL_MES,SACK_OFF,PORCENTAJE_OTIF,OBSERVACION_OTIF,PRESUPUESTO_MO_CIF,MO_CIF,TIEMPO_MUERTO,COSTO_TIEMPO_MUERTO,OBSERVACION_TIEMPO_MUERTO,FECHA_CORTE FROM B_GAB.PLANTA_ALIMENTOS_BALANCEADOS ''')
+        plantaalib = cursor.fetchall()   
+    return plantaalib
