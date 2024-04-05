@@ -1,0 +1,644 @@
+{% load adminlte_helpers i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Humana</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+
+    {% block meta %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% endblock %}
+
+    {% block stylesheets %}
+    {% include 'adminlte/lib/_styles.html' %}
+    <style type="text/css">
+        .btn-circle.btn-xl {
+            width: 130px;
+            height: 130px;
+            padding: 13px 18px;
+            border-radius: 100px;
+            font-size: 15px;
+            text-align: center;
+            margin-left: 50px;
+        }
+
+        .btn-repor {
+            background-color: #651410;
+            color: aliceblue;
+        }
+    </style>
+    {% endblock %}
+
+    {% block extra_head %}{% endblock %}
+</head>
+</head>
+
+<body class="hold-transition sidebar-mini {% block body_class %}{% block bodyclass %}{% endblock %}{% endblock %}">
+    <div class="wrapper">
+        {% block nav_header %}
+        {% include '_main_header.html' %}
+        {% endblock %}
+
+        {% block nav_sidebar %}
+        {% include '_main_sidebar.html' %}
+        {% endblock %}
+
+        {% block content_wrapper %}
+        <div class="content-wrapper">
+            {% block content_header %}
+            <section class="content-header">
+                {% block no_heading %}
+                <h1>
+                    {% block page_name %}{% endblock %}
+                    <div class="header-actions">
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                    {% block no_description %}
+                    <small>{% block page_description %}{% endblock %}</small>
+                    {% endblock %}
+                </h1>
+                {% block breadcrumbs %}
+                {# Breadcrumb implementation left to developers #}
+                {% endblock %}
+                {% endblock no_heading %}
+                <h1>Reportes Gestion Humana</h1>
+            </section>
+            {% endblock %}{% endblock %}
+            <section>
+                <div>
+                    <button id="btn_compgranja" class="btn btn-repor btn-lg" onclick="mostrarcompgranja()">Reporte Compromiso por granja</button>
+                    <button id="btn_disposemana" class="btn btn-repor btn-lg" onclick="mostrardisposemana()">Reporte Disponibilidad Semanal</button>
+                    <button id="btn_cerdosbenef" class="btn btn-repor btn-lg" onclick="mostrarcerdosbenef()">ReporteCerdos Beneficiados</button>
+                    <button id="btn_comparativopl" class="btn btn-repor btn-lg" onclick="mostrarcomparativopl()">Reporte Comparativo Planta</button>
+                    <button id="btn_costodespo" class="btn btn-repor btn-lg" onclick="mostrarcostodespo()">Reporte Costo Desposte</button>
+                    <button id="btn_kgbenef" class="btn btn-repor btn-lg" onclick="mostrarkgbenef()">Reporte Kg Beneficiados</button>
+                    <button id="btn_kgdespos" class="btn btn-repor btn-lg" onclick="mostrarkgdespos()">Reporte kg Despostados</button>
+                    <button id="btn_particortes" class="btn btn-repor btn-lg" onclick="mostrarparticortes()" style="margin-top: 8px;">Reporte Participacion Cortes</button>
+                    <button id="btn_toneladasimport" class="btn btn-repor btn-lg" onclick="mostrartoneladasimport()"style="margin-top: 8px;">Reporte Toneladas Importadas</button>
+                </div>
+            </section>
+  
+            <!-- Contenido principal -->
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="compgranja_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE COMPROMISO GRANJA</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_compgranja" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>GRANJA</th>
+                                        <th>MES</th>
+                                        <th>SEMANA</th>
+                                        <th>CANTIDAD CERDOS</th>
+                                        <th>AÑO</th>
+
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for compgranj in compgranja %}
+                                    <tr>
+                                        <td>{{ compgranj.0 }}</td>
+                                        <td>{{ compgranj.1 }}</td>
+                                        <td>{{ compgranj.2 }}</td>
+                                        <td>{{ compgranj.3 }}</td>
+                                        <td>{{ compgranj.4 }}</td>
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="disposemana_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE DISPONIBILIDAD SEMANAL</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_disposemana" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>GRANJA</th>
+                                        <th>MES</th>
+                                        <th>SEMANA</th>
+                                        <th>CANTIDAD CERDOS</th>
+                                        <th>AÑO</th>
+
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for disposeman in disposemana %}
+                                    <tr>
+                                        <td>{{ disposeman.0 }}</td>
+                                        <td>{{ disposeman.1 }}</td>
+                                        <td>{{ disposeman.2 }}</td>
+                                        <td>{{ disposeman.3 }}</td>
+                                        <td>{{ disposeman.4 }}</td>
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="cerdosbenef_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE CERDOS BENEFICIADOS</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_cerdosbenef" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>CER BENEF COLOMBIA</th>
+                                        <th>CER BENEF EJE CAFETERO</th>
+                                        <th>PARTICIPACION EJE CAFETERO</th>
+                                        <th>CER BENEF CERCAFE</th>
+                                        <th>PARTICIPACION EJE CAF CERCAFE</th>
+                                        <th>PARTICIPACION NACIONAL CERCAFE</th>
+                                        <th>FECHA CORTE</th>
+                                    </tr>
+                                </thead> 
+                                <tbody>
+
+                                    {% for cerdosbene in cerdosbenef %}
+                                    <tr>
+                                        <td>{{ cerdosbene.0 }}</td>
+                                        <td>{{ cerdosbene.1 }}</td>
+                                        <td>{{ cerdosbene.2 }}</td>
+                                        <td>{{ cerdosbene.3 }}</td>
+                                        <td>{{ cerdosbene.4 }}</td>
+                                        <td>{{ cerdosbene.5 }}</td>
+                                        <td>{{ cerdosbene.6 }}</td>
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="comparativopl_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE COMPARATIVO PLANTAS</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_comparativopl" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>PARAMETRO</th>
+                                        <th>VALOR</th>
+                                        <th>EMPRESA</th>
+                                        <th>FECHA CORTE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for comparativop in comparativopl %}
+                                    <tr>
+                                        <td>{{ comparativop.0 }}</td>
+                                        <td>{{ comparativop.1 }}</td>
+                                        <td>{{ comparativop.2 }}</td>
+                                        <td>{{ comparativop.3 }}</td>
+
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="costodespo_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE COSTO DESPOSTE</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_costodespo" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>TIPO CLIENTE</th>
+                                        <th>NUM CERDOS DESPOSTADOS</th>
+                                        <th>KG DESPOSTADOS</th>
+                                        <th>PESO PROM CERDOS</th>
+                                        <th>PRECIO PROM KG</th>
+                                        <th>COSTO MATERIA PRIMA</th>
+                                        <th>COSTO MAQUILA</th>
+                                        <th>COSTO KG MAQUILADO</th>
+                                        <th>MAQUILA SIN MP</th>
+                                        <th>FECHA CORTE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for costodesp in costodespo %}
+                                    <tr>
+                                        <td>{{ costodesp.0 }}</td>
+                                        <td>{{ costodesp.1 }}</td>
+                                        <td>{{ costodesp.2 }}</td>
+                                        <td>{{ costodesp.3 }}</td>
+                                        <td>{{ costodesp.4 }}</td>
+                                        <td>{{ costodesp.5 }}</td>
+                                        <td>{{ costodesp.6 }}</td>
+                                        <td>{{ costodesp.7 }}</td>
+                                        <td>{{ costodesp.8 }}</td>
+                                        <td>{{ costodesp.9 }}</td>
+
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="kgbenef_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE KG BENEFICIADOS</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_kgbenef" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>CER BENEF COLOMBIA</th>
+                                        <th>CER BENEF EJE CAFETERO</th>
+                                        <th>PARTICIPACION EJE CAFETERO</th>
+                                        <th>CER BENEF CERCAFE</th>
+                                        <th>PARTICIPACION EJE CAF CERCAFE</th>
+                                        <th>PARTICIPACION NACIONAL CERCAFE</th>
+                                        <th>PESO CF NACIONAL</th>
+                                        <th>PESO EJE CAFETERO</th>
+                                        <th>PESO CF CERCAFE</th>
+                                        <th>KG NACIONAL</th>
+                                        <th>KG EJE CAFETERO</th>
+                                        <th>KG CERCAFE</th>
+                                        <th>FECHA CORTE</th>
+                                        
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for kgbene in kgbenef %}
+                                    <tr>
+                                        <td>{{ kgbene.0 }}</td>
+                                        <td>{{ kgbene.1 }}</td>
+                                        <td>{{ kgbene.2 }}</td>
+                                        <td>{{ kgbene.3 }}</td>
+                                        <td>{{ kgbene.4 }}</td>
+                                        <td>{{ kgbene.5 }}</td>
+                                        <td>{{ kgbene.6 }}</td>
+                                        <td>{{ kgbene.7 }}</td>
+                                        <td>{{ kgbene.8 }}</td>
+                                        <td>{{ kgbene.9 }}</td>
+                                        <td>{{ kgbene.10}}</td>
+                                        <td>{{ kgbene.11}}</td>
+                                        <td>{{ kgbene.12}}</td>
+
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="kgdespos_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE KG DESPOSTADOS</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_kgdespos" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>KG PRODUCIDOS CERCAFE</th>
+                                        <th>KG DESPOSTADOS CERCAFE</th>
+                                        <th>PORCENTAJE PARTICIPACION</th>
+                                        <th>TRIMESTRE 2022 CERCAFE</th>
+                                        <th>TRIMESTRE 2022 DESPOSTE</th>
+                                        <th>TRIMESTRE 2023 CERCAFE</th>
+                                        <th>TRIMESTRE 2023 DESPOSTE</th>
+                                        <th>CERCIMIENTO 22 23</th>
+                                        <th>FECHA CORTE</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for kgdespo in kgdespos %}
+                                    <tr>
+                                        <td>{{ kgdespo.0 }}</td>
+                                        <td>{{ kgdespo.1 }}</td>
+                                        <td>{{ kgdespo.2 }}</td>
+                                        <td>{{ kgdespo.3 }}</td>
+                                        <td>{{ kgdespo.4 }}</td>
+                                        <td>{{ kgdespo.5 }}</td>
+                                        <td>{{ kgdespo.6 }}</td>
+                                        <td>{{ kgdespo.7 }}</td>
+                                        <td>{{ kgdespo.8 }}</td>
+
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="particortes_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE PARTICIPACION CORTES</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_particortes" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>CORTE</th>
+                                        <th>PORCENTAJE PARTICIPACION</th>
+                                        <th>PORCENTAJE META</th>
+                                        <th>PESO PROM CANAL</th>
+                                        <th>CANTIDAD CANALES</th>
+                                        <th>FECHA CORTE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for particorte in particortes %}
+                                    <tr>
+                                        <td>{{ particorte.0 }}</td>
+                                        <td>{{ particorte.1 }}</td>
+                                        <td>{{ particorte.2 }}</td>
+                                        <td>{{ particorte.3 }}</td>
+                                        <td>{{ particorte.4 }}</td>
+                                        <td>{{ particorte.5 }}</td>
+
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="toneladasimport_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE TONELADAS IMPORTADAS</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_toneladasimport" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>CER BENEF COLOMBIA</th>
+                                        <th>TON BENEF COLOMBIA</th>
+                                        <th>TON IMPORT COLOMBIA</th>
+                                        <th>CERDOS IMPORTADOS</th>
+                                        <th>ENE FEB 22 TON BENEF</th>
+                                        <th>ENE FEB 23 TON BENEF</th>
+                                        <th>CRECIMIENTO 22 23</th>
+                                        <th>ENE FEB MAR 22 TON IMPORT</th>
+                                        <th>ENE FEB MAR 23 TON IMPORT</th>
+                                        <th>CRECIMIENTO OMPORT 22 23</th>
+                                        <th>FECHA CORTE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for toneladasimpor in toneladasimport %}
+                                    <tr>
+                                        <td>{{ toneladasimpor.0 }}</td>
+                                        <td>{{ toneladasimpor.1 }}</td>
+                                        <td>{{ toneladasimpor.2 }}</td>
+                                        <td>{{ toneladasimpor.3 }}</td>
+                                        <td>{{ toneladasimpor.4 }}</td>
+                                        <td>{{ toneladasimpor.5 }}</td>
+                                        <td>{{ toneladasimpor.6 }}</td>
+                                        <td>{{ toneladasimpor.7 }}</td>
+                                        <td>{{ toneladasimpor.8 }}</td>
+                                        <td>{{ toneladasimpor.9 }}</td>
+                                        <td>{{ toneladasimpor.10 }}</td>
+
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+           
+            
+            <!-- /.content -->
+
+            <!-- /.content-wrapper -->
+
+
+
+
+            {% block javascript %}
+            {% include 'adminlte/lib/_scripts.html' %}
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+            <script>
+                function mostrarcompgranja() {
+                    document.getElementById("compgranja_table").style.display = "block";
+                    document.getElementById("disposemana_table").style.display = "none";
+                    document.getElementById("cerdosbenef_table").style.display = "none";
+                    document.getElementById("comparativopl_table").style.display = "none";
+                    document.getElementById("costodespo_table").style.display = "none";
+                    document.getElementById("kgbenef_table").style.display = "none";
+                    document.getElementById("kgdespos_table").style.display = "none";
+                    document.getElementById("particortes_table").style.display = "none";
+                    document.getElementById("toneladasimport_table").style.display = "none";
+
+                }
+
+                function mostrarcerdosbenef() {
+                    document.getElementById("compgranja_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "none";
+                    document.getElementById("cerdosbenef_table").style.display = "block";
+                    document.getElementById("comparativopl_table").style.display = "none";
+                    document.getElementById("costodespo_table").style.display = "none";
+                    document.getElementById("kgbenef_table").style.display = "none";
+                    document.getElementById("kgdespos_table").style.display = "none";
+                    document.getElementById("particortes_table").style.display = "none";
+                    document.getElementById("toneladasimport_table").style.display = "none";
+
+                }
+                function mostrarcomparativopl() {
+                    document.getElementById("compgranja_table").style.display = "none";
+                    document.getElementById("cerdosbenef_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "none";
+                    document.getElementById("comparativopl_table").style.display = "block";
+                    document.getElementById("costodespo_table").style.display = "none";
+                    document.getElementById("kgbenef_table").style.display = "none";
+                    document.getElementById("kgdespos_table").style.display = "none";
+                    document.getElementById("particortes_table").style.display = "none";
+                    document.getElementById("toneladasimport_table").style.display = "none";
+
+                }
+                function mostrarcostodespo() {
+                    document.getElementById("compgranja_table").style.display = "none";
+                    document.getElementById("cerdosbenef_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "none";
+                    document.getElementById("comparativopl_table").style.display = "none";
+                    document.getElementById("costodespo_table").style.display = "block";
+                    document.getElementById("kgbenef_table").style.display = "none";
+                    document.getElementById("kgdespos_table").style.display = "none";
+                    document.getElementById("particortes_table").style.display = "none";
+                    document.getElementById("toneladasimport_table").style.display = "none";
+
+                }
+                function mostrarkgbenef() {
+                    document.getElementById("compgranja_table").style.display = "none";
+                    document.getElementById("cerdosbenef_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "none";
+                    document.getElementById("comparativopl_table").style.display = "none";
+                    document.getElementById("costodespo_table").style.display = "none";
+                    document.getElementById("kgbenef_table").style.display = "block";
+                    document.getElementById("kgdespos_table").style.display = "none";
+                    document.getElementById("particortes_table").style.display = "none";
+                    document.getElementById("toneladasimport_table").style.display = "none";
+
+                }
+                function mostrarkgdespos() {
+                    document.getElementById("compgranja_table").style.display = "none";
+                    document.getElementById("cerdosbenef_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "none";
+                    document.getElementById("comparativopl_table").style.display = "none";
+                    document.getElementById("costodespo_table").style.display = "none";
+                    document.getElementById("kgbenef_table").style.display = "none";
+                    document.getElementById("kgdespos_table").style.display = "block";
+                    document.getElementById("particortes_table").style.display = "none";
+                    document.getElementById("toneladasimport_table").style.display = "none";
+
+                }
+                function mostrarparticortes() {
+                    document.getElementById("compgranja_table").style.display = "none";
+                    document.getElementById("cerdosbenef_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "none";
+                    document.getElementById("comparativopl_table").style.display = "none";
+                    document.getElementById("costodespo_table").style.display = "none";
+                    document.getElementById("kgbenef_table").style.display = "none";
+                    document.getElementById("kgdespos_table").style.display = "none";
+                    document.getElementById("particortes_table").style.display = "block";
+                    document.getElementById("toneladasimport_table").style.display = "none";
+
+                }
+                function mostrartoneladasimport() {
+                    document.getElementById("compgranja_table").style.display = "none";
+                    document.getElementById("cerdosbenef_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "none";
+                    document.getElementById("comparativopl_table").style.display = "none";
+                    document.getElementById("costodespo_table").style.display = "none";
+                    document.getElementById("kgbenef_table").style.display = "none";
+                    document.getElementById("kgdespos_table").style.display = "none";
+                    document.getElementById("particortes_table").style.display = "none";
+                    document.getElementById("toneladasimport_table").style.display = "block";
+
+                }
+                function mostrardisposemana() {
+                    document.getElementById("compgranja_table").style.display = "none";
+                    document.getElementById("cerdosbenef_table").style.display = "none";
+                    document.getElementById("disposemana_table").style.display = "block";
+                    document.getElementById("comparativopl_table").style.display = "none";
+                    document.getElementById("costodespo_table").style.display = "none";
+                    document.getElementById("kgbenef_table").style.display = "none";
+                    document.getElementById("kgdespos_table").style.display = "none";
+                    document.getElementById("particortes_table").style.display = "none";
+                    document.getElementById("toneladasimport_table").style.display = "none";
+
+                }
+                $(document).ready(function () {
+                    $('#tabla_compgranja').DataTable();
+                    $("#tabla_cerdosbenef").DataTable();
+                    $("#tabla_disposemana").DataTable();
+                    $("#tabla_comparativopl").DataTable();
+                    $("#tabla_costodespo").DataTable();
+                    $("#tabla_kgbenef").DataTable();
+                    $("#tabla_kgdespos").DataTable();
+                    $("#tabla_particortes").DataTable();
+                    $("#tabla_toneladasimport").DataTable();
+                });
+            </script>
+            <!-- script para llamar los html en el contenido -->
+            <script src="{% static 'custom.js' %}"></script>
+            {% endblock %}
+
+</body>
+
+</html>

@@ -229,14 +229,14 @@
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'adminfinan' %}
                         <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
-                            <a id="cargarContenido" >
+                            <a href="{% url 'repadminfinan' %}"  >
                                 <i class="nav-icon fas fa-coins"></i>G- Admin y Financiera
                             </a>
                         </li>
                         {% endif %}
                         {% if request.user|user_belongs_to_group:'rrhh' %}
                         <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
-                            <a id="cargarContenido" >
+                            <a href="{% url 'repgestionhumana' %}"  >
                                 <i class="nav-icon fas fa-people-arrows"></i>Gestion Humana
                             </a>
                         </li>

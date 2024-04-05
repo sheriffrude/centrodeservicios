@@ -1588,7 +1588,6 @@ def tablarepclient(request):
         cursor.execute('''SELECT FECHA_CORTE,CANTIDAD_CLIENTES,ZONA_CLIENTE,KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE FROM B_GC.CLIENTES_ACTIVOS ''')
         clientes_act = cursor.fetchall()   
     return clientes_act
-
 def tablarepventas(request):
     with connections['B_GC'].cursor() as cursor:
         cursor.execute('''SELECT FECHA_CORTE,LINEA_NEGOCIO,PRESUPUESTO_UNIDADES,PRESUPUESTO_KG,UNIDADES_VENDIDAS,KG_VENDIDO,VALOR_VENTA,PRESUPUESTO_VENTA FROM B_GC.VENTAS ''')
@@ -1727,18 +1726,122 @@ def tablarepavancepro(request):
         cursor.execute('''SELECT TIPO,PROCESO,DETALLE_PROCESO,AVANCE,META,FECHA_CORTE FROM B_C.AVANCE_PROCESO ''')
         avancepro = cursor.fetchall()   
     return avancepro
-def tablarepplantab(request):
-    with connections['B_GAB'].cursor() as cursor:
-        cursor.execute('''SELECT TONELADAS_PRODUCIDAS_MES,TONELADAS_PRESUPUESTO_MES,PORCENTAJE_VARIACION_MES,PORCENTAJE_CUMPLIMIENTO_MES,OBSERVACION_VARIACION,PORCENTAJE_BULTO_MES,PORCENTAJE_GRANEL_MES,SACK_OFF,PORCENTAJE_OTIF,OBSERVACION_OTIF,PRESUPUESTO_MO_CIF,MO_CIF,TIEMPO_MUERTO,COSTO_TIEMPO_MUERTO,OBSERVACION_TIEMPO_MUERTO,FECHA_CORTE FROM B_GAB.PLANTA_ALIMENTOS_BALANCEADOS ''')
-        plantaalib = cursor.fetchall()   
-    return plantaalib
-def tablarepplantab(request):
-    with connections['B_GAB'].cursor() as cursor:
-        cursor.execute('''SELECT TONELADAS_PRODUCIDAS_MES,TONELADAS_PRESUPUESTO_MES,PORCENTAJE_VARIACION_MES,PORCENTAJE_CUMPLIMIENTO_MES,OBSERVACION_VARIACION,PORCENTAJE_BULTO_MES,PORCENTAJE_GRANEL_MES,SACK_OFF,PORCENTAJE_OTIF,OBSERVACION_OTIF,PRESUPUESTO_MO_CIF,MO_CIF,TIEMPO_MUERTO,COSTO_TIEMPO_MUERTO,OBSERVACION_TIEMPO_MUERTO,FECHA_CORTE FROM B_GAB.PLANTA_ALIMENTOS_BALANCEADOS ''')
-        plantaalib = cursor.fetchall()   
-    return plantaalib
-def tablarepplantab(request):
-    with connections['B_GAB'].cursor() as cursor:
-        cursor.execute('''SELECT TONELADAS_PRODUCIDAS_MES,TONELADAS_PRESUPUESTO_MES,PORCENTAJE_VARIACION_MES,PORCENTAJE_CUMPLIMIENTO_MES,OBSERVACION_VARIACION,PORCENTAJE_BULTO_MES,PORCENTAJE_GRANEL_MES,SACK_OFF,PORCENTAJE_OTIF,OBSERVACION_OTIF,PRESUPUESTO_MO_CIF,MO_CIF,TIEMPO_MUERTO,COSTO_TIEMPO_MUERTO,OBSERVACION_TIEMPO_MUERTO,FECHA_CORTE FROM B_GAB.PLANTA_ALIMENTOS_BALANCEADOS ''')
-        plantaalib = cursor.fetchall()   
-    return plantaalib
+def tablarepcalidadpla(request):
+    with connections['B_C'].cursor() as cursor:
+        cursor.execute('''SELECT PORCENTAJE_DESVIACIONES_CALIDAD,TONELADAS_REPROCESADAS,TONELADAS_LIBERADAS_CONCESION,PORCENTAJE_RETENCION,PORCENTAJE_MEZCLA,PORCENTAJE_DURABILIDAD,PORCENTAJE_FINOS,PORCENTAJE_FORMULACION,CUMPLIMIENTO_BPM,FECHA_CORTE FROM B_C.CALIDAD_PLANTA''')
+        calidadpla = cursor.fetchall()   
+    return calidadpla
+def tablarepcausadesvia(request):
+    with connections['B_C'].cursor() as cursor:
+        cursor.execute('''SELECT CAUSA,PLAN_ACCION,TON_REPROCESADAS,FECHA_CORTE FROM B_C.CAUSAS_DESVIACIONES''')
+        causadesvia = cursor.fetchall()   
+    return causadesvia
+def tablareppqrsf(request):
+    with connections['B_C'].cursor() as cursor:
+        cursor.execute('''SELECT PROCESO,TIPO,ESTADO_MOTIVO,CANTIDAD,CATEGORIA,TIEMPO_RESPUESTA,FECHA_CORTE FROM B_C.PQRSF''')
+        pqrsf = cursor.fetchall()   
+    return pqrsf
+
+#---------------- TABLAS DE REPORTES GESTION ADMINISTRATIVA Y FINANCIERA------------------------------------------
+@never_cache
+@login_required
+def repadminfinan(request):
+    materiapr = tablarepmateriapr(request)
+    compramed = tablarepcompramed(request) 
+    preciocanal = tablareppreciocanal(request) 
+    nuevosclientes = tablarepnuevosclientes(request) 
+    return render(request, 'report_gadminfinan.html', {'materiapr': materiapr,'compramed':compramed,'preciocanal':preciocanal,'nuevosclientes':nuevosclientes})
+
+def tablarepmateriapr(request):
+    with connections['B_GAF'].cursor() as cursor:
+        cursor.execute('''SELECT MATERIA_PRIMA,COSTO_PROMEDIO,CANTIDAD_COMPRADA,DIAS_INVENTARIO,FECHA_CORTE FROM B_GAF.COMPRAS_MATERIA_PRIMA''')
+        materiapr = cursor.fetchall()   
+    return materiapr
+def tablarepcompramed(request):
+    with connections['B_GAF'].cursor() as cursor:
+        cursor.execute('''SELECT VALOR,MEDICAMENTO,CLASIFICACION,CANTIDAD,TIPO,FECHA_CORTE FROM B_GAF.COMPRAS_MEDICAMENTOS''')
+        compramed = cursor.fetchall()   
+    return compramed
+def tablareppreciocanal(request):
+    with connections['B_GAF'].cursor() as cursor:
+        cursor.execute('''SELECT NIT,CLIENTE,ZONA,VALOR  FROM B_GAF.precio_canales_semana''')
+        preciocanal = cursor.fetchall()   
+    return preciocanal
+def tablarepnuevosclientes(request):
+    with connections['DHC'].cursor() as cursor:
+        cursor.execute('''SELECT NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION,ID_VENDEDOR,ID_SEGMENTO,ID_MIX_VENTAS FROM dhc.clientes;''')
+        nuevosclientes = cursor.fetchall()   
+    return nuevosclientes
+
+#---------------- TABLAS DE REPORTES CADENA DE ABASTECIMIENTO------------------------------------------
+@never_cache
+@login_required
+def repgestionhumana(request):
+    compgranja = tablarepcompgranja(request)
+    disposemana = tablarepdisposem(request)
+    cerdosbenef = tablarepcerdosbenef(request) 
+    comparativopl = tablarepcomparativopl(request) 
+    costodespo = tablarepcostodespo(request) 
+    kgbenef = tablarepkgbenef(request) 
+    kgdespos = tablarepkgdespos(request) 
+    particortes = tablarepparticortes(request) 
+    toneladasimport = tablareptoneladasimport(request) 
+    return render(request, 'report_gestionhumana.html', {'compgranja': compgranja,'disposemana': disposemana,'cerdosbenef':cerdosbenef,'comparativopl':comparativopl,'costodespo':costodespo,'kgbenef':kgbenef,'kgdespos':kgdespos,'particortes':particortes,'toneladasimport':toneladasimport})
+
+def tablarepcompgranja(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''select  granja,mes,semana,cantidad_cerdos,año from B_CA.compromiso_mes''')
+        compgranja = cursor.fetchall()
+      
+    return compgranja
+
+def tablarepdisposem(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''select  granja,mes,semana,cantidad_cerdos,año from B_CA.disponibilidad_semanal''')
+        disposemana = cursor.fetchall()
+    return disposemana
+def tablarepcerdosbenef(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''SELECT CER_BENEF_COLOMBIA,CER_BENEF_EJE_CAFETERO,PARTICIPACION_EJE_CAFETERO,CER_BENEF_CERCAFE,PARTICIPACION_EJE_CAF_CERCAFE,PARTICIPACION_NACIONAL_CERCAFE,FECHA_CORTE FROM B_CA.PROD_CARNICA_CERDOS_BENEFICIADOS ''')
+        cerdosbenef = cursor.fetchall()   
+    return cerdosbenef
+def tablarepcomparativopl(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''SELECT PARAMETRO,VALOR,EMPRESA,FECHA_CORTE FROM B_CA.PROD_CARNICA_COMPARATIVO_PLANTAS''')
+        comparativopl = cursor.fetchall()   
+    return comparativopl
+def tablarepcostodespo(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''SELECT TIPO_CLIENTE,NUM_CERDOS_DESPOSTADOS,KG_DESPOSTADOS,PESO_PROM_CERDOS,PRECIO_PROM_KG,COSTO_MATERIA_PRIMA,COSTO_MAQUILA,COSTO_KG_MAQUILADO,MAQUILA_SIN_MP,FECHA_CORTE FROM B_CA.PROD_CARNICA_COSTO_DESPOSTE''')
+        costodespo = cursor.fetchall()   
+    return costodespo
+def tablarepkgbenef(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''SELECT CER_BENEF_COLOMBIA,CER_BENEF_EJE_CAFETERO,PARTICIPACION_EJE_CAFETERO,CER_BENEF_CERCAFE,PARTICIPACION_EJE_CAF_CERCAFE,PARTICIPACION_NACIONAL_CERCAFE,PESO_CF_NACIONAL,PESO_EJE_CAFETERO,PESO_CF_CERCAFE,KG_NACIONAL,KG_EJE_CAFETERO,KG_CERCAFE,FECHA_CORTE FROM B_CA.PROD_CARNICA_KG_BENEFICIO ''')
+        kgbenef = cursor.fetchall()   
+    return kgbenef
+def tablarepkgdespos(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''SELECT KG_PRODUCIDOS_CERCAFE,KG_DESPOSTADOS_CERCAFE,PORCENTAJE_PARTICIPACION,TRIMESTRE_2022_CERCAFE,TRIMESTRE_2022_DESPOSTE,TRIMESTRE_2023_CERCAFE,TRIMESTRE_2023_DESPOSTE,CERCIMIENTO_22_23,FECHA_CORTE FROM B_CA.PROD_CARNICA_KG_DESPOSTADOS ''')
+        kgdespos = cursor.fetchall()   
+    return kgdespos
+def tablarepparticortes(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''SELECT CORTE,PORCENTAJE_PARTICIPACION,PORCENTAJE_META,PESO_PROM_CANAL,CANTIDAD_CANALES,FECHA_CORTE FROM B_CA.PROD_CARNICA_PARTICIPACION_CORTES ''')
+        particortes = cursor.fetchall()   
+    return particortes
+def tablareptoneladasimport(request):
+    with connections['B_CA'].cursor() as cursor:
+        cursor.execute('''SELECT CER_BENEF_COLOMBIA,TON_BENEF_COLOMBIA,TON_IMPORT_COLOMBIA,CERDOS_IMPORTADOS,ENE_FEB_22_TON_BENEF,ENE_FEB_23_TON_BENEF,CRECIMIENTO_22_23,ENE_FEB_MAR_22_TON_IMPORT,ENE_FEB_MAR_23_TON_IMPORT,CRECIMIENTO_OMPORT_22_23,FECHA_CORTE FROM B_CA.PROD_CARNICA_TON_IMPORTADAS ''')
+        toneladasimport = cursor.fetchall()   
+    return toneladasimport
+
+
+
+
+
+
+
+
+
+

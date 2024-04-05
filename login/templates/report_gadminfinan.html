@@ -1,0 +1,318 @@
+{% load adminlte_helpers i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin y Financiera</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+
+    {% block meta %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% endblock %}
+
+    {% block stylesheets %}
+    {% include 'adminlte/lib/_styles.html' %}
+    <style type="text/css">
+        .btn-circle.btn-xl {
+            width: 130px;
+            height: 130px;
+            padding: 13px 18px;
+            border-radius: 100px;
+            font-size: 15px;
+            text-align: center;
+            margin-left: 50px;
+        }
+
+        .btn-repor {
+            background-color: #651410;
+            color: aliceblue;
+        }
+    </style>
+    {% endblock %}
+
+    {% block extra_head %}{% endblock %}
+</head>
+</head>
+
+<body class="hold-transition sidebar-mini {% block body_class %}{% block bodyclass %}{% endblock %}{% endblock %}">
+    <div class="wrapper">
+        {% block nav_header %}
+        {% include '_main_header.html' %}
+        {% endblock %}
+
+        {% block nav_sidebar %}
+        {% include '_main_sidebar.html' %}
+        {% endblock %}
+
+        {% block content_wrapper %}
+        <div class="content-wrapper">
+            {% block content_header %}
+            <section class="content-header">
+                {% block no_heading %}
+                <h1>
+                    {% block page_name %}{% endblock %}
+                    <div class="header-actions">
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                    {% block no_description %}
+                    <small>{% block page_description %}{% endblock %}</small>
+                    {% endblock %}
+                </h1>
+                {% block breadcrumbs %}
+                {# Breadcrumb implementation left to developers #}
+                {% endblock %}
+                {% endblock no_heading %}
+                <h1>Reportes Gestion Administrativa y Financiera</h1>
+            </section>
+            {% endblock %}{% endblock %}
+            <section>
+                <div>
+                    <button id="btn_materiapr" class="btn btn-repor btn-lg" onclick="mostrarmateriapr()">Reporte Compras Materia Prima</button>
+                    <button id="btn_compramed" class="btn btn-repor btn-lg" onclick="mostrarcompramed()">Reporte Compras Medicamentos</button>
+                    <button id="btn_preciocanal" class="btn btn-repor btn-lg" onclick="mostrarpreciocanal()">Reporte Precio Canales</button>
+                    <button id="btn_nuevosclientes" class="btn btn-repor btn-lg" onclick="mostrarnuevosclientes()">Reporte Nuevos Clientes</button>
+
+                </div>
+            </section>
+
+            <!-- Contenido principal -->
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="materiapr_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE COMPRA MATERIA PRIMA</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_materiapr" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>MATERIA PRIMA</th>
+                                        <th>COSTO PROMEDIO</th>
+                                        <th>CANTIDAD COMPRADA</th>
+                                        <th>DIAS INVENTARIO</th>
+                                        <th>FECHA CORTE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for materiap in materiapr %}
+                                    <tr>
+                                        <td>{{ materiap.0 }}</td>
+                                        <td>{{ materiap.1 }}</td>
+                                        <td>{{ materiap.2 }}</td>
+                                        <td>{{ materiap.3 }}</td>
+                                        <td>{{ materiap.4 }}</td>
+                                        
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="compramed_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE COMPRA DE MEDICAMENTOS</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_compramed" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>VALOR</th>
+                                        <th>MEDICAMENTO</th>
+                                        <th>CLASIFICACION</th>
+                                        <th>CANTIDAD</th>
+                                        <th>TIPO</th>
+                                        <th>FECHA CORTE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for comprame in compramed %}
+                                    <tr>
+                                        <td>{{ comprame.0 }}</td>
+                                        <td>{{ comprame.1 }}</td>
+                                        <td>{{ comprame.2 }}</td>
+                                        <td>{{ comprame.3 }}</td>
+                                        <td>{{ comprame.4 }}</td>
+                                        <td>{{ comprame.5 }}</td>
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="preciocanal_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE CAUSA DESVIACIONES</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_preciocanal" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>NIT</th>
+                                        <th>CLIENTE</th>
+                                        <th>ZONA</th>
+                                        <th>VALOR</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for preciocana in preciocanal %}
+                                    <tr>
+                                        <td>{{ preciocana.0 }}</td>
+                                        <td>{{ preciocana.1 }}</td>
+                                        <td>{{ preciocana.2 }}</td>
+                                        <td>{{ preciocana.3 }}</td>
+
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="nuevosclientes_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE PQRSF</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_nuevosclientes" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>NIT</th>
+                                        <th>RAZON SOCIAL</th>
+                                        <th>CUPO</th>
+                                        <th>DIRECCION SEDE PRINCIPAL</th>
+                                        <th>DIRECCION EXPENDIO</th>
+                                        <th>CLASIFICACION</th>
+                                        <th>MUNICIPIO</th>
+                                        <th>DEPARTAMENTO</th>
+                                        <th>REGION</th>
+                                        <th>VENDEDOR</th>
+                                        <th>SEGMENTO</th>
+                                        <th>MIX VENTAS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for nuevoscliente in nuevosclientes %}
+                                    <tr>
+                                        <td>{{ nuevoscliente.0 }}</td>
+                                        <td>{{ nuevoscliente.1 }}</td>
+                                        <td>{{ nuevoscliente.2 }}</td>
+                                        <td>{{ nuevoscliente.3 }}</td>
+                                        <td>{{ nuevoscliente.4 }}</td>
+                                        <td>{{ nuevoscliente.5 }}</td>
+                                        <td>{{ nuevoscliente.6 }}</td>
+                                        <td>{{ nuevoscliente.7 }}</td>
+                                        <td>{{ nuevoscliente.8 }}</td>
+                                        <td>{{ nuevoscliente.9 }}</td>
+                                        <td>{{ nuevoscliente.10 }}</td>
+                                        <td>{{ nuevoscliente.11 }}</td>
+
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+
+            <!-- /.content -->
+
+            <!-- /.content-wrapper -->
+
+
+
+
+            {% block javascript %}
+            {% include 'adminlte/lib/_scripts.html' %}
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+            <script>
+                function mostrarmateriapr() {
+                    document.getElementById("materiapr_table").style.display = "block";
+                    document.getElementById("compramed_table").style.display = "none";
+                    document.getElementById("preciocanal_table").style.display = "none";
+                    document.getElementById("nuevosclientes_table").style.display = "none";
+
+
+                }
+                function mostrarcompramed() {
+                    document.getElementById("materiapr_table").style.display = "none";
+                    document.getElementById("compramed_table").style.display = "block";
+                    document.getElementById("preciocanal_table").style.display = "none";
+                    document.getElementById("nuevosclientes_table").style.display = "none";
+
+
+                }
+                function mostrarpreciocanal() {
+                    document.getElementById("materiapr_table").style.display = "none";
+                    document.getElementById("compramed_table").style.display = "none";
+                    document.getElementById("preciocanal_table").style.display = "block";
+                    document.getElementById("nuevosclientes_table").style.display = "none";
+
+
+                }
+                function mostrarnuevosclientes() {
+                    document.getElementById("materiapr_table").style.display = "none";
+                    document.getElementById("compramed_table").style.display = "none";
+                    document.getElementById("preciocanal_table").style.display = "none";
+                    document.getElementById("nuevosclientes_table").style.display = "block";
+
+
+                }
+
+                $(document).ready(function () {
+                    $('#tabla_materiapr').DataTable();
+                    $("#tabla_compramed").DataTable();
+                    $("#tabla_preciocanal").DataTable();
+                    $("#tabla_nuevosclientes").DataTable();
+
+                });
+            </script>
+            <!-- script para llamar los html en el contenido -->
+            <script src="{% static 'custom.js' %}"></script>
+            {% endblock %}
+
+</body>
+
+</html>

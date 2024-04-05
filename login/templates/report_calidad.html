@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>cad abastecimiento</title>
+    <title>Calidad</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
 
 
@@ -68,7 +68,7 @@
                 {# Breadcrumb implementation left to developers #}
                 {% endblock %}
                 {% endblock no_heading %}
-                <h1>Reportes Cadena De Abastecimiento</h1>
+                <h1>Reportes Calidad</h1>
             </section>
             {% endblock %}{% endblock %}
             <section>
@@ -90,7 +90,7 @@
                 <section class="content">
                     <div class="card" id="avancepro_table" style="display:none;">
                         <div class="card-header">
-                            <h3 class="card-title">REPORTE DE COMPROMISO GRANJA</h3>
+                            <h3 class="card-title">REPORTE DE AVANCE PROCESO</h3>
                         </div>
                         <div class="card-body">
                             <table id="tabla_avancepro" class="table table-bordered table-hover ">
@@ -129,35 +129,42 @@
             <div class="contener">
                 <!-- Sección de tabla -->
                 <section class="content">
-                    <div class="card" id="cerdosbenef_table" style="display:none;">
+                    <div class="card" id="calidadpla_table" style="display:none;">
                         <div class="card-header">
-                            <h3 class="card-title">REPORTE DE CERDOS BENEFICIADOS</h3>
+                            <h3 class="card-title">REPORTE DE CALIDAD PLANTA</h3>
                         </div>
                         <div class="card-body">
-                            <table id="tabla_cerdosbenef" class="table table-bordered table-hover ">
+                            <table id="tabla_calidadpla" class="table table-bordered table-hover ">
                                 <thead>
 
                                     <tr>
-                                        <th>CER BENEF COLOMBIA</th>
-                                        <th>CER BENEF EJE CAFETERO</th>
-                                        <th>PARTICIPACION EJE CAFETERO</th>
-                                        <th>CER BENEF CERCAFE</th>
-                                        <th>PARTICIPACION EJE CAF CERCAFE</th>
-                                        <th>PARTICIPACION NACIONAL CERCAFE</th>
+                                        <th>PORCENTAJE DESVIACIONES CALIDAD</th>
+                                        <th>TONELADAS REPROCESADAS</th>
+                                        <th>TONELADAS LIBERADAS CONCESION</th>
+                                        <th>PORCENTAJE RETENCION</th>
+                                        <th>PORCENTAJE MEZCLA</th>
+                                        <th>PORCENTAJE DURABILIDAD</th>
+                                        <th>PORCENTAJE FINOS</th>
+                                        <th>PORCENTAJE FORMULACION</th>
+                                        <th>CUMPLIMIENTO BPM</th>
                                         <th>FECHA CORTE</th>
+                                        
                                     </tr>
                                 </thead>
                                 <tbody>
 
-                                    {% for cerdosbene in cerdosbenef %}
+                                    {% for calidadpl in calidadpla %}
                                     <tr>
-                                        <td>{{ cerdosbene.0 }}</td>
-                                        <td>{{ cerdosbene.1 }}</td>
-                                        <td>{{ cerdosbene.2 }}</td>
-                                        <td>{{ cerdosbene.3 }}</td>
-                                        <td>{{ cerdosbene.4 }}</td>
-                                        <td>{{ cerdosbene.5 }}</td>
-                                        <td>{{ cerdosbene.6 }}</td>
+                                        <td>{{ calidadpl.0 }}</td>
+                                        <td>{{ calidadpl.1 }}</td>
+                                        <td>{{ calidadpl.2 }}</td>
+                                        <td>{{ calidadpl.3 }}</td>
+                                        <td>{{ calidadpl.4 }}</td>
+                                        <td>{{ calidadpl.5 }}</td>
+                                        <td>{{ calidadpl.6 }}</td>
+                                        <td>{{ calidadpl.7 }}</td>
+                                        <td>{{ calidadpl.8 }}</td>
+                                        <td>{{ calidadpl.9 }}</td>
                                     </tr>
                                     {% endfor %}
 
@@ -172,29 +179,29 @@
             <div class="contener">
                 <!-- Sección de tabla -->
                 <section class="content">
-                    <div class="card" id="comparativopl_table" style="display:none;">
+                    <div class="card" id="causadesvia_table" style="display:none;">
                         <div class="card-header">
-                            <h3 class="card-title">REPORTE DE COMPARATIVO PLANTAS</h3>
+                            <h3 class="card-title">REPORTE DE CAUSA DESVIACIONES</h3>
                         </div>
                         <div class="card-body">
-                            <table id="tabla_comparativopl" class="table table-bordered table-hover ">
+                            <table id="tabla_causadesvia" class="table table-bordered table-hover ">
                                 <thead>
 
                                     <tr>
-                                        <th>PARAMETRO</th>
-                                        <th>VALOR</th>
-                                        <th>EMPRESA</th>
+                                        <th>CAUSA</th>
+                                        <th>PLAN ACCION</th>
+                                        <th>TON REPROCESADAS</th>
                                         <th>FECHA CORTE</th>
                                     </tr>
                                 </thead>
                                 <tbody>
 
-                                    {% for comparativop in comparativopl %}
+                                    {% for causadesvi in causadesvia %}
                                     <tr>
-                                        <td>{{ comparativop.0 }}</td>
-                                        <td>{{ comparativop.1 }}</td>
-                                        <td>{{ comparativop.2 }}</td>
-                                        <td>{{ comparativop.3 }}</td>
+                                        <td>{{ causadesvi.0 }}</td>
+                                        <td>{{ causadesvi.1 }}</td>
+                                        <td>{{ causadesvi.2 }}</td>
+                                        <td>{{ causadesvi.3 }}</td>
 
                                     </tr>
                                     {% endfor %}
@@ -210,41 +217,35 @@
             <div class="contener">
                 <!-- Sección de tabla -->
                 <section class="content">
-                    <div class="card" id="costodespo_table" style="display:none;">
+                    <div class="card" id="pqrsf_table" style="display:none;">
                         <div class="card-header">
-                            <h3 class="card-title">REPORTE DE COSTO DESPOSTE</h3>
+                            <h3 class="card-title">REPORTE DE PQRSF</h3>
                         </div>
                         <div class="card-body">
-                            <table id="tabla_costodespo" class="table table-bordered table-hover ">
+                            <table id="tabla_pqrsf" class="table table-bordered table-hover ">
                                 <thead>
 
                                     <tr>
-                                        <th>TIPO CLIENTE</th>
-                                        <th>NUM CERDOS DESPOSTADOS</th>
-                                        <th>KG DESPOSTADOS</th>
-                                        <th>PESO PROM CERDOS</th>
-                                        <th>PRECIO PROM KG</th>
-                                        <th>COSTO MATERIA PRIMA</th>
-                                        <th>COSTO MAQUILA</th>
-                                        <th>COSTO KG MAQUILADO</th>
-                                        <th>MAQUILA SIN MP</th>
+                                        <th>PROCESO</th>
+                                        <th>TIPO</th>
+                                        <th>ESTADO MOTIVO</th>
+                                        <th>CANTIDAD</th>
+                                        <th>CATEGORIA</th>
+                                        <th>TIEMPO RESPUESTA</th>
                                         <th>FECHA CORTE</th>
                                     </tr>
                                 </thead>
                                 <tbody>
 
-                                    {% for costodesp in costodespo %}
+                                    {% for pqrs in pqrsf %}
                                     <tr>
-                                        <td>{{ costodesp.0 }}</td>
-                                        <td>{{ costodesp.1 }}</td>
-                                        <td>{{ costodesp.2 }}</td>
-                                        <td>{{ costodesp.3 }}</td>
-                                        <td>{{ costodesp.4 }}</td>
-                                        <td>{{ costodesp.5 }}</td>
-                                        <td>{{ costodesp.6 }}</td>
-                                        <td>{{ costodesp.7 }}</td>
-                                        <td>{{ costodesp.8 }}</td>
-                                        <td>{{ costodesp.9 }}</td>
+                                        <td>{{ pqrs.0 }}</td>
+                                        <td>{{ pqrs.1 }}</td>
+                                        <td>{{ pqrs.2 }}</td>
+                                        <td>{{ pqrs.3 }}</td>
+                                        <td>{{ pqrs.4 }}</td>
+                                        <td>{{ pqrs.5 }}</td>
+                                        <td>{{ pqrs.6 }}</td>
 
                                     </tr>
                                     {% endfor %}

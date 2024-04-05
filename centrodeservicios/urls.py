@@ -107,8 +107,8 @@ urlpatterns = [
     path('repcadabastecimiento/', views.repcadabastecimiento, name='repcadabastecimiento'),
     path('repplantaalibal/', views.repplantaalibal, name='repplantaalibal'),
     path('repcalidad/', views.repcalidad, name='repcalidad'),
-
-
+    path('repadminfinan/', views.repadminfinan, name='repadminfinan'),
+    path('repgestionhumana/', views.repgestionhumana, name='repgestionhumana'),
 
 
 
