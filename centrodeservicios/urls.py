@@ -113,8 +113,7 @@ urlpatterns = [
     
     path('api/hembras-registradas/', views.api_hembras_registradas),
 
-
-
+    
 
 
 

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Remisiones</title>
+</head>
+<body>
+    <h1>Reporte de Remisiones</h1>
+    <p>Fecha y hora de expedición: {{ fecha_hora }}</p>
+    <table borderer="1">
+        <thead>
+            <tr>
+                <th>REMISION GRANJA</th>
+                <th>Registro IC</th>
+                <th>Registro ICA</th>
+                <th>Placa</th>
+                <th>Transportado Por</th>
+                <th>Despachado a</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for remision in remisiones %}
+            <tr>
+                <td>{{ remision.idsolicitud }}</td>
+                <td>{{ remision.regic }}</td>
+                <td>{{ remision.regica }}</td>
+                <td>{{ remision.placa }}</td>
+                <td>{{ remision.conductor }}</td>
+                <td>{{ remision.frigorifico }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

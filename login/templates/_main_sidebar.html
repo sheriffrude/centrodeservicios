@@ -274,7 +274,7 @@
 
                     </ul>
                 </li>
-                {% if request.user|user_belongs_to_group:'gerencia' %}
+                {% if request.user|user_belongs_to_group:'tecnica' %}
                         <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
                             <a href="{% url 'repremision' %}"  >
                                 <i class="nav-icon fas fa-user-tie"></i>Remisiones

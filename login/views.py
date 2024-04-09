@@ -1841,19 +1841,31 @@ def tablareptoneladasimport(request):
 
 from django.db import OperationalError
 
+
 @never_cache
 @login_required
 def repremision(request):
-    remisionnew = tablaremisionnew(request)
-    return render(request, 'remision.html', {'remisionnew': remisionnew})
+    consecutivo_cercafe = request.GET.get('consecutivoCercafe', None)
+    if consecutivo_cercafe:
+        remisionnew = tablaremisionnew(consecutivo_cercafe)
+        print(consecutivo_cercafe)
+        return JsonResponse({'remisionnew': remisionnew})
+    else:
+        # Si no se proporciona un consecutivo, simplemente renderiza la plantilla HTML
+        return render(request, 'remision.html')
 
-def tablaremisionnew(request):
+
+
+
+def tablaremisionnew(consecutivo_cercafe):
     intranetcercafe2_connection = connections['intranet']
     with intranetcercafe2_connection.cursor() as cursor:
-        cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento from intranetcercafe2.despachoLotesGranjas")
-        remisionnew = cursor.fetchall()   
+        if consecutivo_cercafe:
+            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento from intranetcercafe2.despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
+        else:
+            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento from intranetcercafe2.despachoLotesGranjas")
+        remisionnew = cursor.fetchall()
     return remisionnew
-
 
 
 
