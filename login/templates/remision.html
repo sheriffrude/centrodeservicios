@@ -1,0 +1,174 @@
+{% load adminlte_helpers i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>comercial</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+
+    {% block meta %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% endblock %}
+
+    {% block stylesheets %}
+    {% include 'adminlte/lib/_styles.html' %}
+    <style type="text/css">
+        .btn-circle.btn-xl {
+            width: 130px;
+            height: 100px;
+            padding: 13px 18px;
+            border-radius: 100px;
+            font-size: 15px;
+            text-align: center;
+            margin-left: 50px;
+        }
+
+        .btn-repor {
+            background-color: #651410;
+            color: aliceblue;
+        }
+    </style>
+    {% endblock %}
+
+    {% block extra_head %}{% endblock %}
+</head>
+</head>
+
+<body class="hold-transition sidebar-mini {% block body_class %}{% block bodyclass %}{% endblock %}{% endblock %}">
+    <div class="wrapper">
+        {% block nav_header %}
+        {% include '_main_header.html' %}
+        {% endblock %}
+
+        {% block nav_sidebar %}
+        {% include '_main_sidebar.html' %}
+        {% endblock %}
+
+        {% block content_wrapper %}
+        <div class="content-wrapper">
+            {% block content_header %}
+            <section class="content-header">
+                {% block no_heading %}
+                <h1>
+                    {% block page_name %}{% endblock %}
+                    <div class="header-actions">
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                    {% block no_description %}
+                    <small>{% block page_description %}{% endblock %}</small>
+                    {% endblock %}
+                </h1>
+                {% block breadcrumbs %}
+                {# Breadcrumb implementation left to developers #}
+                {% endblock %}
+                {% endblock no_heading %}
+                <h1>Generar Remisiones</h1>
+            </section>
+            {% endblock %}{% endblock %}
+            <section>
+                <div class="row">
+                    <div class="col-3"><input type="number" class="form-control" placeholder="Numero Remision"></div>
+                    <button id="btn_remisionnew" class="btn btn-repor btn-lg" onclick="mostrarremisionnew()">BUSCAR</button>
+                </div>
+            </section>
+
+            <!-- Contenido principal -->
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="remisionnew_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REMISION</h3>
+                        </div>
+                    
+                        <div class="card-body">
+                            <table id="tabla_remisionnew" class="table table-bordered table-hover " >
+                                <thead>
+                                    <tr>
+                                        <th>Consecutivo Despacho</th>
+                                        <th>ID Solicitud</th>
+                                        <th>Granja</th>
+                                        <th>Lote</th>
+                                        <th>Cerdos Despachados</th>
+                                        <th>Frigorífico</th>
+                                        <th>Fecha de Entrega</th>
+                                        <th>Peso Total</th>
+                                        <th>Conductor</th>
+                                        <th>Placa</th>
+                                        <th>Registro IC</th>
+                                        <th>Registro ICA</th>
+                                        <th>Retiro de Alimento</th>
+                                        
+                                    </tr>
+                                </thead>
+
+
+                                    {% for remisionne in remisionnew %}
+                                    <tr>
+                                        <td>{{ remisionne.0 }}</td>
+                                        <td>{{ remisionne.1 }}</td>
+                                        <td>{{ remisionne.2 }}</td>
+                                        <td>{{ remisionne.3 }}</td>
+                                        <td>{{ remisionne.4 }}</td>
+                                        <td>{{ remisionne.5 }}</td>
+                                        <td>{{ remisionne.6 }}</td>
+                                        <td>{{ remisionne.7 }}</td>
+                                        <td>{{ remisionne.8 }}</td>
+                                        <td>{{ remisionne.9 }}</td>
+                                        <td>{{ remisionne.10 }}</td>
+                                        <td>{{ remisionne.11 }}</td>
+                                        <td>{{ remisionne.12 | date:"d/m/Y H:i:s" }}</td> 
+                                       
+                                        
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+
+
+            <!-- Pie de página -->
+            <!-- Agrega aquí el código para el pie de página si es necesario -->
+
+
+
+
+            {% block javascript %}
+            {% include 'adminlte/lib/_scripts.html' %}
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+            <script>
+                function mostrarremisionnew() {
+                    document.getElementById("remisionnew_table").style.display = "block";
+                   
+                }
+
+               
+                $(document).ready(function () {
+                    $('#tabla_remisionnew').DataTable();
+
+                    $("#tabla_ventas").DataTable({
+                        "responsive": true, "lengthChange": false, "autoWidth": false,
+                        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                    }).buttons().container().appendTo('#tabla_ventas_wrapper .col-md-6:eq(0)');
+
+                });
+            </script>
+            <!-- script para llamar los html en el contenido -->
+            <script src="{% static 'custom.js' %}"></script>
+            {% endblock %}
+
+</body>
+
+</html>

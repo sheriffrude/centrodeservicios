@@ -120,6 +120,7 @@
                             </a>
                         </li>
                         {% endif %}
+                        
                         {% if request.user|user_belongs_to_group:'rrhh' %}
                         <li class="nav-item">
                             <a id="cargarContenido" href="{% url 'gestionhumana' %}" class="nav-link">
@@ -234,6 +235,7 @@
                             </a>
                         </li>
                         {% endif %}
+                        
                         {% if request.user|user_belongs_to_group:'rrhh' %}
                         <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
                             <a href="{% url 'repgestionhumana' %}"  >
@@ -272,6 +274,13 @@
 
                     </ul>
                 </li>
+                {% if request.user|user_belongs_to_group:'gerencia' %}
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
+                            <a href="{% url 'repremision' %}"  >
+                                <i class="nav-icon fas fa-user-tie"></i>Remisiones
+                            </a>
+                        </li>
+                        {% endif %}
             </div>
                 {% endblock nav_links %}
                 {% endblock nav_links_outer %}

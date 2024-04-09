@@ -140,6 +140,7 @@ def carexitosa(request):
 @login_required
 def repofina(request):
    return render(request, 'report_finan.html')
+
 #------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------
 #---------------CADENA DE ABASTECIMIENTO --------------------------------------------------------------
@@ -1838,8 +1839,168 @@ def tablareptoneladasimport(request):
 
 
 
+from django.db import OperationalError
+
+@never_cache
+@login_required
+def repremision(request):
+    remisionnew = tablaremisionnew(request)
+    return render(request, 'remision.html', {'remisionnew': remisionnew})
+
+def tablaremisionnew(request):
+    intranetcercafe2_connection = connections['intranet']
+    with intranetcercafe2_connection.cursor() as cursor:
+        cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento from intranetcercafe2.despachoLotesGranjas")
+        remisionnew = cursor.fetchall()   
+    return remisionnew
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def api_hembras_registradas(request):
+    # Obtener la conexión a la base de datos intranetcercafe2
+    intranetcercafe2_connection = connections['intranet']
+
+    # Realizar la consulta a la base de datos
+    with intranetcercafe2_connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM hembras_registradas")
+        results = cursor.fetchall()
+
+    # Procesar los resultados y construir la respuesta JSON
+    items = {'Ingreso_lote': []}
+    for granja in results:
+        item = {
+            'id': granja[0],
+            'id_lote': granja[1],
+            'nombre_hembra': granja[2],
+            'estado': granja[3]
+        }
+        items['Ingreso_lote'].append(item)
+
+    response = {
+        'success': True,
+        'data': items,
+        'message': 'data_hembras_peso_esperado'
+    }
+
+    return JsonResponse(response, status=200)
 
 
 

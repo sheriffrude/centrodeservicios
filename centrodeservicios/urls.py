@@ -11,7 +11,7 @@ urlpatterns = [
     path('signin/', views.signin, name='signin'),
     path('home/', views.home, name='home'),
     path('exit/', views.exit, name='exit'),
-    
+
     #----------------------cadena de abastecimiento ----------------------------------
     path('cadenaabastecimiento/', views.cadenaabastecimiento, name='cadenaabastecimiento'),
     path('cargar_excel_disponibilidad/', views.cargar_excel_disponibilidad, name='cargar_excel_disponibilidad'),
@@ -109,6 +109,9 @@ urlpatterns = [
     path('repcalidad/', views.repcalidad, name='repcalidad'),
     path('repadminfinan/', views.repadminfinan, name='repadminfinan'),
     path('repgestionhumana/', views.repgestionhumana, name='repgestionhumana'),
+    path('repremision/', views.repremision, name='repremision'),
+    
+    path('api/hembras-registradas/', views.api_hembras_registradas),
 
 
 

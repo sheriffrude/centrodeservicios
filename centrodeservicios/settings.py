@@ -108,6 +108,14 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306',
     },
+    'intranet': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'intranetcercafe2',
+        'USER': 'root',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    },
 }
 
 # Lista de nombres de esquemas adicionales
@@ -132,6 +140,7 @@ for esquema in esquemas:
         'NAME': esquema,
         **base_config,
     }
+
 
 
 # Password validation
