@@ -3,6 +3,7 @@ from django.urls import path
 from centrodeservicios import settings
 from login import views
 from django.conf.urls.static import static
+
 #--Todas las urls de Centro de servicios ---
 
 urlpatterns = [
@@ -110,11 +111,10 @@ urlpatterns = [
     path('repadminfinan/', views.repadminfinan, name='repadminfinan'),
     path('repgestionhumana/', views.repgestionhumana, name='repgestionhumana'),
     path('repremision/', views.repremision, name='repremision'),
-    
+    path('generar_pdf/', views.generar_pdf, name='generar_pdf'),
     path('api/hembras-registradas/', views.api_hembras_registradas),
 
     
-
 
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

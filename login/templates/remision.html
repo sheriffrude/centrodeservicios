@@ -183,6 +183,7 @@
                                     var remisionnew = response.remisionnew;
                                     // Iterar sobre los datos y agregar filas a la tabla
                                     $.each(remisionnew, function (index, data) {
+                                        console.log(remisionnew)
                                         var row = '<tr>';
                                         row += '<td>' + data[0] + '</td>';
                                         row += '<td>' + data[1] + '</td>';
@@ -214,7 +215,13 @@
                         });
                     });
                 });
-                
+                $(document).ready(function () {
+                    $('#generatePdfBtn').click(function () {
+                        var consecutivoCercafe = $('#consecutivoCercafe').val();
+                        console.log(consecutivoCercafe)
+                        window.location.href = '/generar_pdf/?consecutivoCercafe=' + consecutivoCercafe;
+                    });
+                });
             </script>
 
 

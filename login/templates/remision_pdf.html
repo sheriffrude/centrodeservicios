@@ -1,3 +1,6 @@
+{% load adminlte_helpers %}
+{%load static %}
+{% load custom_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,31 +8,139 @@
     <title>Reporte de Remisiones</title>
 </head>
 <body>
-    <h1>Reporte de Remisiones</h1>
-    <p>Fecha y hora de expedición: {{ fecha_hora }}</p>
-    <table borderer="1">
-        <thead>
-            <tr>
-                <th>REMISION GRANJA</th>
-                <th>Registro IC</th>
-                <th>Registro ICA</th>
-                <th>Placa</th>
-                <th>Transportado Por</th>
-                <th>Despachado a</th>
-            </tr>
-        </thead>
+    <table style="height: 30px; width: 305px; border-collapse: collapse; border-style: solid; float: right; margin-top: 0;" border="1">
         <tbody>
-            {% for remision in remisiones %}
-            <tr>
-                <td>{{ remision.idsolicitud }}</td>
-                <td>{{ remision.regic }}</td>
-                <td>{{ remision.regica }}</td>
-                <td>{{ remision.placa }}</td>
-                <td>{{ remision.conductor }}</td>
-                <td>{{ remision.frigorifico }}</td>
-            </tr>
-            {% endfor %}
+        <tr style="height: 30px;">
+        <td style="width: 176.172px; height: 30px; text-align: center;">CONSECUTIVO CERCAFE:</td>
+        <td style="width: 121.828px; text-align: center; height: 30px;"><strong>{{ consecutivo_cercafe }}</strong></td>
+        </tr>
         </tbody>
-    </table>
+        </table>
+        <p style="text-align: center;"><img style="float: left;" src="" alt="" width="118" height="118" />&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;</p>
+        <p style="text-align: center;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+        <p style="text-align: left;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;  &nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="" alt="" width="194" height="97" /></p>
+        <p style="text-align: center;">&nbsp;&nbsp;Nit: 816003954-5</p>
+        <p style="text-align: center;">MERCASA UN ADMINISTRATIVA P4 OF 403 - PEREIRA</p>
+        <p>&nbsp; &nbsp; &nbsp;</p>
+        <table style="height: 122px; width: 100%; border-collapse: collapse; border-style: solid;">
+        <tbody>
+        <tr style="height: 14px;">
+        <td style="width: 23.5295%; height: 14px;"><strong>Planta De Sacrificio:</strong></td>
+        <td style="width: 14.7058%; height: 14px;">Frigotún</td>
+        <td style="width: 3.5014%; height: 14px;">&nbsp;</td>
+        <td style="width: 4.06156%; height: 14px;">&nbsp;</td>
+        <td style="width: 34.1737%; height: 14px;"><strong>Fecha y hora de expedicion:</strong></td>
+        <td style="width: 14.2857%; height: 14px;">10/04/2024 13:00:00</td>
+        </tr>
+        <tr style="height: 18px;">
+        <td style="width: 23.5295%; height: 18px;"><strong>Granja:</strong></td>
+        <td style="width: 14.7058%; height: 18px;">CAMPEON</td>
+        <td style="width: 3.5014%; height: 18px;">&nbsp;</td>
+        <td style="width: 4.06156%; height: 18px;">&nbsp;</td>
+        <td style="width: 34.1737%; height: 18px;"><strong>Ciudad&nbsp;</strong></td>
+        <td style="width: 14.2857%; height: 18px;">Pereira</td>
+        </tr>
+        
+        <tr style="height: 18px;">
+        <td style="width: 23.5295%; height: 18px;"><strong>Propietario:</strong></td>
+        <td style="width: 14.7058%; height: 18px;">CAMPEON</td>
+        <td style="width: 3.5014%; height: 18px;">&nbsp;</td>
+        <td style="width: 4.06156%; height: 18px;">&nbsp;</td>
+        <td style="width: 34.1737%; height: 18px;"><strong>Registro ICA:</strong></td>{% for remisionne in remisionnew %}
+        <td style="width: 14.2857%; height: 18px;">{{ remisionne.11}}</td>{% endfor %}
+        </tr>
+        
+        <tr style="height: 18px;">
+        <td style="width: 23.5295%; height: 18px;"><strong>Nit:</strong></td>
+        <td style="width: 14.7058%; height: 18px;">900470503</td>
+        <td style="width: 3.5014%; height: 18px;">&nbsp;</td>
+        <td style="width: 4.06156%; height: 18px;">&nbsp;</td>
+        <td style="width: 34.1737%; height: 18px;"><strong>Registro IC:</strong></td>
+        <td style="width: 14.2857%; height: 18px;">202448123354</td>
+        </tr>
+        <tr style="height: 18px;">
+        <td style="width: 23.5295%; height: 18px;"><strong>Despachado a:</strong></td>
+        <td style="width: 14.7058%; height: 18px;">Frigotun</td>
+        <td style="width: 3.5014%; height: 18px;">&nbsp;</td>
+        <td style="width: 4.06156%; height: 18px;">&nbsp;</td>
+        <td style="width: 34.1737%; height: 18px;"><strong>Retiro de Alimento:</strong></td>
+        <td style="width: 14.2857%; height: 18px;">10/04/2024 05:00:00</td>
+        </tr>
+        <tr style="height: 18px;">
+        <td style="width: 23.5295%; height: 18px;"><strong>Transportado por:</strong></td>
+        <td style="width: 14.7058%; height: 18px;">Jose Guillermo Alzate</td>
+        <td style="width: 3.5014%; height: 18px;">&nbsp;</td>
+        <td style="width: 4.06156%; height: 18px;">&nbsp;</td>
+        <td style="width: 34.1737%; height: 18px;"><strong>Placa:</strong></td>
+        {% for remision in remisionnew %}
+        <td style="width: 14.2857%; height: 18px;">{{remision.9}}</td>
+        {% endfor %}
+        </tr>
+        <tr style="height: 18px;">
+        <td style="width: 23.5295%; height: 18px;">&nbsp;</td>
+        <td style="width: 14.7058%; height: 18px;">&nbsp;</td>
+        <td style="width: 3.5014%; height: 18px;">&nbsp;</td>
+        <td style="width: 4.06156%; height: 18px;">&nbsp;</td>
+        <td style="width: 34.1737%; height: 18px;">&nbsp;</td>
+        <td style="width: 14.2857%; height: 18px;">&nbsp;</td>
+        </tr>
+        </tbody>
+        </table>
+        <table style="height: 72px; width: 100%; border-collapse: collapse;">
+        <tbody>
+        <tr style="height: 18px;">
+        <td style="width: 16.6667%; height: 18px;">&nbsp;</td>
+        <td style="width: 16.5266%; height: 18px;">&nbsp;</td>
+        <td style="width: 26.7507%; height: 18px;">&nbsp;</td>
+        <td style="width: 21.5687%; height: 18px;">&nbsp;</td>
+        <td style="width: 9.94403%; height: 18px;">&nbsp;</td>
+        <td style="width: 8.54345%; height: 18px;">&nbsp;</td>
+        </tr>
+        <tr style="height: 18px;">
+        
+        <td style="width: 16.5266%; height: 18px;"><strong>LOTE</strong></td>
+        
+        <td style="width: 21.5687%; height: 18px;"><strong>DESCRIPCION</strong></td>
+        <td style="width: 9.94403%; height: 18px;"><strong>CANT</strong></td>
+        <td style="width: 8.54345%; height: 18px;"><strong>PESO</strong></td>
+        </tr>{% for remisionne in remisionnew %}
+        <tr style="height: 18px;">
+        
+        <td style="width: 16.5266%; height: 18px;">{{remisionne.3}}</td>
+        <td style="width: 21.5687%; height: 18px;">CERDO EN PIE</td>
+        <td style="width: 9.94403%; height: 18px;">{{remisionne.4}}</td>
+        <td style="width: 8.54345%; height: 18px;">{{remisionne.7}}</td>
+        </tr>
+        {% endfor %}
+       
+        <tr style="height: 18px;">
+        <td style="width: 16.6667%; height: 18px;">&nbsp;</td>
+        <td style="width: 16.5266%; height: 18px;">&nbsp;</td>
+        <td style="width: 26.7507%; height: 18px;">&nbsp;</td>
+        <td style="width: 21.5687%; height: 18px;">&nbsp;</td>
+        <td style="width: 9.94403%; height: 18px;">&nbsp;</td>
+        <td style="width: 8.54345%; height: 18px;">&nbsp;</td>
+        </tr>
+        </tbody>
+        </table>
+        <p>Observaciones:</p>
+        <table style="height: 80px; width: 100.617%; border-collapse: collapse; border-style: solid;" border="1"><caption>&nbsp;</caption>
+        <tbody>
+        <tr style="height: 15px;">
+        <td style="width: 17.4969%; height: 15px;">Fecha y Hora de Salida:</td>
+        <td style="width: 20.1354%; height: 15px;">&nbsp;Despachado Por:</td>
+        <td style="width: 16.7966%; height: 15px;">Fecha y Hora Llegada:</td>
+        <td style="width: 20.5639%; height: 15px;">Recibido Por:</td>
+        <td style="width: 27.7724%; height: 15px;">Cantidad Total: <strong>6</strong></td>
+        </tr>
+        <tr style="height: 65px;">
+        <td style="width: 17.4969%; height: 65px;">&nbsp;</td>
+        <td style="width: 20.1354%; height: 65px;">&nbsp;</td>
+        <td style="width: 16.7966%; height: 65px;">&nbsp;</td>
+        <td style="width: 20.5639%; height: 65px;">&nbsp;</td>
+        <td style="width: 27.7724%; height: 65px;">Peso Total: <strong>1100</strong></td>
+        </tr>
+        </tbody>
+        </table>
 </body>
 </html>

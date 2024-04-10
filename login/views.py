@@ -8,6 +8,7 @@ import pandas as pd
 from django.http import HttpResponse, HttpResponseRedirect
 
 from centrodeservicios import settings
+
 from .forms import UploadFileForm
 from django.http import JsonResponse
 import openpyxl
@@ -1591,7 +1592,8 @@ def tablarepclient(request):
     return clientes_act
 def tablarepventas(request):
     with connections['B_GC'].cursor() as cursor:
-        cursor.execute('''SELECT FECHA_CORTE,LINEA_NEGOCIO,PRESUPUESTO_UNIDADES,PRESUPUESTO_KG,UNIDADES_VENDIDAS,KG_VENDIDO,VALOR_VENTA,PRESUPUESTO_VENTA FROM B_GC.VENTAS ''')
+        cursor.execute('''SELECT FECHA_CORTE,LINEA_NEGOCIO,PRESUPUESTO_UNIDADES,PRESUPUESTO_KG,UNIDADES_VENDIDAS,KG_VENDIDO,VALOR_VENTA,PRESUPUESTO_VENTA FROM B_GC.VENTAS 
+                          WHERE GUID = (SELECT MAX(GUID) FROM B_GC.VENTAS)''')
         repventas = cursor.fetchall()   
     return repventas
 #---------------- TABLAS DE REPORTES G TECNICA------------------------------------------
@@ -1724,12 +1726,12 @@ def repcalidad(request):
 
 def tablarepavancepro(request):
     with connections['B_C'].cursor() as cursor:
-        cursor.execute('''SELECT TIPO,PROCESO,DETALLE_PROCESO,AVANCE,META,FECHA_CORTE FROM B_C.AVANCE_PROCESO ''')
+        cursor.execute('''SELECT TIPO,PROCESO,DETALLE_PROCESO,AVANCE,META,FECHA_CORTE FROM B_C.AVANCE_PROCESO WHERE GUID = (SELECT MIN(GUID) FROM b_c.avance_proceso) ''')
         avancepro = cursor.fetchall()   
     return avancepro
 def tablarepcalidadpla(request):
     with connections['B_C'].cursor() as cursor:
-        cursor.execute('''SELECT PORCENTAJE_DESVIACIONES_CALIDAD,TONELADAS_REPROCESADAS,TONELADAS_LIBERADAS_CONCESION,PORCENTAJE_RETENCION,PORCENTAJE_MEZCLA,PORCENTAJE_DURABILIDAD,PORCENTAJE_FINOS,PORCENTAJE_FORMULACION,CUMPLIMIENTO_BPM,FECHA_CORTE FROM B_C.CALIDAD_PLANTA''')
+        cursor.execute('''SELECT PORCENTAJE_DESVIACIONES_CALIDAD,TONELADAS_REPROCESADAS,TONELADAS_LIBERADAS_CONCESION,PORCENTAJE_RETENCION,PORCENTAJE_MEZCLA,PORCENTAJE_DURABILIDAD,PORCENTAJE_FINOS,PORCENTAJE_FORMULACION,CUMPLIMIENTO_BPM,FECHA_CORTE FROM B_C.CALIDAD_PLANTA WHERE GUID = (SELECT MIN(GUID) FROM B_C.CALIDAD_PLANTA)''')
         calidadpla = cursor.fetchall()   
     return calidadpla
 def tablarepcausadesvia(request):
@@ -1868,6 +1870,39 @@ def tablaremisionnew(consecutivo_cercafe):
     return remisionnew
 
 
+
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+import pdfkit
+
+def generar_pdf(request):
+    intranetcercafe2_connection = connections['intranet']
+    consecutivo_cercafe = request.GET.get('consecutivoCercafe', None)
+    
+    # Verificar si se proporciona un consecutivo_cercafe
+    if consecutivo_cercafe:
+        # Obtener los datos de la remisión filtrados por el consecutivo ceracafe
+        remisiones = tablaremisionnew(consecutivo_cercafe)
+        with intranetcercafe2_connection.cursor() as cursor:
+            if consecutivo_cercafe:
+                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento from intranetcercafe2.despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
+            else:
+                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento from intranetcercafe2.despachoLotesGranjas")
+            remisionnew = cursor.fetchall()
+        print(remisionnew)
+        # Renderizar el HTML con los datos de la remisión filtrados
+        html = render_to_string('remision_pdf.html', {'remisiones': remisiones, 'remisionnew':remisionnew, 'consecutivo_cercafe':consecutivo_cercafe})
+        
+        # Convertir el HTML en PDF utilizando wkhtmltopdf
+        pdf = pdfkit.from_string(html, False, configuration=pdfkit.configuration(wkhtmltopdf='C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'))
+
+        # Retornar el PDF como una respuesta HTTP para descargar
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="reporte_remisiones.pdf"'
+        return response
+    else:
+        # Si no se proporciona un consecutivo, devolver un mensaje de error o redireccionar a otra página
+        return HttpResponse("No se proporcionó un consecutivo válido.")
 
 
 
