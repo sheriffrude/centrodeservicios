@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'adminlte3',
     'adminlte3_theme',
     'wkhtmltopdf',
-    'rest_framework'
+    
 ]
 
 MIDDLEWARE = [
@@ -198,3 +198,12 @@ CACHE_MIDDLEWARE_ALIAS = 'default'
 CACHE_MIDDLEWARE_SECONDS = 0
 CACHE_MIDDLEWARE_KEY_PREFIX = ''
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
+
+
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'mendietap874@gmail.com'
+EMAIL_HOST_PASSWORD = 'Celeste1*'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

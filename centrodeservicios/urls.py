@@ -3,7 +3,7 @@ from django.urls import path
 from centrodeservicios import settings
 from login import views
 from django.conf.urls.static import static
-
+from django.contrib.auth import views as auth_views
 #--Todas las urls de Centro de servicios ---
 
 urlpatterns = [
@@ -12,7 +12,10 @@ urlpatterns = [
     path('signin/', views.signin, name='signin'),
     path('home/', views.home, name='home'),
     path('exit/', views.exit, name='exit'),
-
+    path('reset_password/', auth_views.PasswordResetView.as_view(), name='reset_password'),
+    path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     #----------------------cadena de abastecimiento ----------------------------------
     path('cadenaabastecimiento/', views.cadenaabastecimiento, name='cadenaabastecimiento'),
     path('cargar_excel_disponibilidad/', views.cargar_excel_disponibilidad, name='cargar_excel_disponibilidad'),
