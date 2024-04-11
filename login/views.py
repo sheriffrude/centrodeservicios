@@ -1874,24 +1874,85 @@ def tablaremisionnew(consecutivo_cercafe):
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 import pdfkit
+import qrcode
+from django.db import connections
+from django.template.loader import render_to_string
 
+def generate_qr_code(input_data):
+    # Obtener la ruta absoluta del directorio 'static/images' dentro de tu proyecto Django
+    static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
+    images_dir = os.path.join(static_dir, 'images')
+    filename = 'qrcercafe.png'
+    filepath = os.path.join(images_dir, filename)
+
+    # Crear el directorio si no existe
+    os.makedirs(images_dir, exist_ok=True)
+
+    # Crear el código QR
+    qr = qrcode.QRCode(version=1, box_size=10, border=5)
+    qr.add_data(input_data)
+    qr.make(fit=True)
+
+    # Crear la imagen del código QR
+    img = qr.make_image(fill='black', back_color='white')
+
+    # Guardar la imagen en la ruta especificada
+    img.save(filepath)
+    
+    
 def generar_pdf(request):
     intranetcercafe2_connection = connections['intranet']
+    dhc_connection = connections['DHC'] 
     consecutivo_cercafe = request.GET.get('consecutivoCercafe', None)
     
     # Verificar si se proporciona un consecutivo_cercafe
     if consecutivo_cercafe:
         # Obtener los datos de la remisión filtrados por el consecutivo ceracafe
         remisiones = tablaremisionnew(consecutivo_cercafe)
+        
+        # Consultar los datos de la tabla despachoLotesGranjas de intranetcercafe2
         with intranetcercafe2_connection.cursor() as cursor:
             if consecutivo_cercafe:
-                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento from intranetcercafe2.despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
+                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento FROM despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
             else:
-                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento from intranetcercafe2.despachoLotesGranjas")
+                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento FROM despachoLotesGranjas")
             remisionnew = cursor.fetchall()
-        print(remisionnew)
+            
+        granja_primera_consulta = remisionnew[0][2] if remisionnew else None
+        
+        print(granja_primera_consulta)
+        if granja_primera_consulta:
+            with dhc_connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT
+                        B.ID AS ID,
+                        B.ID_FRIGOTUN AS ID_INTRANET,
+                        UPPER(C.GRANJAS) AS Granja,
+                        D.CODIGO AS Nit_asociado,
+                        UPPER(E.RAZON_SOCIAL) AS Asociado
+                    FROM
+                        DHC.homologacion_granjas B
+                    JOIN DHC.granjas C ON B.ID = C.ID
+                    JOIN DHC.nombre_comercial D ON C.NOMBRE_COMERCIAL = D.ID
+                    JOIN DHC.RAZON_SOCIAL E ON C.RAZON_SOCIAL = E.ID
+                    WHERE UPPER(ID_INTRANET) = %s;
+                """, [granja_primera_consulta])
+                resultados_dhc = cursor.fetchall()
+        print(resultados_dhc)
+
+        # Combinar los resultados de ambas consultas si es necesario
+        
+        total_cantidad = sum(remisionne[7] for remisionne in remisionnew)
+        
+        total_cantidad1 = str(sum(remisionne[7] for remisionne in remisionnew))
+        totalcerdos = sum(remisionne[4] for remisionne in remisionnew)
+        totalcerdos1 = str(sum(remisionne[4] for remisionne in remisionnew))
+        promedio = total_cantidad/totalcerdos
+        promedio_formateado = f'{promedio:.2f}'
+        input_data = (resultados_dhc[0][0], resultados_dhc[0][2],consecutivo_cercafe, totalcerdos1, total_cantidad1)
+        generate_qr_code(input_data)
         # Renderizar el HTML con los datos de la remisión filtrados
-        html = render_to_string('remision_pdf.html', {'remisiones': remisiones, 'remisionnew':remisionnew, 'consecutivo_cercafe':consecutivo_cercafe})
+        html = render_to_string('remision_pdf.html', {'remisiones': remisiones,'promedio_formateado':promedio_formateado ,'remisionnew':remisionnew, 'resultados_dhc':resultados_dhc,'consecutivo_cercafe':consecutivo_cercafe,'total_cantidad':total_cantidad,'totalcerdos':totalcerdos})
         
         # Convertir el HTML en PDF utilizando wkhtmltopdf
         pdf = pdfkit.from_string(html, False, configuration=pdfkit.configuration(wkhtmltopdf='C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'))
@@ -1903,6 +1964,7 @@ def generar_pdf(request):
     else:
         # Si no se proporciona un consecutivo, devolver un mensaje de error o redireccionar a otra página
         return HttpResponse("No se proporcionó un consecutivo válido.")
+
 
 
 

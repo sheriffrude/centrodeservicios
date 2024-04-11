@@ -6,6 +6,21 @@
 <head>
     <meta charset="UTF-8">
     <title>Reporte de Remisiones</title>
+    <script>
+        function actualizarFechaExpedicion() {
+            var fechaHoraActual = new Date();
+            var formatoFechaHora = ("0" + fechaHoraActual.getDate()).slice(-2) + "/" +
+                                   ("0" + (fechaHoraActual.getMonth() + 1)).slice(-2) + "/" +
+                                   fechaHoraActual.getFullYear() + " " +
+                                   ("0" + fechaHoraActual.getHours()).slice(-2) + ":" +
+                                   ("0" + fechaHoraActual.getMinutes()).slice(-2) + ":" +
+                                   ("0" + fechaHoraActual.getSeconds()).slice(-2);
+            document.getElementById("fechaExpedicion").innerText = formatoFechaHora;
+        }
+        window.onload = function() {
+            actualizarFechaExpedicion();
+        };
+    </script>
 </head>
 <body>
     <table style="height: 30px; width: 305px; border-collapse: collapse; border-style: solid; float: right; margin-top: 0;" border="1">
@@ -16,9 +31,12 @@
         </tr>
         </tbody>
         </table>
-        <p style="text-align: center;"><img style="float: left;" src="" alt="" width="118" height="118" />&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;</p>
+        <p style="text-align: center;"><img style="float: left;" src="http://127.0.0.1:8000/static/images/qrcercafe.png" alt="" width="118" height="118" />&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;</p> 
         <p style="text-align: center;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-        <p style="text-align: left;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;  &nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="" alt="" width="194" height="97" /></p>
+        <p style="text-align: left;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;
+             &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; 
+                <img src="http://127.0.0.1:8000/static/images/logo_cercafe_original.png" alt="logocercafe" width="194" height="97" /></p>
         <p style="text-align: center;">&nbsp;&nbsp;Nit: 816003954-5</p>
         <p style="text-align: center;">MERCASA UN ADMINISTRATIVA P4 OF 403 - PEREIRA</p>
         <p>&nbsp; &nbsp; &nbsp;</p>
@@ -26,15 +44,23 @@
         <tbody>
         <tr style="height: 14px;">
         <td style="width: 23.5295%; height: 14px;"><strong>Planta De Sacrificio:</strong></td>
-        <td style="width: 14.7058%; height: 14px;">Frigotún</td>
+        {% if remisionnew %}
+        {% with last_remision=remisionnew|last %}
+        <td style="width: 14.2857%; height: 18px;">{{ last_remision.5}}</td>
+        {% endwith %}
+        {% endif %}
         <td style="width: 3.5014%; height: 14px;">&nbsp;</td>
         <td style="width: 4.06156%; height: 14px;">&nbsp;</td>
         <td style="width: 34.1737%; height: 14px;"><strong>Fecha y hora de expedicion:</strong></td>
-        <td style="width: 14.2857%; height: 14px;">10/04/2024 13:00:00</td>
+        <td style="width: 14.2857%; height: 14px;" id="fechaExpedicion">10/04/2024 13:00:00</td>
         </tr>
         <tr style="height: 18px;">
         <td style="width: 23.5295%; height: 18px;"><strong>Granja:</strong></td>
-        <td style="width: 14.7058%; height: 18px;">CAMPEON</td>
+        {% if resultados_dhc %}
+        {% with last_resultados_dhc=resultados_dhc|last %}
+        <td style="width: 14.7058%; height: 18px;">{{last_resultados_dhc.2}}</td>
+        {% endwith %}
+        {% endif %}
         <td style="width: 3.5014%; height: 18px;">&nbsp;</td>
         <td style="width: 4.06156%; height: 18px;">&nbsp;</td>
         <td style="width: 34.1737%; height: 18px;"><strong>Ciudad&nbsp;</strong></td>
@@ -43,38 +69,68 @@
         
         <tr style="height: 18px;">
         <td style="width: 23.5295%; height: 18px;"><strong>Propietario:</strong></td>
-        <td style="width: 14.7058%; height: 18px;">CAMPEON</td>
+        {% if resultados_dhc %}
+        {% with last_resultados_dhc=resultados_dhc|last %}
+        <td style="width: 14.7058%; height: 18px;">{{last_resultados_dhc.4}}</td>
+        {% endwith %}
+        {% endif %}
         <td style="width: 3.5014%; height: 18px;">&nbsp;</td>
         <td style="width: 4.06156%; height: 18px;">&nbsp;</td>
-        <td style="width: 34.1737%; height: 18px;"><strong>Registro ICA:</strong></td>{% for remisionne in remisionnew %}
-        <td style="width: 14.2857%; height: 18px;">{{ remisionne.11}}</td>{% endfor %}
+        <td style="width: 34.1737%; height: 18px;"><strong>Registro ICA:</strong></td>
+        {% if remisionnew %}
+        {% with last_remision=remisionnew|last %}
+        <td style="width: 14.2857%; height: 18px;">{{ last_remision.11}}</td>
+        {% endwith %}
+        {% endif %}
         </tr>
         
         <tr style="height: 18px;">
         <td style="width: 23.5295%; height: 18px;"><strong>Nit:</strong></td>
-        <td style="width: 14.7058%; height: 18px;">900470503</td>
+        {% if resultados_dhc %}
+        {% with last_resultados_dhc=resultados_dhc|last %}
+        <td style="width: 14.7058%; height: 18px;">{{last_resultados_dhc.3}}</td>
+        {% endwith %}
+        {% endif %}
         <td style="width: 3.5014%; height: 18px;">&nbsp;</td>
         <td style="width: 4.06156%; height: 18px;">&nbsp;</td>
         <td style="width: 34.1737%; height: 18px;"><strong>Registro IC:</strong></td>
-        <td style="width: 14.2857%; height: 18px;">202448123354</td>
+        {% if remisionnew %}
+        {% with last_remision=remisionnew|last %}
+        <td style="width: 14.2857%; height: 18px;">{{ last_remision.10}}</td>
+        {% endwith %}
+        {% endif %}
         </tr>
         <tr style="height: 18px;">
         <td style="width: 23.5295%; height: 18px;"><strong>Despachado a:</strong></td>
-        <td style="width: 14.7058%; height: 18px;">Frigotun</td>
+        {% if remisionnew %}
+        {% with last_remision=remisionnew|last %}
+        <td style="width: 14.2857%; height: 18px;">{{ last_remision.5}}</td>
+        {% endwith %}
+        {% endif %}
         <td style="width: 3.5014%; height: 18px;">&nbsp;</td>
         <td style="width: 4.06156%; height: 18px;">&nbsp;</td>
         <td style="width: 34.1737%; height: 18px;"><strong>Retiro de Alimento:</strong></td>
-        <td style="width: 14.2857%; height: 18px;">10/04/2024 05:00:00</td>
+        {% if remisionnew %}
+        {% with last_remision=remisionnew|last %}
+        <td style="width: 14.2857%; height: 18px;">{{last_remision.12 | date:"d/m/Y H:i:s"}}</td>
+        {% endwith %}
+        {% endif %}
         </tr>
         <tr style="height: 18px;">
         <td style="width: 23.5295%; height: 18px;"><strong>Transportado por:</strong></td>
-        <td style="width: 14.7058%; height: 18px;">Jose Guillermo Alzate</td>
+        {% if remisionnew %}
+        {% with last_remision=remisionnew|last %}
+        <td style="width: 14.2857%; height: 18px;">{{ last_remision.8}}</td>
+        {% endwith %}
+        {% endif %}
         <td style="width: 3.5014%; height: 18px;">&nbsp;</td>
         <td style="width: 4.06156%; height: 18px;">&nbsp;</td>
         <td style="width: 34.1737%; height: 18px;"><strong>Placa:</strong></td>
-        {% for remision in remisionnew %}
-        <td style="width: 14.2857%; height: 18px;">{{remision.9}}</td>
-        {% endfor %}
+        {% if remisionnew %}
+        {% with last_remision=remisionnew|last %}
+        <td style="width: 14.2857%; height: 18px;">{{ last_remision.9 }}</td>
+        {% endwith %}
+        {% endif %}
         </tr>
         <tr style="height: 18px;">
         <td style="width: 23.5295%; height: 18px;">&nbsp;</td>
@@ -131,14 +187,14 @@
         <td style="width: 20.1354%; height: 15px;">&nbsp;Despachado Por:</td>
         <td style="width: 16.7966%; height: 15px;">Fecha y Hora Llegada:</td>
         <td style="width: 20.5639%; height: 15px;">Recibido Por:</td>
-        <td style="width: 27.7724%; height: 15px;">Cantidad Total: <strong>6</strong></td>
+        <td style="width: 27.7724%; height: 15px;">Cantidad Total: <strong>{{totalcerdos}}</strong></td>
         </tr>
         <tr style="height: 65px;">
         <td style="width: 17.4969%; height: 65px;">&nbsp;</td>
         <td style="width: 20.1354%; height: 65px;">&nbsp;</td>
         <td style="width: 16.7966%; height: 65px;">&nbsp;</td>
         <td style="width: 20.5639%; height: 65px;">&nbsp;</td>
-        <td style="width: 27.7724%; height: 65px;">Peso Total: <strong>1100</strong></td>
+        <td style="width: 27.7724%; height: 65px;">Peso Total: <strong>{{ total_cantidad }}</strong> <br> Peso Promedio : <strong>{{ promedio_formateado }}</strong></td>
         </tr>
         </tbody>
         </table>
