@@ -741,7 +741,7 @@ def cargar_excel_abashem(request):
                         'INSERT INTO ABASTECIMIENTO_HEMBRAS (GRANJA,CANTIDAD_ENTREGADA,PORCENTAJE_CUMPLIMIENTO,FECHA_CORTE,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s)',
                         (GRANJA.value,CANTIDAD_ENTREGADA.value,PORCENTAJE_CUMPLIMIENTO.value,FECHA_CORTE.value,guid,usuario.username)
                     )
-                messages.success(request, 'Carga de datos en SST SEVERIDAD Y FRECUENCIA exitosa')
+                messages.success(request, 'Carga de datos en ABASTECIMIENTO HEMBRAS exitosa')
         except KeyError:
             messages.error(request, 'No se ha proporcionado un archivo Excel.')
         except IntegrityError as e:
@@ -1587,7 +1587,8 @@ def repgcomercial(request):
 
 def tablarepclient(request):
     with connections['B_GC'].cursor() as cursor:
-        cursor.execute('''SELECT FECHA_CORTE,CANTIDAD_CLIENTES,ZONA_CLIENTE,KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE FROM B_GC.CLIENTES_ACTIVOS ''')
+        cursor.execute('''SELECT FECHA_CORTE,CANTIDAD_CLIENTES,ZONA_CLIENTE,KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE FROM B_GC.CLIENTES_ACTIVOS
+                          WHERE GUID = (SELECT MAX(GUID) FROM B_GC.CLIENTES_ACTIVOS) ''')
         clientes_act = cursor.fetchall()   
     return clientes_act
 def tablarepventas(request):
@@ -1610,32 +1611,34 @@ def repgtecnica(request):
 
 def tablarepabhembras(request):
     with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT GRANJA,CANTIDAD_ENTREGADA,PORCENTAJE_CUMPLIMIENTO,FECHA_CORTE FROM B_GT.ABASTECIMIENTO_HEMBRAS ''')
+        cursor.execute('''SELECT GRANJA,CANTIDAD_ENTREGADA,PORCENTAJE_CUMPLIMIENTO,FECHA_CORTE FROM B_GT.ABASTECIMIENTO_HEMBRAS
+                        WHERE GUID = (SELECT MAX(GUID) FROM B_GT.ABASTECIMIENTO_HEMBRAS)''')
         abhembras = cursor.fetchall()   
     return abhembras
 def tablarepfortuitos(request):
     with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT FECHA_CORTE,GRANJA,CANTIDAD,ESTADO,NUMERO_ORDEN,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,CANTIDAD_RETOMAS,NUMERO_TIQUETE,REGISTRO_FOTO,DESTINO FROM B_GT.FORTUITOS ''')
+        cursor.execute('''SELECT FECHA_CORTE,GRANJA,CANTIDAD,ESTADO,NUMERO_ORDEN,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,CANTIDAD_RETOMAS,NUMERO_TIQUETE,REGISTRO_FOTO,DESTINO FROM B_GT.FORTUITOS
+                       WHERE GUID = (SELECT MAX(GUID) FROM B_GT.FORTUITOS)''')
         fortuitos = cursor.fetchall()   
     return fortuitos
 def tablarepkgvendidos(request):
     with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT GRANJA,KG_V_H_A,ASOCIADO,FECHA_CORTE FROM B_GT.KG_VENDIDOS_HEMBRA''')
+        cursor.execute('''SELECT GRANJA,KG_V_H_A,ASOCIADO,FECHA_CORTE FROM B_GT.KG_VENDIDOS_HEMBRA WHERE GUID = (SELECT MAX(GUID) FROM B_GT.KG_VENDIDOS_HEMBRA)''')
         kgvendidos = cursor.fetchall()   
     return kgvendidos
 def tablareppfinalcon(request):
     with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT GRANJA,PESO,META_PESO,CONVERSION_META,CONVERSION,FECHA_CORTE FROM B_GT.PESO_FINAL_CONVERSION ''')
+        cursor.execute('''SELECT GRANJA,PESO,META_PESO,CONVERSION_META,CONVERSION,FECHA_CORTE FROM B_GT.PESO_FINAL_CONVERSION WHERE GUID = (SELECT MAX(GUID) FROM B_GT.PESO_FINAL_CONVERSION)''')
         pfinalcon = cursor.fetchall()   
     return pfinalcon
 def tablarepprohembras(request):
     with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE FROM B_GT.PROYECCION_HEMBRAS ''')
+        cursor.execute('''SELECT PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE FROM B_GT.PROYECCION_HEMBRAS WHERE GUID = (SELECT MAX(GUID) FROM B_GT.PROYECCION_HEMBRAS)''')
         prohembras = cursor.fetchall()   
     return prohembras
 def tablareptecnicacia(request):
     with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT LINEA_GENETICA,CANTIDAD_MACHOS,PORCENTAJE_DISTRIBUCION_MACHOS,CANTIDAD_DESECHADO,PORCENTAJE_DESCECHADO,DOSIS_PRODUCIDAS,DOSIS_VENDIDAS,PROMEDIO_MORFOLOGIA,OBSERVACION,FECHA_CORTE FROM B_GT.TECNICA_CIA ''')
+        cursor.execute('''SELECT LINEA_GENETICA,CANTIDAD_MACHOS,PORCENTAJE_DISTRIBUCION_MACHOS,CANTIDAD_DESECHADO,PORCENTAJE_DESCECHADO,DOSIS_PRODUCIDAS,DOSIS_VENDIDAS,PROMEDIO_MORFOLOGIA,OBSERVACION,FECHA_CORTE FROM B_GT.TECNICA_CIA WHERE GUID = (SELECT MAX(GUID) FROM B_GT.TECNICA_CIA)''')
         tecnicacia = cursor.fetchall()   
     return tecnicacia
 #---------------- TABLAS DE REPORTES CADENA DE ABASTECIMIENTO------------------------------------------
@@ -1870,7 +1873,7 @@ def tablaremisionnew(consecutivo_cercafe):
     return remisionnew
 
 
-
+#--- script para creacion del PDF EN  REMISIONES
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 import pdfkit
@@ -1949,7 +1952,7 @@ def generar_pdf(request):
         totalcerdos1 = str(sum(remisionne[4] for remisionne in remisionnew))
         promedio = total_cantidad/totalcerdos
         promedio_formateado = f'{promedio:.2f}'
-        input_data = (resultados_dhc[0][0], resultados_dhc[0][2],consecutivo_cercafe, totalcerdos1, total_cantidad1)
+        input_data = (resultados_dhc[0][0], resultados_dhc[0][2],consecutivo_cercafe, totalcerdos1, total_cantidad1,remisionnew[0][9],remisionnew[0][11],resultados_dhc[0][3])
         generate_qr_code(input_data)
         # Renderizar el HTML con los datos de la remisión filtrados
         html = render_to_string('remision_pdf.html', {'remisiones': remisiones,'promedio_formateado':promedio_formateado ,'remisionnew':remisionnew, 'resultados_dhc':resultados_dhc,'consecutivo_cercafe':consecutivo_cercafe,'total_cantidad':total_cantidad,'totalcerdos':totalcerdos})

@@ -202,8 +202,8 @@ CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 
 
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 25
-EMAIL_HOST_USER = 'mendietap874@gmail.com'
-EMAIL_HOST_PASSWORD = 'Celeste1*'
+EMAIL_HOST = 'smtp.office365.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'jefferson.villamizar@cercafe.com.co'
+EMAIL_HOST_PASSWORD = 'Teamohij4'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
