@@ -109,21 +109,14 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306',
     },
-    'intranet': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'intranetcercafe2',
-        'USER': 'root',
-        'PASSWORD': '1234',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    },
+   
 }
 
 # Lista de nombres de esquemas adicionales
 esquemas = [
     'B_GC', 'B_GT', 'B_CA', 'B_GAB', 'B_CI',
     'B_M', 'B_C', 'B_GD', 'B_GAF', 'B_GH',
-    'B_TI', 'B_SAC', 'B_SIG', 'B_GG', 'DHC'
+    'B_TI', 'B_SAC', 'B_SIG', 'B_GG', 'DHC','intranetcercafe2'
 ]
 
 # Configuración base para todas las bases de datos adicionales

@@ -26,6 +26,10 @@ from django.views.decorators.cache import never_cache
 from uuid import uuid4
 import os
 import datetime
+
+
+
+
 #---Define La Vista del login-----
 def signin(request):
    if request.method == 'GET' :
@@ -1863,7 +1867,7 @@ def repremision(request):
 
 
 def tablaremisionnew(consecutivo_cercafe):
-    intranetcercafe2_connection = connections['intranet']
+    intranetcercafe2_connection = connections['intranetcercafe2']
     with intranetcercafe2_connection.cursor() as cursor:
         if consecutivo_cercafe:
             cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento from intranetcercafe2.despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
@@ -1904,7 +1908,7 @@ def generate_qr_code(input_data):
     
     
 def generar_pdf(request):
-    intranetcercafe2_connection = connections['intranet']
+    intranetcercafe2_connection = connections['intranetcercafe2']
     dhc_connection = connections['DHC'] 
     consecutivo_cercafe = request.GET.get('consecutivoCercafe', None)
     
