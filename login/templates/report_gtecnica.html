@@ -141,17 +141,16 @@
                                 <thead>
                                     <tr>
                                         <th>FECHA CORTE</th>
+                                        <th>PLANTA</th>
                                         <th>GRANJA</th>
-                                        <th>CANTIDAD</th>
-                                        <th>ESTADO</th>
-                                        <th>NUMERO ORDEN</th>
                                         <th>CANTIDAD MUERTE TRANSPORTE</th>
                                         <th>CANTIDAD MUERTE REPOSO</th>
-                                        <th>CANTIDAD RETOMAS</th>
-                                        <th>NUMERO TIQUETE</th>
-                                        <th>REGISTRO FOTO</th>
-                                        <th>DESTINO</th>
-
+                                        <th>AGITADOS</th>
+                                        <th>LESIONADOS</th>
+                                        <th>RETOMAS</th>
+                                        <th>TOTAL</th>
+                                        
+                                      
                                 </thead>
                                 <tbody>
                                     {% for fortuito in fortuitos %}
@@ -165,8 +164,7 @@
                                         <td>{{fortuito.6}}</td>
                                         <td>{{fortuito.7}}</td>
                                         <td>{{fortuito.8}}</td>
-                                        <td>{{fortuito.9}}</td>
-                                        <td>{{fortuito.10}}</td>
+                                        
 
                                     </tr>
                                     {% endfor %}

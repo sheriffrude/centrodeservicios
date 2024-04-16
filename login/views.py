@@ -770,11 +770,11 @@ def cargar_excel_fortuitos(request):
             with connections['B_GT'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                   
-                    FECHA_CORTE,GRANJA,CANTIDAD,ESTADO,NUMERO_ORDEN,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,CANTIDAD_RETOMAS,NUMERO_TIQUETE,REGISTRO_FOTO,DESTINO= row
+                    FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL= row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla SST_SEVERIDAD_Y_FRECUENCIA
                     cursor.execute(
-                        'INSERT INTO FORTUITOS (FECHA_CORTE,GRANJA,CANTIDAD,ESTADO,NUMERO_ORDEN,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,CANTIDAD_RETOMAS,NUMERO_TIQUETE,REGISTRO_FOTO,DESTINO,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s)',
-                        (FECHA_CORTE.value,GRANJA.value,CANTIDAD.value,ESTADO.value,NUMERO_ORDEN.value,CANTIDAD_MUERTE_TRANSPORTE.value,CANTIDAD_MUERTE_REPOSO.value,CANTIDAD_RETOMAS.value,NUMERO_TIQUETE.value,REGISTRO_FOTO.value,DESTINO.value,guid,usuario.username)
+                        'INSERT INTO FORTUITOS3 (FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s, %s,%s, %s, %s)',
+                        (FECHA_CORTE.value,PLANTA.value,GRANJA.value,CANTIDAD_MUERTE_TRANSPORTE.value,CANTIDAD_MUERTE_REPOSO.value,AGITADOS.value,LESIONADOS.value,RETOMAS.value,TOTAL.value,guid,usuario.username)
                     )
                 messages.success(request, 'Carga de datos en FORTUITOS exitosa')
         except KeyError:
@@ -1621,8 +1621,8 @@ def tablarepabhembras(request):
     return abhembras
 def tablarepfortuitos(request):
     with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT FECHA_CORTE,GRANJA,CANTIDAD,ESTADO,NUMERO_ORDEN,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,CANTIDAD_RETOMAS,NUMERO_TIQUETE,REGISTRO_FOTO,DESTINO FROM B_GT.FORTUITOS
-                       WHERE GUID = (SELECT MAX(GUID) FROM B_GT.FORTUITOS)''')
+        cursor.execute('''SELECT FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL FROM B_GT.FORTUITOS3
+                       WHERE GUID = (SELECT MAX(GUID) FROM B_GT.FORTUITOS3)''')
         fortuitos = cursor.fetchall()   
     return fortuitos
 def tablarepkgvendidos(request):
