@@ -169,7 +169,7 @@ def cargar_excel_cadenaabastecimiento(request):
                         'INSERT INTO compromiso_mes (granja, mes, semana, cantidad_cerdos, año, GUID, USUARIO) VALUES (%s, %s, %s, %s, %s, %s, %s)',
                         (granja.value, mes.value, semana.value, cantidad_cerdos.value, año.value,guid,usuario.username)
                     )
-            messages.success(request, 'Carga de datos en VENTAS exitosa')
+            messages.success(request, 'Carga de datos en compromiso mes exitosa')
         except KeyError:
             messages.error(request, 'No se ha proporcionado un archivo Excel.')
         except IntegrityError as e:
@@ -442,7 +442,7 @@ def cargar_excel_clientesactivos(request):
                         'INSERT INTO CLIENTES_ACTIVOS (FECHA_CORTE,CANTIDAD_CLIENTES,ZONA_CLIENTE,KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s,%s,%s)',
                         (FECHA_CORTE.value, CANTIDAD_CLIENTES.value, ZONA_CLIENTE.value, KG_FACTURADOS.value,DINERO_APORTADO.value,ESTADO_CLIENTE.value,guid,usuario.username)
                     )
-            messages.success(request, 'Carga de datos en VENTAS exitosa')
+            messages.success(request, 'Carga de datos en CLIENTES ACTIVOS exitosa')
         except KeyError:
             messages.error(request, 'No se ha proporcionado un archivo Excel.')
         except IntegrityError as e:
@@ -1037,6 +1037,42 @@ def cargar_excel_causasdes(request):
             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
         return redirect('home')
     return render(request, '/home/')
+
+
+
+
+
+
+#-------- vista para el cargue de excel en oinc --------------------------------------------------------
+# @never_cache
+# @login_required
+# def cargar_excel_causasdes(request):
+#     if request.method == 'POST':
+#         try:
+#             archivo_excel = request.FILES['archivo_excel']
+#             wb = openpyxl.load_workbook(archivo_excel)
+#             ws = wb.active
+#             guid = str(uuid4())
+#             usuario = request.user
+#             # Abre una conexión a la base de datos b_c
+#             with connections['oinc'].cursor() as cursor:
+#                 for row in ws.iter_rows(min_row=2):
+#                     print(row)
+#                     Mes,Año,Semana,Lote,Lote_Turn_Bene,Lote_Cod_Canal,Fase,F_Ingreso,F_Beneficio,F_Vencimiento,Proveedor,Propietario,Granja,Rem_Granja,Rem_Solicitante,Mun_Granja,Guia_ICA,Verificacion_ICA,Lab_IC,Registro_IC,Turno_Beneficio,Cod_Canal,Genero,PROM_Peso_Pie,Presentacion,C_Caliente,Grasa_Dorsal,RTO_PCC,C_Fria,RTO_PCF,Clasificacion,Merma,Magro,Cava,Tiempo_Cava,Clas_SEUROP,Clas_ABC,F_Remision,Destino_Cliente,Destino_Remision,Direccion_Remision,Remision,Tipo_Remision,Desposte,G_Invima,Placa_Furgon,Factura_Beneficio,Decomiso,Patologia,Observacion= row
+#                     # Ejecuta una consulta SQL para insertar los datos en la tabla CAUSAS_DESVIACIONES
+#                     cursor.execute(
+#                         'INSERT INTO TRAZABILIDAD_OINC (Mes,Año,Semana,Lote,Lote_Turn_Bene,Lote_Cod_Canal,Fase,F_Ingreso,F_Beneficio,F_Vencimiento,Proveedor,Propietario,Granja,Rem_Granja,Rem_Solicitante,Mun_Granja,Guia_ICA,Verificacion_ICA,Lab_IC,Registro_IC,Turno_Beneficio,Cod_Canal,Genero,PROM_Peso_Pie,Presentacion,C_Caliente,Grasa_Dorsal,RTO_PCC,C_Fria,RTO_PCF,Clasificacion,Merma,Magro,Cava,Tiempo_Cava,Clas_SEUROP,Clas_ABC,F_Remision,Destino_Cliente,Destino_Remision,Direccion_Remision,Remision,Tipo_Remision,Desposte,G_Invima,Placa_Furgon,Factura_Beneficio,Decomiso,Patologia,Observacion) VALUES (%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s)',
+#                         (Mes.value,Año.value,Semana.value,Lote.value,Lote_Turn_Bene.value,Lote_Cod_Canal.value,Fase.value,F_Ingreso.value,F_Beneficio.value,F_Vencimiento.value,Proveedor.value,Propietario.value,Granja.value,Rem_Granja.value,Rem_Solicitante.value,Mun_Granja.value,Guia_ICA.value,Verificacion_ICA.value,Lab_IC.value,Registro_IC.value,Turno_Beneficio.value,Cod_Canal.value,Genero.value,PROM_Peso_Pie.value,Presentacion.value,C_Caliente.value,Grasa_Dorsal.value,RTO_PCC.value,C_Fria.value,RTO_PCF.value,Clasificacion.value,Merma.value,Magro.value,Cava.value,Tiempo_Cava.value,Clas_SEUROP.value,Clas_ABC.value,F_Remision.value,Destino_Cliente.value,Destino_Remision.value,Direccion_Remision.value,Remision.value,Tipo_Remision.value,Desposte.value,G_Invima.value,Placa_Furgon.value,Factura_Beneficio.value,Decomiso.value,Patologia.value,Observacion.value)
+#                     )
+#                 messages.success(request, 'Carga de datos en CAUSAS_DESVIACIONES exitosa')
+#         except KeyError:
+#             messages.error(request, 'No se ha proporcionado un archivo Excel.')
+#         except IntegrityError as e:
+#             messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+#         except Exception as e:
+#             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+#         return redirect('home')
+#     return render(request, '/home/')
 #-------- vista para el cargue de excel en PQRSF --------------------------------------------------------
 @never_cache
 @login_required
@@ -1783,72 +1819,88 @@ def tablarepnuevosclientes(request):
         nuevosclientes = cursor.fetchall()   
     return nuevosclientes
 
-#---------------- TABLAS DE REPORTES CADENA DE ABASTECIMIENTO------------------------------------------
+#---------------- TABLAS DE REPORTES GESTION HUMANA------------------------------------------
 @never_cache
 @login_required
 def repgestionhumana(request):
-    compgranja = tablarepcompgranja(request)
-    disposemana = tablarepdisposem(request)
-    cerdosbenef = tablarepcerdosbenef(request) 
-    comparativopl = tablarepcomparativopl(request) 
-    costodespo = tablarepcostodespo(request) 
-    kgbenef = tablarepkgbenef(request) 
-    kgdespos = tablarepkgdespos(request) 
-    particortes = tablarepparticortes(request) 
-    toneladasimport = tablareptoneladasimport(request) 
-    return render(request, 'report_gestionhumana.html', {'compgranja': compgranja,'disposemana': disposemana,'cerdosbenef':cerdosbenef,'comparativopl':comparativopl,'costodespo':costodespo,'kgbenef':kgbenef,'kgdespos':kgdespos,'particortes':particortes,'toneladasimport':toneladasimport})
+    nomina = tablarepnomina(request)
+    promociones = tablareppromociones(request)
+    procesosele = tablarepprocesosele(request) 
+    retencion = tablarepretencion(request) 
+    rotacion = tablareprotacion(request) 
+    sstdiagindi = tablarepsstdiagindi(request) 
+    sstindi = tablarepsstindi(request) 
+    sstseveridad = tablarepsstseveridad(request) 
+    return render(request, 'report_gestionhumana.html', {'nomina': nomina,'promociones': promociones,'procesosele':procesosele,'retencion':retencion,'rotacion':rotacion,'sstdiagindi':sstdiagindi,'sstindi':sstindi,'sstseveridad':sstseveridad})
 
-def tablarepcompgranja(request):
-    with connections['B_CA'].cursor() as cursor:
-        cursor.execute('''select  granja,mes,semana,cantidad_cerdos,año from B_CA.compromiso_mes''')
-        compgranja = cursor.fetchall()
+def tablarepnomina(request):
+    with connections['B_GH'].cursor() as cursor:
+        cursor.execute('''SELECT FECHA_CORTE,AREA,CENTRO_COSTO,NUM_COLABORADORES,COSTO_PROV FROM B_GH.NOMINA''')
+        nomina = cursor.fetchall()
       
-    return compgranja
+    return nomina
 
-def tablarepdisposem(request):
-    with connections['B_CA'].cursor() as cursor:
-        cursor.execute('''select  granja,mes,semana,cantidad_cerdos,año from B_CA.disponibilidad_semanal''')
-        disposemana = cursor.fetchall()
-    return disposemana
-def tablarepcerdosbenef(request):
-    with connections['B_CA'].cursor() as cursor:
-        cursor.execute('''SELECT CER_BENEF_COLOMBIA,CER_BENEF_EJE_CAFETERO,PARTICIPACION_EJE_CAFETERO,CER_BENEF_CERCAFE,PARTICIPACION_EJE_CAF_CERCAFE,PARTICIPACION_NACIONAL_CERCAFE,FECHA_CORTE FROM B_CA.PROD_CARNICA_CERDOS_BENEFICIADOS ''')
-        cerdosbenef = cursor.fetchall()   
-    return cerdosbenef
-def tablarepcomparativopl(request):
-    with connections['B_CA'].cursor() as cursor:
-        cursor.execute('''SELECT PARAMETRO,VALOR,EMPRESA,FECHA_CORTE FROM B_CA.PROD_CARNICA_COMPARATIVO_PLANTAS''')
-        comparativopl = cursor.fetchall()   
-    return comparativopl
-def tablarepcostodespo(request):
-    with connections['B_CA'].cursor() as cursor:
-        cursor.execute('''SELECT TIPO_CLIENTE,NUM_CERDOS_DESPOSTADOS,KG_DESPOSTADOS,PESO_PROM_CERDOS,PRECIO_PROM_KG,COSTO_MATERIA_PRIMA,COSTO_MAQUILA,COSTO_KG_MAQUILADO,MAQUILA_SIN_MP,FECHA_CORTE FROM B_CA.PROD_CARNICA_COSTO_DESPOSTE''')
-        costodespo = cursor.fetchall()   
-    return costodespo
-def tablarepkgbenef(request):
-    with connections['B_CA'].cursor() as cursor:
-        cursor.execute('''SELECT CER_BENEF_COLOMBIA,CER_BENEF_EJE_CAFETERO,PARTICIPACION_EJE_CAFETERO,CER_BENEF_CERCAFE,PARTICIPACION_EJE_CAF_CERCAFE,PARTICIPACION_NACIONAL_CERCAFE,PESO_CF_NACIONAL,PESO_EJE_CAFETERO,PESO_CF_CERCAFE,KG_NACIONAL,KG_EJE_CAFETERO,KG_CERCAFE,FECHA_CORTE FROM B_CA.PROD_CARNICA_KG_BENEFICIO ''')
-        kgbenef = cursor.fetchall()   
-    return kgbenef
-def tablarepkgdespos(request):
-    with connections['B_CA'].cursor() as cursor:
-        cursor.execute('''SELECT KG_PRODUCIDOS_CERCAFE,KG_DESPOSTADOS_CERCAFE,PORCENTAJE_PARTICIPACION,TRIMESTRE_2022_CERCAFE,TRIMESTRE_2022_DESPOSTE,TRIMESTRE_2023_CERCAFE,TRIMESTRE_2023_DESPOSTE,CERCIMIENTO_22_23,FECHA_CORTE FROM B_CA.PROD_CARNICA_KG_DESPOSTADOS ''')
-        kgdespos = cursor.fetchall()   
-    return kgdespos
-def tablarepparticortes(request):
-    with connections['B_CA'].cursor() as cursor:
-        cursor.execute('''SELECT CORTE,PORCENTAJE_PARTICIPACION,PORCENTAJE_META,PESO_PROM_CANAL,CANTIDAD_CANALES,FECHA_CORTE FROM B_CA.PROD_CARNICA_PARTICIPACION_CORTES ''')
-        particortes = cursor.fetchall()   
-    return particortes
-def tablareptoneladasimport(request):
-    with connections['B_CA'].cursor() as cursor:
-        cursor.execute('''SELECT CER_BENEF_COLOMBIA,TON_BENEF_COLOMBIA,TON_IMPORT_COLOMBIA,CERDOS_IMPORTADOS,ENE_FEB_22_TON_BENEF,ENE_FEB_23_TON_BENEF,CRECIMIENTO_22_23,ENE_FEB_MAR_22_TON_IMPORT,ENE_FEB_MAR_23_TON_IMPORT,CRECIMIENTO_OMPORT_22_23,FECHA_CORTE FROM B_CA.PROD_CARNICA_TON_IMPORTADAS ''')
-        toneladasimport = cursor.fetchall()   
-    return toneladasimport
+def tablareppromociones(request):
+    with connections['B_GH'].cursor() as cursor:
+        cursor.execute('''SELECT FECHA_CORTE,NOMBRE,ANTIGUO_CARGO,NUEVO_CARGO FROM B_GH.PROMOCIONES''')
+        promociones = cursor.fetchall()
+    return promociones
+def tablarepprocesosele(request):
+    with connections['B_GH'].cursor() as cursor:
+        cursor.execute('''SELECT NUM_REQUISICION,FECHA_APROBACION,AREA_CENTRO_COSTO,FECHA_RETIRO,NOMBRE_RETIRADO,CARGO,CUBRIMIENTO_ESPERADO_DIAS,NOMBRE_CANDIDATO,TIPO_INGRESO_PROMO_INT,EXAMEN_MEDICO,VISITA_DOMICILIARIA,POLIGRAFIA,FECHA_INGRESO FROM B_GH.PROCESO_SELECCION ''')
+        procesosele = cursor.fetchall()   
+    return procesosele
+def tablarepretencion(request):
+    with connections['B_GH'].cursor() as cursor:
+        cursor.execute('''SELECT FECHA_REPORTE,INDICADOR_RETENCION,OBSERVACIONES FROM B_GH.RETENCION''')
+        retencion = cursor.fetchall()   
+    return retencion
+def tablareprotacion(request):
+    with connections['B_GH'].cursor() as cursor:
+        cursor.execute('''SELECT FECHA_REPORTE,INDICADOR_ROTACION,OBSERVACIONES FROM B_GH.ROTACION''')
+        rotacion = cursor.fetchall()   
+    return rotacion
+def tablarepsstdiagindi(request):
+    with connections['B_GH'].cursor() as cursor:
+        cursor.execute('''SELECT FECHA_CORTE,SEDE,DIAGNOSTICO,CANTIDAD,OBSERVACION FROM B_GH.SST_DIAGNOSTICOS_INDICADORES ''')
+        sstdiagindi = cursor.fetchall()   
+    return sstdiagindi
+def tablarepsstindi(request):
+    with connections['B_GH'].cursor() as cursor:
+        cursor.execute('''SELECT FECHA_CORTE,SEDE,CANTIDAD_PEG,DIAS_INCAPACIDAD_PEL,CANTIDAD_PAT,PRORROGAS,DIAS_INCAPACIDAD_PAT,LICENCIA_MATERNIDAD,DIAS_LICENCIA_MAT,LICENCIA_PATERNIDAD,DIAS_LICENCIA_PAT,COSTO_INCAPACIDAD,OBSERVACIONES FROM B_GH.SST_INDICADORES''')
+        sstindi = cursor.fetchall()   
+    return sstindi
+def tablarepsstseveridad(request):
+    with connections['B_GH'].cursor() as cursor:
+        cursor.execute('''SELECT FECHA_CORTE,CANT_ENF_GENERAL,CANT_ACC_TRABAJO,NUM_EMPLEADOS,FREC_ACC,DIAS_INC_GENERAL,DIAS_INC_ACC,SEV_ACC,INCID_ENF_LAB,PORC_AUSENTISMO FROM B_GH.SST_SEVERIDAD_Y_FRECUENCIA''')
+        sstseveridad = cursor.fetchall()   
+    return sstseveridad
 
 
 
-from django.db import OperationalError
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @never_cache
@@ -1877,7 +1929,7 @@ def tablaremisionnew(consecutivo_cercafe):
     return remisionnew
 
 
-#--- script para creacion del PDF EN  REMISIONES
+#--- VISTA para creacion del PDF EN  REMISIONES
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 import pdfkit
