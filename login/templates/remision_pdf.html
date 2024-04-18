@@ -132,6 +132,7 @@
         {% endwith %}
         {% endif %}
         </tr>
+        
         <tr style="height: 18px;">
         <td style="width: 23.5295%; height: 18px;">&nbsp;</td>
         <td style="width: 14.7058%; height: 18px;">&nbsp;</td>
@@ -159,6 +160,7 @@
         <td style="width: 21.5687%; height: 18px;"><strong>DESCRIPCION</strong></td>
         <td style="width: 9.94403%; height: 18px;"><strong>CANT</strong></td>
         <td style="width: 8.54345%; height: 18px;"><strong>PESO</strong></td>
+        <td style="width: 8.54345%; height: 18px;"><strong>EDAD(días)</strong></td>
         </tr>{% for remisionne in remisionnew %}
         <tr style="height: 18px;">
         
@@ -166,6 +168,7 @@
         <td style="width: 21.5687%; height: 18px;">CERDO EN PIE</td>
         <td style="width: 9.94403%; height: 18px;">{{remisionne.4}}</td>
         <td style="width: 8.54345%; height: 18px;">{{remisionne.7}}</td>
+        <td style="width: 8.54345%; height: 18px;">{{remisionne.13}}</td>
         </tr>
         {% endfor %}
        

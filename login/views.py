@@ -1903,6 +1903,9 @@ def tablarepsstseveridad(request):
 
 
 
+from django.db.models import Q
+import datetime
+
 @never_cache
 @login_required
 def repremision(request):
@@ -1922,11 +1925,72 @@ def tablaremisionnew(consecutivo_cercafe):
     intranetcercafe2_connection = connections['intranetcercafe2']
     with intranetcercafe2_connection.cursor() as cursor:
         if consecutivo_cercafe:
-            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento from intranetcercafe2.despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
+            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from intranetcercafe2.despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
         else:
-            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento from intranetcercafe2.despachoLotesGranjas")
+            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from intranetcercafe2.despachoLotesGranjas")
         remisionnew = cursor.fetchall()
     return remisionnew
+
+
+def filtered_data(start_date, end_date):
+    with connections['intranetcercafe2'].cursor() as cursor:
+        cursor.execute('''
+            SELECT ConsecutivoDespacho, idSolicitud, granja, lote, cerdosDespachados, frigorifico, 
+            fechaEntrega, pesoTotal, conductor, placa, regic, regica, retiroalimento, edadprom 
+            FROM intranetcercafe2.despachoLotesGranjas
+            WHERE fechaEntrega BETWEEN %s AND %s
+        ''', [start_date, end_date])
+        fechas = cursor.fetchall()
+
+    
+    logger.info(fechas)
+
+    return fechas
+
+def generar_excel(request):
+    # Obtener las fechas de inicio y fin del request
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    # Obtener los datos filtrados utilizando la función de la segunda vista
+    compromisos = filtered_data(start_date, end_date)
+
+    # Obtener el directorio de descargas del usuario actual
+    downloads_dir = os.path.join(settings.BASE_DIR, 'tmp')
+
+    # Crear el archivo Excel en el directorio de descargas
+    filename = 'remisiones.xlsx'
+    file_path = os.path.join(downloads_dir, filename)
+
+    # Escribir los datos en el archivo Excel
+    workbook = xlsxwriter.Workbook(file_path)
+    worksheet = workbook.add_worksheet()
+
+    # Escribir los encabezados
+    headers = ['ConsecutivoDespacho', 'idSolicitud', 'granja', 'lote', 'cerdosDespachados', 'frigorifico', 
+               'fechaEntrega', 'pesoTotal', 'conductor', 'placa', 'regic', 'regica', 'retiroalimento', 'edadprom']
+    for i, header in enumerate(headers):
+        worksheet.write(0, i, header)
+
+    # Obtener el índice de la columna 'fechaEntrega'
+    fecha_entrega_index = headers.index('fechaEntrega') if 'fechaEntrega' in headers else None
+
+    # Escribir los datos
+    for row, compromiso in enumerate(compromisos, start=1):
+        for col, value in enumerate(compromiso):
+            # Formatear la fecha como un string
+            if fecha_entrega_index is not None and col == fecha_entrega_index:
+                value = value.strftime('%Y-%m-%d')
+            worksheet.write(row, col, value)
+
+    # Cerrar el archivo Excel
+    workbook.close()
+
+    # Enviar el archivo Excel como respuesta de descarga
+    with open(file_path, 'rb') as file:
+        response = HttpResponse(file.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
 
 
 #--- VISTA para creacion del PDF EN  REMISIONES
@@ -1972,9 +2036,9 @@ def generar_pdf(request):
         # Consultar los datos de la tabla despachoLotesGranjas de intranetcercafe2
         with intranetcercafe2_connection.cursor() as cursor:
             if consecutivo_cercafe:
-                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento FROM despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
+                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom FROM despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
             else:
-                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento FROM despachoLotesGranjas")
+                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom FROM despachoLotesGranjas")
             remisionnew = cursor.fetchall()
             
         granja_primera_consulta = remisionnew[0][2] if remisionnew else None

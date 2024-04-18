@@ -36,6 +36,27 @@
             background-color: #651410;
             color: aliceblue;
         }
+        .btn-pdf{
+            margin-bottom: 17px;
+        }
+        .btn-export-excel {
+            width: 167px;
+            height: 46px;
+            margin-bottom: 50px;
+            margin-inline: 10px;
+            margin-top: 23px;
+        }
+        .row{
+            margin-left: 19.5px !important;
+        }
+        .h3, h3 {
+            margin-left: 8px !important;
+        }
+        .btn-danger1 {
+            background-color: #c45454;
+            color: #ffffff;
+        }
+    </style>
     </style>
     {% endblock %}
 
@@ -79,17 +100,36 @@
             <section>
                 <form id="consultaForm">
                     <div class="row">
-                        <div class="col-3"><input type="number" class="form-control" id="consecutivoCercafe"
-                                name="consecutivoCercafe" placeholder="Consecutivo Cercafe"></div>
+                        <div class="col-3">
+                            <input type="number" class="form-control" id="consecutivoCercafe" name="consecutivoCercafe"
+                                placeholder="Consecutivo Cercafe">
+                        </div>
                         <button type="submit" class="btn btn-repor btn-lg">Consultar</button>
                     </div>
                     <div class="row">
-                        <button id="generatePdfBtn" class="btn btn-primary">Generar PDF</button>
-
-
+                        <button id="generatePdfBtn" class="btn btn-danger1 btn-pdf">Generar PDF<img
+                            src="/static/images/icons8-pdf-60.png" height="35" width="35" /></button>
                     </div>
+                    <h3>Generar Reporte De Remisiones</h3>
+                    <div class="row">
+                        
+                    <div class="col-2">
+                        <label for="fecha_inicio">Desde:</label>
+                        <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio"
+                            placeholder="Fecha de inicio" value="">
+                    </div>
+                    <div class="col-2">
+                        <label for="fecha_fin">Hasta:</label>
+                        <input type="date" class="form-control" id="fecha_fin" name="fecha_fin"
+                            placeholder="Fecha de fin" value="">
+                    </div>
+                    <button id="export-excel" class="btn btn-success btn-export-excel">Exportar a Excel<img
+                                src="/static/images/icons8-excel-48.png" height="35" width="35" /></button>
+                    </div>
+                    
                 </form>
             </section>
+
 
 
             <!-- Contenido principal -->
@@ -101,7 +141,7 @@
                             <h3 class="card-title">REMISION</h3>
                         </div>
 
-                        <div class="card-body">
+                        <div class="card-body " >
                             <table id="tabla_remisionnew" class="table table-bordered table-hover ">
                                 <thead>
                                     <tr>
@@ -118,6 +158,7 @@
                                         <th>Registro IC</th>
                                         <th>Registro ICA</th>
                                         <th>Retiro de Alimento</th>
+                                        <th>Edad promedio</th>
 
                                     </tr>
                                 </thead>
@@ -138,6 +179,7 @@
                                     <td>{{ remisionne.10 }}</td>
                                     <td>{{ remisionne.11 }}</td>
                                     <td>{{ remisionne.12 | date:"d/m/Y H:i:s" }}</td>
+                                    <td>{{ remisionne.13 }}</td>
 
 
                                     {% endfor %}
@@ -164,6 +206,7 @@
             <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
             <script>
+
                 $(document).ready(function () {
                     $('#consultaForm').submit(function (event) {
                         event.preventDefault();
@@ -198,6 +241,7 @@
                                         row += '<td>' + data[10] + '</td>';
                                         row += '<td>' + data[11] + '</td>';
                                         row += '<td>' + data[12] + '</td>';
+                                        row += '<td>' + data[13] + '</td>';
                                         row += '</tr>';
                                         $('#tabla_remisionnew tbody').append(row);
                                     });
@@ -214,6 +258,14 @@
                             }
                         });
                     });
+                });
+                $("#export-excel").click(function () {
+                    // Obtener las fechas seleccionadas
+                    var startDate = $("#fecha_inicio").val();
+                    var endDate = $("#fecha_fin").val();
+
+                    // Redireccionar al usuario a la vista export_excel con las fechas como parámetros
+                    window.location.href = '/generar_excel/?start_date=' + startDate + '&end_date=' + endDate;
                 });
                 $(document).ready(function () {
                     $('#generatePdfBtn').click(function () {
