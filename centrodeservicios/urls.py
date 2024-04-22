@@ -101,7 +101,7 @@ urlpatterns = [
     path('grupos/', views.grupos_asociados, name='grupos_asociados'),
     path('tabla/', views.tablarepclient, name='tablarepclient'),
     path('frigorificos/', views.frigorificos, name='frigorificos'),
-    
+    path('cargar_excel_oinc/', views.cargar_excel_oinc, name='cargar_excel_oinc'),
 
 #--------------------------------- REPORTES------------------------------------------------
     

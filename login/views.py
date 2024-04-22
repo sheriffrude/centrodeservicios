@@ -1044,35 +1044,35 @@ def cargar_excel_causasdes(request):
 
 
 #-------- vista para el cargue de excel en oinc --------------------------------------------------------
-# @never_cache
-# @login_required
-# def cargar_excel_causasdes(request):
-#     if request.method == 'POST':
-#         try:
-#             archivo_excel = request.FILES['archivo_excel']
-#             wb = openpyxl.load_workbook(archivo_excel)
-#             ws = wb.active
-#             guid = str(uuid4())
-#             usuario = request.user
-#             # Abre una conexión a la base de datos b_c
-#             with connections['oinc'].cursor() as cursor:
-#                 for row in ws.iter_rows(min_row=2):
-#                     print(row)
-#                     Mes,Año,Semana,Lote,Lote_Turn_Bene,Lote_Cod_Canal,Fase,F_Ingreso,F_Beneficio,F_Vencimiento,Proveedor,Propietario,Granja,Rem_Granja,Rem_Solicitante,Mun_Granja,Guia_ICA,Verificacion_ICA,Lab_IC,Registro_IC,Turno_Beneficio,Cod_Canal,Genero,PROM_Peso_Pie,Presentacion,C_Caliente,Grasa_Dorsal,RTO_PCC,C_Fria,RTO_PCF,Clasificacion,Merma,Magro,Cava,Tiempo_Cava,Clas_SEUROP,Clas_ABC,F_Remision,Destino_Cliente,Destino_Remision,Direccion_Remision,Remision,Tipo_Remision,Desposte,G_Invima,Placa_Furgon,Factura_Beneficio,Decomiso,Patologia,Observacion= row
-#                     # Ejecuta una consulta SQL para insertar los datos en la tabla CAUSAS_DESVIACIONES
-#                     cursor.execute(
-#                         'INSERT INTO TRAZABILIDAD_OINC (Mes,Año,Semana,Lote,Lote_Turn_Bene,Lote_Cod_Canal,Fase,F_Ingreso,F_Beneficio,F_Vencimiento,Proveedor,Propietario,Granja,Rem_Granja,Rem_Solicitante,Mun_Granja,Guia_ICA,Verificacion_ICA,Lab_IC,Registro_IC,Turno_Beneficio,Cod_Canal,Genero,PROM_Peso_Pie,Presentacion,C_Caliente,Grasa_Dorsal,RTO_PCC,C_Fria,RTO_PCF,Clasificacion,Merma,Magro,Cava,Tiempo_Cava,Clas_SEUROP,Clas_ABC,F_Remision,Destino_Cliente,Destino_Remision,Direccion_Remision,Remision,Tipo_Remision,Desposte,G_Invima,Placa_Furgon,Factura_Beneficio,Decomiso,Patologia,Observacion) VALUES (%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s)',
-#                         (Mes.value,Año.value,Semana.value,Lote.value,Lote_Turn_Bene.value,Lote_Cod_Canal.value,Fase.value,F_Ingreso.value,F_Beneficio.value,F_Vencimiento.value,Proveedor.value,Propietario.value,Granja.value,Rem_Granja.value,Rem_Solicitante.value,Mun_Granja.value,Guia_ICA.value,Verificacion_ICA.value,Lab_IC.value,Registro_IC.value,Turno_Beneficio.value,Cod_Canal.value,Genero.value,PROM_Peso_Pie.value,Presentacion.value,C_Caliente.value,Grasa_Dorsal.value,RTO_PCC.value,C_Fria.value,RTO_PCF.value,Clasificacion.value,Merma.value,Magro.value,Cava.value,Tiempo_Cava.value,Clas_SEUROP.value,Clas_ABC.value,F_Remision.value,Destino_Cliente.value,Destino_Remision.value,Direccion_Remision.value,Remision.value,Tipo_Remision.value,Desposte.value,G_Invima.value,Placa_Furgon.value,Factura_Beneficio.value,Decomiso.value,Patologia.value,Observacion.value)
-#                     )
-#                 messages.success(request, 'Carga de datos en CAUSAS_DESVIACIONES exitosa')
-#         except KeyError:
-#             messages.error(request, 'No se ha proporcionado un archivo Excel.')
-#         except IntegrityError as e:
-#             messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
-#         except Exception as e:
-#             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
-#         return redirect('home')
-#     return render(request, '/home/')
+@never_cache
+@login_required
+def cargar_excel_oinc(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+            guid = str(uuid4())
+            usuario = request.user
+            # Abre una conexión a la base de datos oinc
+            with connections['oinc'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=4):
+                    print(row)
+                    Mes,Año,Semana,Lote,Lote_Turn_Bene,Lote_Cod_Canal,Fase,F_Ingreso,F_Beneficio,F_Vencimiento,Proveedor,Propietario,Granja,Rem_Granja,Rem_Solicitante,Mun_Granja,Guia_ICA,Verificacion_ICA,Lab_IC,Registro_IC,Turno_Beneficio,Cod_Canal,Genero,PROM_Peso_Pie,Presentacion,C_Caliente,Grasa_Dorsal,RTO_PCC,C_Fria,RTO_PCF,Clasificacion,Merma,Magro,Cava,Tiempo_Cava,Clas_SEUROP,Clas_ABC,F_Remision,Destino_Cliente,Destino_Remision,Direccion_Remision,Mun_destino,Dep_destino,Remision,Tipo_Remision,Desposte,G_Invima,Placa_Furgon,Factura_Beneficio,Decomiso,Patologia,Observacion,_= row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla CAUSAS_DESVIACIONES
+                    cursor.execute(
+                        'INSERT INTO TRAZABILIDAD_OINC (Mes,Año,Semana,Lote,Lote_Turn_Bene,Lote_Cod_Canal,Fase,F_Ingreso,F_Beneficio,F_Vencimiento,Proveedor,Propietario,Granja,Rem_Granja,Rem_Solicitante,Mun_Granja,Guia_ICA,Verificacion_ICA,Lab_IC,Registro_IC,Turno_Beneficio,Cod_Canal,Genero,PROM_Peso_Pie,Presentacion,C_Caliente,Grasa_Dorsal,RTO_PCC,C_Fria,RTO_PCF,Clasificacion,Merma,Magro,Cava,Tiempo_Cava,Clas_SEUROP,Clas_ABC,F_Remision,Destino_Cliente,Destino_Remision,Direccion_Remision,Mun_destino,Dep_destino,Remision,Tipo_Remision,Desposte,G_Invima,Placa_Furgon,Factura_Beneficio,Decomiso,Patologia,Observacion) VALUES (%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s, %s, %s)',
+                        (Mes.value,Año.value,Semana.value,Lote.value,Lote_Turn_Bene.value,Lote_Cod_Canal.value,Fase.value,F_Ingreso.value,F_Beneficio.value,F_Vencimiento.value,Proveedor.value,Propietario.value,Granja.value,Rem_Granja.value,Rem_Solicitante.value,Mun_Granja.value,Guia_ICA.value,Verificacion_ICA.value,Lab_IC.value,Registro_IC.value,Turno_Beneficio.value,Cod_Canal.value,Genero.value,PROM_Peso_Pie.value,Presentacion.value,C_Caliente.value,Grasa_Dorsal.value,RTO_PCC.value,C_Fria.value,RTO_PCF.value,Clasificacion.value,Merma.value,Magro.value,Cava.value,Tiempo_Cava.value,Clas_SEUROP.value,Clas_ABC.value,F_Remision.value,Destino_Cliente.value,Destino_Remision.value,Direccion_Remision.value,Mun_destino.value,Dep_destino.value,Remision.value,Tipo_Remision.value,Desposte.value,G_Invima.value,Placa_Furgon.value,Factura_Beneficio.value,Decomiso.value,Patologia.value,Observacion.value)
+                    )
+                messages.success(request, 'Carga de datos en TRAZABILIDAD_OINC exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
 #-------- vista para el cargue de excel en PQRSF --------------------------------------------------------
 @never_cache
 @login_required
@@ -1210,7 +1210,7 @@ def cargar_excel_compramatprima(request):
     return render(request, '/home/')
 
 
-#-------- vista para el cargue de excel en COMPRAS_MEDICAMENTOS --------------------------------------------------------
+#-------- vista para el cargue de excel en oinc --------------------------------------------------------
 
 # @login_required
 # def cargar_excel_compramed(request):

@@ -194,9 +194,20 @@ CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 
 
 
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.office365.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'jefferson.villamizar@cercafe.com.co'
-EMAIL_HOST_PASSWORD = 'Teamohij4'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'mendietap874@gmail.com'
+EMAIL_HOST_PASSWORD = 'Teamohij4'
+
+email_from = 'mendietap874@gmail.com'
+recipient_list = ['mendietap874@gmail.com']
+
+CELERY_BROKER_URL = 'django-db://'
+CELERY_BEAT_SCHEDULE = {
+    'backup-databases-every-day': {
+        'task': 'login.tasks.backup_databases',
+        'schedule': 86400.0,  
+    },
+}
