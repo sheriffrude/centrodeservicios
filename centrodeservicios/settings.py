@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'adminlte3',
     'adminlte3_theme',
     'wkhtmltopdf',
-    
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -204,10 +204,10 @@ EMAIL_HOST_PASSWORD = 'Teamohij4'
 email_from = 'mendietap874@gmail.com'
 recipient_list = ['mendietap874@gmail.com']
 
-CELERY_BROKER_URL = 'django-db://'
-CELERY_BEAT_SCHEDULE = {
-    'backup-databases-every-day': {
-        'task': 'login.tasks.backup_databases',
-        'schedule': 86400.0,  
-    },
-}
+# CELERY_BEAT_SCHEDULE = {
+#     "scheduled_task": {
+#         "task": "login.tasks.add",
+#         "schedule": 10.0,
+#         "args": (15, 10),
+#     }
+# }

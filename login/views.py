@@ -1044,6 +1044,9 @@ def cargar_excel_causasdes(request):
 
 
 #-------- vista para el cargue de excel en oinc --------------------------------------------------------
+from datetime import datetime as dt
+from openpyxl.cell.cell import Cell
+
 @never_cache
 @login_required
 def cargar_excel_oinc(request):
@@ -1058,11 +1061,71 @@ def cargar_excel_oinc(request):
             with connections['oinc'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=4):
                     print(row)
-                    Mes,Año,Semana,Lote,Lote_Turn_Bene,Lote_Cod_Canal,Fase,F_Ingreso,F_Beneficio,F_Vencimiento,Proveedor,Propietario,Granja,Rem_Granja,Rem_Solicitante,Mun_Granja,Guia_ICA,Verificacion_ICA,Lab_IC,Registro_IC,Turno_Beneficio,Cod_Canal,Genero,PROM_Peso_Pie,Presentacion,C_Caliente,Grasa_Dorsal,RTO_PCC,C_Fria,RTO_PCF,Clasificacion,Merma,Magro,Cava,Tiempo_Cava,Clas_SEUROP,Clas_ABC,F_Remision,Destino_Cliente,Destino_Remision,Direccion_Remision,Mun_destino,Dep_destino,Remision,Tipo_Remision,Desposte,G_Invima,Placa_Furgon,Factura_Beneficio,Decomiso,Patologia,Observacion,_= row
-                    # Ejecuta una consulta SQL para insertar los datos en la tabla CAUSAS_DESVIACIONES
+                    # Obtener solo las primeras 52 columnas de la fila
+                    row_data = row[:52]
+                    # Acceder a los valores de las celdas
+                    Mes = row_data[0].value
+                    Año = row_data[1].value
+                    Semana = row_data[2].value
+                    Lote = row_data[3].value
+                    Lote_Turn_Bene = row_data[4].value
+                    Lote_Cod_Canal = row_data[5].value
+                    Fase = row_data[6].value
+                    F_Ingreso = row_data[7].value
+                    F_Beneficio = row_data[8].value
+                    F_Vencimiento = row_data[9].value
+                    Proveedor = row_data[10].value
+                    Propietario = row_data[11].value
+                    Granja = row_data[12].value
+                    Rem_Granja = row_data[13].value
+                    Rem_Solicitante = row_data[14].value
+                    Mun_Granja = row_data[15].value
+                    Guia_ICA = row_data[16].value
+                    Verificacion_ICA = row_data[17].value
+                    Lab_IC = row_data[18].value
+                    Registro_IC = row_data[19].value
+                    Turno_Beneficio = row_data[20].value
+                    Cod_Canal = row_data[21].value
+                    Genero = row_data[22].value
+                    PROM_Peso_Pie = row_data[23].value
+                    Presentacion = row_data[24].value
+                    C_Caliente = row_data[25].value
+                    Grasa_Dorsal = row_data[26].value
+                    RTO_PCC = row_data[27].value
+                    C_Fria = row_data[28].value
+                    RTO_PCF = row_data[29].value
+                    Clasificacion = row_data[30].value
+                    Merma = row_data[31].value
+                    Magro = row_data[32].value
+                    Cava = row_data[33].value
+                    Tiempo_Cava = row_data[34].value
+                    Clas_SEUROP = row_data[35].value
+                    Clas_ABC = row_data[36].value
+                    F_Remision = row_data[37].value
+                    Destino_Cliente = row_data[38].value
+                    Destino_Remision = row_data[39].value
+                    Direccion_Remision = row_data[40].value
+                    Mun_destino = row_data[41].value
+                    Dep_destino = row_data[42].value
+                    Remision = row_data[43].value
+                    Tipo_Remision = row_data[44].value
+                    Desposte = row_data[45].value
+                    G_Invima = row_data[46].value
+                    Placa_Furgon = row_data[47].value
+                    Factura_Beneficio = row_data[48].value
+                    Decomiso = row_data[49].value
+                    Patologia = row_data[50].value
+                    Observacion = row_data[51].value
+
+                    Merma = Merma.replace('%', '') if Merma and '%' in Merma else Merma
+                    RTO_PCC = RTO_PCC.replace('%', '') if RTO_PCC and '%' in RTO_PCC else RTO_PCC
+                    RTO_PCF = RTO_PCF.replace('%', '') if RTO_PCF and '%' in RTO_PCF else RTO_PCF
+                    Magro = Magro.replace('%', '') if Magro and '%' in Magro else Magro
+                    
+                    # Ejecutar una consulta SQL para insertar los datos en la tabla TRAZABILIDAD_OINC
                     cursor.execute(
-                        'INSERT INTO TRAZABILIDAD_OINC (Mes,Año,Semana,Lote,Lote_Turn_Bene,Lote_Cod_Canal,Fase,F_Ingreso,F_Beneficio,F_Vencimiento,Proveedor,Propietario,Granja,Rem_Granja,Rem_Solicitante,Mun_Granja,Guia_ICA,Verificacion_ICA,Lab_IC,Registro_IC,Turno_Beneficio,Cod_Canal,Genero,PROM_Peso_Pie,Presentacion,C_Caliente,Grasa_Dorsal,RTO_PCC,C_Fria,RTO_PCF,Clasificacion,Merma,Magro,Cava,Tiempo_Cava,Clas_SEUROP,Clas_ABC,F_Remision,Destino_Cliente,Destino_Remision,Direccion_Remision,Mun_destino,Dep_destino,Remision,Tipo_Remision,Desposte,G_Invima,Placa_Furgon,Factura_Beneficio,Decomiso,Patologia,Observacion) VALUES (%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s, %s, %s)',
-                        (Mes.value,Año.value,Semana.value,Lote.value,Lote_Turn_Bene.value,Lote_Cod_Canal.value,Fase.value,F_Ingreso.value,F_Beneficio.value,F_Vencimiento.value,Proveedor.value,Propietario.value,Granja.value,Rem_Granja.value,Rem_Solicitante.value,Mun_Granja.value,Guia_ICA.value,Verificacion_ICA.value,Lab_IC.value,Registro_IC.value,Turno_Beneficio.value,Cod_Canal.value,Genero.value,PROM_Peso_Pie.value,Presentacion.value,C_Caliente.value,Grasa_Dorsal.value,RTO_PCC.value,C_Fria.value,RTO_PCF.value,Clasificacion.value,Merma.value,Magro.value,Cava.value,Tiempo_Cava.value,Clas_SEUROP.value,Clas_ABC.value,F_Remision.value,Destino_Cliente.value,Destino_Remision.value,Direccion_Remision.value,Mun_destino.value,Dep_destino.value,Remision.value,Tipo_Remision.value,Desposte.value,G_Invima.value,Placa_Furgon.value,Factura_Beneficio.value,Decomiso.value,Patologia.value,Observacion.value)
+                        'INSERT INTO TRAZABILIDAD_OINC (Mes, Año, Semana, Lote, Lote_Turn_Bene, Lote_Cod_Canal, Fase, F_Ingreso, F_Beneficio, F_Vencimiento, Proveedor, Propietario, Granja, Rem_Granja, Rem_Solicitante, Mun_Granja, Guia_ICA, Verificacion_ICA, Lab_IC, Registro_IC, Turno_Beneficio, Cod_Canal, Genero, PROM_Peso_Pie, Presentacion, C_Caliente, Grasa_Dorsal, RTO_PCC, C_Fria, RTO_PCF, Clasificacion, Merma, Magro, Cava, Tiempo_Cava, Clas_SEUROP, Clas_ABC, F_Remision, Destino_Cliente, Destino_Remision, Direccion_Remision, Mun_destino, Dep_destino, Remision, Tipo_Remision, Desposte, G_Invima, Placa_Furgon, Factura_Beneficio, Decomiso, Patologia, Observacion) VALUES (%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s, %s, %s)',
+                        (Mes, Año, Semana, Lote, Lote_Turn_Bene, Lote_Cod_Canal, Fase, F_Ingreso, F_Beneficio, F_Vencimiento, Proveedor, Propietario, Granja, Rem_Granja, Rem_Solicitante, Mun_Granja, Guia_ICA, Verificacion_ICA, Lab_IC, Registro_IC, Turno_Beneficio, Cod_Canal, Genero, PROM_Peso_Pie, Presentacion, C_Caliente, Grasa_Dorsal, RTO_PCC, C_Fria, RTO_PCF, Clasificacion, Merma, Magro, Cava, Tiempo_Cava, Clas_SEUROP, Clas_ABC, F_Remision, Destino_Cliente, Destino_Remision, Direccion_Remision, Mun_destino, Dep_destino, Remision, Tipo_Remision, Desposte, G_Invima, Placa_Furgon, Factura_Beneficio, Decomiso, Patologia, Observacion)
                     )
                 messages.success(request, 'Carga de datos en TRAZABILIDAD_OINC exitosa')
         except KeyError:
@@ -1073,6 +1136,8 @@ def cargar_excel_oinc(request):
             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
         return redirect('home')
     return render(request, '/home/')
+
+
 #-------- vista para el cargue de excel en PQRSF --------------------------------------------------------
 @never_cache
 @login_required
