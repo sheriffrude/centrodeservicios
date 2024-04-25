@@ -17,228 +17,143 @@ def ejecutar_consulta(fecha_inicial, fecha_final):
     
     # Ejecutar la consulta SQL
     consulta_sql = """
-      -- RENDIMIENTOS PORCINOS GRANJAS
-
-	USE DHC;
+    
+    -- OPERACION DESPOSTE A FACTURAR
+    use dhc;
     SET @Fecha_inicial = '{}';
 	SET @Fecha_Final = '{}';
 
 	-- Convertimos las fechas de varchar a date
 	SET @Fecha_inicial_t = STR_TO_DATE(@Fecha_inicial, '%d/%m/%Y');
 	SET @Fecha_Final_t = STR_TO_DATE(@Fecha_Final, '%d/%m/%Y');
-
-	DROP TEMPORARY TABLE IF EXISTS t_homologacion_granjas;
-    DROP TEMPORARY TABLE IF EXISTS t_rendimientos_porcinos;
-    DROP TEMPORARY TABLE IF EXISTS t_trazabilidad_oinc;
+    
+    -- Creamos e Importamos tablas temporales globales
     DROP TEMPORARY TABLE IF EXISTS t_rendimientos_porcinos_granjas;
-
-    CREATE TEMPORARY TABLE t_homologacion_granjas LIKE dhc.homologacion_granjas;
-
-    INSERT INTO t_homologacion_granjas
-    SELECT * FROM dhc.homologacion_granjas;
+	DROP TEMPORARY TABLE IF EXISTS t_remisiones_porcinos;
+    DROP TEMPORARY TABLE IF EXISTS t_operacion_desposte;
     
-    CREATE TEMPORARY TABLE t_trazabilidad_oinc LIKE oinc.trazabilidad_oinc;
+    CREATE TEMPORARY TABLE t_rendimientos_porcinos_granjas LIKE b_ca.rendimientos_porcinos_granjas;
     
-	INSERT INTO t_trazabilidad_oinc
-    SELECT * FROM oinc.trazabilidad_oinc WHERE F_Beneficio BETWEEN @Fecha_inicial_t AND @Fecha_Final_t;
-    
-    CREATE TEMPORARY TABLE t_rendimientos_porcinos(
-		tiquete int,
-		id_orden int ,
-		descripcion_exp varchar(80),
-		tercero varchar(80),
-		peso_pie decimal(5,2),
-		peso_caliente decimal(5,2),
-		rendimiento decimal(10,2),
-		peso_frio decimal(5,2),
-		rendimiento_cf decimal(10,2),
-		guia int,
-		fecha_despacho date,
-		fecha_sacrificio date,
-		mm_magro tinyint,
-		porcentaje_magro decimal(5,2),
-		clasificacion_magro varchar(12),
-		profundidad_lomo decimal(5,2),
-        Lote VARCHAR(500),
-		Granja VARCHAR(500),
-        id_granja INT,
-        FRIGORIFICO VARCHAR(50)
-    );
-
-    INSERT INTO t_rendimientos_porcinos(tiquete,id_orden,descripcion_exp,tercero,peso_pie,peso_caliente,
-		rendimiento,peso_frio,rendimiento_cf,guia,fecha_despacho,fecha_sacrificio,mm_magro,porcentaje_magro,
-		clasificacion_magro,profundidad_lomo,Lote,Granja,id_granja,FRIGORIFICO)
-    SELECT
-		A.tiquete,
-        A.id_orden,
-        A.descripcion_exp,
-        A.tercero,
-        A.peso_pie,
-        A.peso_caliente,
-		A.rendimiento,
-        A.peso_frio,
-        A.rendimiento_cf,
-        A.guia,
-        A.fecha_despacho,
-        A.fecha_sacrificio,
-        A.mm_magro,
-        A.porcentaje_magro,
-		A.clasificacion_magro,
-        A.profundidad_lomo,
-        B.ConsecutivoDespacho AS Lote,
-        UPPER(B.granja) AS Granja,
-        C.id AS id_granja,
-        'FRIGOTUN' AS FRIGORIFICO
-	FROM frigotun.rendimientos_porcinos A 
-	JOIN frigotun.ordenes_porcinos B ON A.id_orden = B.id_orden
-    JOIN FRIGOTUN.granjas C ON B.Granja = C.nombre_granja
-    WHERE A.fecha_sacrificio BETWEEN @Fecha_inicial_t AND @Fecha_Final_t
-	AND B.fecha BETWEEN @Fecha_inicial_t AND @Fecha_Final_t;
-    
--- SELECT * FROM t_rendimientos_porcinos;
-    
--- SELECT * FROM frigotun.rendimientos_porcinos;
--- SELECT * FROM frigotun.ordenes_porcinos;
-     CREATE TEMPORARY TABLE t_rendimientos_porcinos_granjas(
-		tiquete VARCHAR(500),
-		id_orden VARCHAR(500) ,
-		descripcion_exp varchar(80),
-		tercero varchar(80),
-		peso_pie decimal(5,2),
-		peso_caliente decimal(5,2),
-		rendimiento decimal(10,2),
-		peso_frio decimal(5,2),
-		rendimiento_cf decimal(10,2),
-		guia VARCHAR(500),
-		fecha_despacho date,
-		fecha_sacrificio date,
-		mm_magro decimal(5,2),
-		porcentaje_magro decimal(5,2),
-		clasificacion_magro varchar(12),
-		profundidad_lomo decimal(5,2),
-        Lote VARCHAR(500),
-		Codigo_granja VARCHAR(100),
-		Granja VARCHAR(100),
-		Nit_asociado VARCHAR(100),
-		Asociado VARCHAR(100),
-		Grupo_Granja VARCHAR(100),
-        FRIGORIFICO VARCHAR(50)
-		);
-
-	INSERT INTO t_rendimientos_porcinos_granjas (tiquete,id_orden,descripcion_exp,tercero,peso_pie,peso_caliente,
-	rendimiento,peso_frio,rendimiento_cf,guia,fecha_despacho,fecha_sacrificio,mm_magro,porcentaje_magro,
-	clasificacion_magro,profundidad_lomo,Lote,Codigo_granja,Granja,Nit_asociado,Asociado,Grupo_Granja,FRIGORIFICO)
-	SELECT
-    A.tiquete,
-	A.id_orden,
-	UPPER(A.descripcion_exp) AS descripcion_exp,
-	UPPER(A.tercero) AS tercero,
-	A.peso_pie,
-	A.peso_caliente,
-	A.rendimiento,
-	A.peso_frio,
-	A.rendimiento_cf,
-	A.guia,
-	A.fecha_despacho,
-	A.fecha_sacrificio,
-	A.mm_magro,
-	A.porcentaje_magro,
-	UPPER(A.clasificacion_magro) AS clasificacion_magro,
-	A.profundidad_lomo,
-    A.Lote,
-    B.ID AS Codigo_granja,
-    UPPER(C.GRANJAS) AS Granja,
-    D.CODIGO AS Nit_asociado,
-    UPPER(E.RAZON_SOCIAL) AS Asociado,
-    UPPER(F.GRUPO_ASOCIADO) AS Grupo_Granja,
-    A.FRIGORIFICO
-	FROM t_rendimientos_porcinos A
-    JOIN DHC.homologacion_granjas B ON A.id_granja = B.ID_FRIGOTUN
-    JOIN DHC.granjas C ON B.ID = C.ID
-    JOIN DHC.nombre_comercial D ON C.NOMBRE_COMERCIAL = D.ID
-    JOIN DHC.RAZON_SOCIAL E ON C.RAZON_SOCIAL = E.ID
-    JOIN DHC.GRUPO_ASOCIADO F ON C.GRUPO_ASOCIADO = F.ID;
+    CREATE TEMPORARY TABLE t_remisiones_porcinos LIKE frigotun.remisiones_porcinos;
 	
-    INSERT INTO t_rendimientos_porcinos_granjas (
-    tiquete,
-    id_orden,
-    descripcion_exp,
-    tercero,
-    peso_pie,
-    peso_caliente,
-    rendimiento,
-    peso_frio,
-    rendimiento_cf,
-    guia,
-    fecha_despacho,
-    fecha_sacrificio,
-    mm_magro,
-    porcentaje_magro,
-    clasificacion_magro,
-    profundidad_lomo,
-    Lote,
-    Codigo_granja,
-    Granja,
-    Nit_asociado,
-    Asociado,
-    Grupo_Granja,
-    FRIGORIFICO
-)
-SELECT
-    A.Lote_Cod_Canal AS tiquete,
-    A.Lote_Turn_Bene AS id_orden,
-    A.Direccion_Remision AS descripcion_exp,
-    A.Proveedor AS tercero,
-    A.PROM_Peso_Pie AS peso_pie,
-    A.C_Caliente AS peso_caliente,
-    REPLACE(A.RTO_PCC, ',', '.') AS rendimiento,
-    A.C_Fria AS peso_frio,
-    REPLACE(A.RTO_PCF, ',', '.') AS rendimiento_cf,
-    A.Remision AS guia,
-    A.F_Remision AS fecha_despacho,
-    A.F_Beneficio AS fecha_sacrificio,
-    A.Grasa_Dorsal AS mm_magro,
-    REPLACE(A.Magro, ',', '.') AS porcentaje_magro, -- Reemplazar comas por puntos
-    A.Clasificacion AS clasificacion_magro,
-    A.Grasa_Dorsal AS profundidad_lomo,
+	INSERT INTO t_rendimientos_porcinos_granjas
+    SELECT * FROM b_ca.rendimientos_porcinos_granjas
+	WHERE descripcion_exp LIKE '%DESPOSTE%'
+    AND fecha_despacho BETWEEN @Fecha_inicial_t AND @Fecha_Final_t;
+    
+    -- SELECT * FROM t_rendimientos_porcinos_granjas;
+    
+	INSERT INTO t_remisiones_porcinos 
+    SELECT * FROM frigotun.remisiones_porcinos;
+    
+    CREATE TEMPORARY TABLE t_operacion_desposte (
+		Fecha_transformacion DATE,
+		Unidades INT,
+		Peso_canal_fria DECIMAL(22,9),
+		Lote VARCHAR (500),
+		Codigo_granja VARCHAR (10),
+		Remision VARCHAR(500),
+		Valor_kilo DECIMAL(22,9),
+		Valor DECIMAL(22,9),
+		Cliente VARCHAR(500),
+		Planta_Beneficio VARCHAR(20),
+		Granja VARCHAR(500),
+		Nit_asociado VARCHAR(500),
+		Asociado VARCHAR(500),
+		Grupo_Granja VARCHAR(500),
+		Retencion DECIMAL(22,9),
+		Valor_a_pagar_asociado DECIMAL(22,9)
+    );
+    
+    INSERT INTO t_operacion_desposte (Fecha_transformacion,Unidades,Peso_canal_fria,Lote,Codigo_granja,Remision,Valor_kilo,Valor,Cliente,
+	Planta_Beneficio,Granja,Nit_asociado,Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado)
+    SELECT 
+	A.fecha_despacho AS Fecha_transformacion,
+    COUNT(A.tiquete) AS Unidades,
+    SUM(A.peso_frio) AS Peso_canal_fria,
     A.Lote AS Lote,
-    B.ID AS Codigo_granja,
-    UPPER(C.GRANJAS) AS Granja,
-    D.CODIGO AS Nit_asociado,
-    UPPER(E.RAZON_SOCIAL) AS Asociado,
-    UPPER(F.GRUPO_ASOCIADO) AS Grupo_Granja,
-    'OINC' AS FRIGORIFICO
-FROM
-    t_trazabilidad_oinc A
-JOIN
-    DHC.homologacion_granjas B ON A.Granja = B.NOMBRE_OINC
-JOIN
-    DHC.granjas C ON B.ID = C.ID
-JOIN
-    DHC.nombre_comercial D ON C.NOMBRE_COMERCIAL = D.ID
-JOIN
-    DHC.RAZON_SOCIAL E ON C.RAZON_SOCIAL = E.ID
-JOIN
-    DHC.GRUPO_ASOCIADO F ON C.GRUPO_ASOCIADO = F.ID;
-
-
-	-- SELECT * FROM t_rendimientos_porcinos_granjas;
-	-- SELECT * FROM t_rendimientos_porcinos_granjas WHERE FRIGORIFICO = 'OINC' AND descripcion_exp LIKE '%DESPOSTE CERCAFE%';
-    -- SELECT * FROM t_rendimientos_porcinos_granjas WHERE FRIGORIFICO = 'FRIGOTUN' AND descripcion_exp LIKE '%DESPOSTE%';
+    A.Codigo_granja AS Codigo_granja,
+    A.GUIA AS Remision,
+    0 AS Valor_kilo,
+	0 AS Valor,
+    B.tercero AS Cliente,
+    A.FRIGORIFICO AS Planta_Beneficio,
+    A.Granja AS Granja,
+    A.Nit_asociado AS Nit_asociado,
+    A.Asociado AS Asociado,
+    A.Grupo_Granja AS Grupo_Granja,
+    0 AS Retencion,
+    0 AS Valor_a_pagar_asociado
+	FROM t_rendimientos_porcinos_granjas A 
+    JOIN t_remisiones_porcinos B ON A.Guia = B.GUIA
+    WHERE A.FRIGORIFICO = 'FRIGOTUN' AND B.tercero LIKE '%CERCAFE DESPOSTE%' GROUP BY Fecha_transformacion,Lote,Codigo_granja,Remision,Cliente,Planta_Beneficio,Granja,
+    Nit_asociado,Asociado,Grupo_Granja;
+    -- select * from t_operacion_desposte;
     
-    INSERT INTO B_CA.rendimientos_porcinos_granjas(tiquete,id_orden,descripcion_exp,tercero,peso_pie,peso_caliente,
-	rendimiento,peso_frio,rendimiento_cf,guia,fecha_despacho,fecha_sacrificio,mm_magro,porcentaje_magro,
-	clasificacion_magro,profundidad_lomo,Lote,Codigo_granja,Granja,Nit_asociado,Asociado,Grupo_Granja,FRIGORIFICO)
-	SELECT
-    tiquete,id_orden,descripcion_exp,tercero,peso_pie,peso_caliente,
-	rendimiento,peso_frio,rendimiento_cf,guia,fecha_despacho,fecha_sacrificio,mm_magro,porcentaje_magro,
-	clasificacion_magro,profundidad_lomo,Lote,Codigo_granja,Granja,Nit_asociado,Asociado,Grupo_Granja,FRIGORIFICO
-    FROM t_rendimientos_porcinos_granjas;
+    INSERT INTO t_operacion_desposte (Fecha_transformacion,Unidades,Peso_canal_fria,Lote,Codigo_granja,Remision,Valor_kilo,Valor,Cliente,
+	Planta_Beneficio,Granja,Nit_asociado,Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado)
+    SELECT 
+	fecha_despacho AS Fecha_transformacion,
+    COUNT(tiquete) AS Unidades,
+    SUM(peso_frio) AS Peso_canal_fria,
+    Lote AS Lote,
+    Codigo_granja AS Codigo_granja,
+    GUIA AS Remision,
+    0 AS Valor_kilo,
+	0 AS Valor,
+    descripcion_exp AS Cliente,
+    FRIGORIFICO AS Planta_Beneficio,
+    Granja AS Granja,
+    Nit_asociado AS Nit_asociado,
+    Asociado AS Asociado,
+    Grupo_Granja AS Grupo_Granja,
+    0 AS Retencion,
+    0 AS Valor_a_pagar_asociado
+	FROM t_rendimientos_porcinos_granjas
+    WHERE FRIGORIFICO = 'OINC' GROUP BY Fecha_transformacion,Lote,Codigo_granja,Remision,Cliente,Planta_Beneficio,Granja,
+    Nit_asociado,Asociado,Grupo_Granja;
     
-	DROP TEMPORARY TABLE IF EXISTS t_homologacion_granjas;
-    DROP TEMPORARY TABLE IF EXISTS t_rendimientos_porcinos;
-    DROP TEMPORARY TABLE IF EXISTS t_trazabilidad_oinc;
+    -- SELECT * FROM t_operacion_desposte;
+    SET @GUID = UUID();
+    
+    INSERT INTO B_GAF.OPERACION_DESPOSTE(Fecha_transformacion,Unidades,Peso_canal_fria,Consecutivo_Cercafe,Codigo_granja,Remision,Valor,
+	Cliente,Planta_Beneficio,Granja,Nit_asociado,Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado,Valor_kilo,GUID)
+    SELECT
+    Fecha_transformacion as Fecha_transformacion,
+	Unidades,
+	Peso_canal_fria,
+	Lote AS Consecutivo_Cercafe,
+	Codigo_granja,
+	Remision,
+	Valor,
+	Cliente,
+	Planta_Beneficio,
+	Granja,
+	Nit_asociado,
+	Asociado,
+	Grupo_Granja,
+	Retencion,
+	Valor_a_pagar_asociado,
+    Valor_kilo,
+    @GUID AS GUID
+    FROM t_operacion_desposte;
+    
+    /*
+    ALTER TABLE b_gaf.operacion_desposte
+	CHANGE COLUMN Lote Consecutivo_Cercafe varchar(500);
+    */
+    
+    /* Consulta a ejecutar
+    SELECT Fecha_transformacion,Unidades,Peso_canal_fria,Lote,Codigo_granja,Remision,Valor,Cliente,Planta_Beneficio,Granja,Nit_asociado,
+	Asociado,Grupo_Granja,Retencion,Valor_a_pagar_asociado,Valor_kilo
+	FROM B_GAF.OPERACION_DESPOSTE
+	WHERE GUID=(SELECT GUID FROM B_GAF.OPERACION_DESPOSTE WHERE FECHA_DATOS=(SELECT MAX(FECHA_DATOS) FROM B_GAF.OPERACION_DESPOSTE) LIMIT 1)
+    */ 
+    -- Eliminamos tablas temporales
     DROP TEMPORARY TABLE IF EXISTS t_rendimientos_porcinos_granjas;
+	DROP TEMPORARY TABLE IF EXISTS t_remisiones_porcinos;
+    DROP TEMPORARY TABLE IF EXISTS t_operacion_desposte;
+    
     """.format(fecha_inicial, fecha_final)
     print("Consulta SQL:")
     print(consulta_sql)
