@@ -120,6 +120,11 @@ def ti(request):
 @login_required
 def adminfinan(request):
    return render(request, 'gestionadminfinan.html')
+#---Define La Vista del modulo Gestion admin y finan-----
+@never_cache
+@login_required
+def sig(request):
+   return render(request, 'sig.html')
 
 #---Define La Vista del modulo financiera-----
 @never_cache
@@ -933,6 +938,39 @@ def cargar_excel_alibal(request):
                         (TONELADAS_PRODUCIDAS_MES.value,TONELADAS_PRESUPUESTO_MES.value,PORCENTAJE_VARIACION_MES.value,PORCENTAJE_CUMPLIMIENTO_MES.value,OBSERVACION_VARIACION.value,PORCENTAJE_BULTO_MES.value,PORCENTAJE_GRANEL_MES.value,SACK_OFF.value,PORCENTAJE_OTIF.value,OBSERVACION_OTIF.value,PRESUPUESTO_MO_CIF.value,MO_CIF.value,TIEMPO_MUERTO.value,COSTO_TIEMPO_MUERTO.value,OBSERVACION_TIEMPO_MUERTO.value,FECHA_CORTE.value,guid,usuario.username)
                     )
                 messages.success(request, 'Carga de datos en PLANTA ALIMENTOS BALANCEADOS exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+#------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------
+#------------------ CARGA DE BSC --------------------------------------------------------
+#------------------------------------------------------------------------------------------------------
+#------ vista para el cargue de excel en clientes activos----------------------------------------------
+@never_cache
+@login_required
+def cargar_excel_bsc(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+            guid = str(uuid4())
+            usuario = request.user
+            # Abre una conexión a la base de datos b_gc
+            with connections['B_SIG'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    PERSPECTIVA, ESTRATEGIA, INDICADOR, META, META_NUMERICA, MES, UNIDAD_MEDIDA, RESULTADO, RESULTADO_NUMERICO, RESULTADO_GENERAL = row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla bsc
+                    cursor.execute(
+                        'INSERT INTO bsc (PERSPECTIVA,ESTRATEGIA,INDICADOR,META,META_NUMERICA,MES,UNIDAD_MEDIDA,RESULTADO,RESULTADO_NUMERICO,RESULTADO_GENERAL,GUID,USUARIO) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                        (PERSPECTIVA.value,ESTRATEGIA.value,INDICADOR.value,META.value,META_NUMERICA.value,MES.value,UNIDAD_MEDIDA.value,RESULTADO.value,RESULTADO_NUMERICO.value,RESULTADO_GENERAL.value,guid,usuario.username)
+                    )
+            messages.success(request, 'Carga de datos en bsc exitosa')
         except KeyError:
             messages.error(request, 'No se ha proporcionado un archivo Excel.')
         except IntegrityError as e:
@@ -2094,7 +2132,7 @@ def generar_pdf(request):
     consecutivo_cercafe = request.GET.get('consecutivoCercafe', None)
     
     # Verificar si se proporciona un consecutivo_cercafe
-    if consecutivo_cercafe:
+    if consecutivo_cercafe: 
         # Obtener los datos de la remisión filtrados por el consecutivo ceracafe
         remisiones = tablaremisionnew(consecutivo_cercafe)
         

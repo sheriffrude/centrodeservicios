@@ -275,7 +275,7 @@ def obtener_fechas():
 def main():
     fecha_inicial, fecha_final = obtener_fechas()
     ejecutar_consulta(fecha_inicial, fecha_final)
-    print('ejecutando script')
+    print('ejecutando script RENDIMIENTOS PORCINOS GRANJAS')
     
 if __name__ == "__main__":
     main()

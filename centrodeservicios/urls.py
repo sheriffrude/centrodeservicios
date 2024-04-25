@@ -76,6 +76,10 @@ urlpatterns = [
     
     path('cargar_excel_transfordig/', views.cargar_excel_transfordig, name='cargar_excel_transfordig'),
     path('cargar_excel_inideco/', views.cargar_excel_inideco, name='cargar_excel_inideco'),
+     #--------------------------------- T.I ------------------------------------------------
+    path('sig/', views.sig, name='sig'),
+    path('cargar_excel_bsc/', views.cargar_excel_bsc, name='cargar_excel_bsc'),
+    
     
      #--------------------------------- Admin y Financiera ------------------------------------------------
     path('adminfinan/', views.adminfinan, name='adminfinan'),

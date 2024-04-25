@@ -19,6 +19,7 @@ def ejecutar_consulta(fecha_inicial, fecha_final):
     consulta_sql = """
     
     -- OPERACION DESPOSTE A FACTURAR
+    
     use dhc;
     SET @Fecha_inicial = '{}';
 	SET @Fecha_Final = '{}';
@@ -155,7 +156,7 @@ def ejecutar_consulta(fecha_inicial, fecha_final):
     DROP TEMPORARY TABLE IF EXISTS t_operacion_desposte;
     
     """.format(fecha_inicial, fecha_final)
-    print("Consulta SQL:")
+    print("Consulta SQL operacion desposte a facturar:")
     print(consulta_sql)
     cursor.execute(consulta_sql)
 
@@ -190,7 +191,7 @@ def obtener_fechas():
 def main2():
     fecha_inicial, fecha_final = obtener_fechas()
     ejecutar_consulta(fecha_inicial, fecha_final)
-    print('ejecutando script2')
+    print('ejecutando script operacion desposte a facturar')
     
 if __name__ == "__main__":
     main2()
