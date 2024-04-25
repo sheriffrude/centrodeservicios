@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 import os
 
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'adminlte3_theme',
     'wkhtmltopdf',
     'django_celery_beat',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -116,7 +118,7 @@ DATABASES = {
 esquemas = [
     'B_GC', 'B_GT', 'B_CA', 'B_GAB', 'B_CI',
     'B_M', 'B_C', 'B_GD', 'B_GAF', 'B_GH',
-    'B_TI', 'B_SAC', 'B_SIG', 'B_GG', 'DHC','intranetcercafe2','oinc'
+    'B_TI', 'B_SAC', 'B_SIG', 'B_GG', 'DHC','intranetcercafe2','oinc','frigotun'
 ]
 
 # Configuración base para todas las bases de datos adicionales
@@ -204,10 +206,13 @@ EMAIL_HOST_PASSWORD = 'Teamohij4'
 email_from = 'mendietap874@gmail.com'
 recipient_list = ['mendietap874@gmail.com']
 
-# CELERY_BEAT_SCHEDULE = {
-#     "scheduled_task": {
-#         "task": "login.tasks.add",
-#         "schedule": 10.0,
-#         "args": (15, 10),
-#     }
-# }
+CELERY_BEAT_SCHEDULE = {
+    "scheduled_task": {
+        "task": "login.tasks.ejecutar_script",
+        "schedule": 30.0,
+    },
+    "scheduled_task2": {
+        "task": "login.tasks.ejecutar_script2",
+        "schedule": 50.0,
+    }
+}
