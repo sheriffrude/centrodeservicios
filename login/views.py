@@ -948,9 +948,9 @@ def cargar_excel_alibal(request):
     return render(request, '/home/')
 #------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------
-#------------------ CARGA DE BSC --------------------------------------------------------
+#------------------ CARGA DE BSC ----------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------
-#------ vista para el cargue de excel en BSC----------------------------------------------
+#------ vista para el cargue de excel en BSC-----------------------------------------------------------
 @never_cache
 @login_required
 def cargar_excel_bsc(request):
@@ -1409,7 +1409,7 @@ def cargar_excel_preciocanal(request):
             # Abre una conexión a la base de datos B_GAF
             with connections['B_GAF'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
-                    NIT, CLIENTE, ZONA, VALOR = row
+                    NIT, CLIENTE, ZONA, VALOR, SEMANA = row
                     
                     # Verificar si el NIT existe en la lista de NITs existentes
                     if int(NIT.value) not in map(int, nits_existentes):
@@ -1426,8 +1426,8 @@ def cargar_excel_preciocanal(request):
 
                     # Ejecuta una consulta SQL para insertar los datos en la tabla precio_canales_semana
                     cursor.execute(
-                        'INSERT INTO precio_canales_semana (NIT, CLIENTE, ZONA, VALOR, GUID, USUARIO) VALUES (%s, %s, %s, %s, %s, %s)',
-                        (NIT.value, CLIENTE.value, ZONA.value, VALOR.value, guid, usuario.username)
+                        'INSERT INTO precio_canales_semana (NIT, CLIENTE, ZONA, VALOR,SEMANA, GUID, USUARIO) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                        (NIT.value, CLIENTE.value, ZONA.value, VALOR.value, SEMANA.value, guid, usuario.username)
                     )
                 messages.success(request, 'Carga de datos en precio canales exitosa')
         except KeyError:
