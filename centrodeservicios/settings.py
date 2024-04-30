@@ -205,11 +205,18 @@ EMAIL_HOST_PASSWORD = 'Teamohij4'
 
 email_from = 'mendietap874@gmail.com'
 recipient_list = ['mendietap874@gmail.com']
+from celery.schedules import crontab
+from datetime import datetime
+today = datetime.now().weekday()
+friday = (5 - today) % 7
 
+
+
+horario_ejecucion = crontab(hour=9, minute=00)
 CELERY_BEAT_SCHEDULE = {
     "scheduled_task": {
         "task": "login.tasks.ejecutar_script",
-        "schedule": 30.0,
+        "schedule": horario_ejecucion,
     },
     "scheduled_task2": {
         "task": "login.tasks.ejecutar_script2",

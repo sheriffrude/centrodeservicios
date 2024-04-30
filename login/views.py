@@ -428,6 +428,35 @@ def cargar_excel_toneladasimport(request):
 #------------------ CARGA DE GESTION COMERCIAL --------------------------------------------------------
 #------------------------------------------------------------------------------------------------------
 #------ vista para el cargue de excel en clientes activos----------------------------------------------
+# @never_cache
+# @login_required
+# def cargar_excel_clientesactivos(request):
+#     if request.method == 'POST':
+#         try:
+#             archivo_excel = request.FILES['archivo_excel']
+#             wb = openpyxl.load_workbook(archivo_excel)
+#             ws = wb.active
+#             guid = str(uuid4())
+#             usuario = request.user
+#             # Abre una conexión a la base de datos b_gc
+#             with connections['B_GC'].cursor() as cursor:
+#                 for row in ws.iter_rows(min_row=2):
+#                     FECHA_CORTE, CANTIDAD_CLIENTES, ZONA_CLIENTE, KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE = row
+#                     # Ejecuta una consulta SQL para insertar los datos en la tabla compromiso_mes
+#                     cursor.execute(
+#                         'INSERT INTO CLIENTES_ACTIVOS (FECHA_CORTE,CANTIDAD_CLIENTES,ZONA_CLIENTE,KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s,%s,%s)',
+#                         (FECHA_CORTE.value, CANTIDAD_CLIENTES.value, ZONA_CLIENTE.value, KG_FACTURADOS.value,DINERO_APORTADO.value,ESTADO_CLIENTE.value,guid,usuario.username)
+#                     )
+#             messages.success(request, 'Carga de datos en CLIENTES ACTIVOS exitosa')
+#         except KeyError:
+#             messages.error(request, 'No se ha proporcionado un archivo Excel.')
+#         except IntegrityError as e:
+#             messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+#         except Exception as e:
+#             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+#         return redirect('home')
+#     return render(request, '/home/')
+#------ vista para el cargue de excel en clientes activos----------------------------------------------
 @never_cache
 @login_required
 def cargar_excel_clientesactivos(request):
@@ -439,13 +468,13 @@ def cargar_excel_clientesactivos(request):
             guid = str(uuid4())
             usuario = request.user
             # Abre una conexión a la base de datos b_gc
-            with connections['B_GC'].cursor() as cursor:
+            with connections['DHC'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
-                    FECHA_CORTE, CANTIDAD_CLIENTES, ZONA_CLIENTE, KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE = row
+                    NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION, ID_VENDEDOR,ID_SEGMENTO,ID_MIX_VENTAS = row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla compromiso_mes
                     cursor.execute(
-                        'INSERT INTO CLIENTES_ACTIVOS (FECHA_CORTE,CANTIDAD_CLIENTES,ZONA_CLIENTE,KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s,%s,%s)',
-                        (FECHA_CORTE.value, CANTIDAD_CLIENTES.value, ZONA_CLIENTE.value, KG_FACTURADOS.value,DINERO_APORTADO.value,ESTADO_CLIENTE.value,guid,usuario.username)
+                        'INSERT INTO CLIENTES (NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION, ID_VENDEDOR,ID_SEGMENTO,ID_MIX_VENTAS,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)',
+                        (NIT.value,RAZON_SOCIAL.value,CUPO.value,DIRECCION_SEDE_PRINCIPAL.value,DIRECCION_EXPENDIO.value,ID_CLASIFICACION.value,ID_MUNICIPIO.value,ID_DEPARTAMENTO.value,ID_REGION.value, ID_VENDEDOR.value,ID_SEGMENTO.value,ID_MIX_VENTAS.value,guid,usuario.username)
                     )
             messages.success(request, 'Carga de datos en CLIENTES ACTIVOS exitosa')
         except KeyError:

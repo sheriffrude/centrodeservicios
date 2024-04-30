@@ -171,12 +171,12 @@ def obtener_fechas():
     hoy = datetime.now()
     dia_semana = hoy.weekday()  # 0 para lunes, 1 para martes, etc.
 
-    if dia_semana in [0, 1, 2, 3]:  # Lunes a jueves
+    if dia_semana in [ 1, 2, 3,4]:  # martes a viernes
         fecha_inicial = hoy - timedelta(days=1)
         fecha_final = hoy - timedelta(days=1)
-    elif dia_semana == 4:  # Viernes
-        fecha_inicial = hoy - timedelta(days=3)  # Viernes - 3 días = Martes
-        fecha_final = hoy - timedelta(days=1)    # Viernes - 1 día = Jueves
+    elif dia_semana == 0:  # lunes
+        fecha_inicial = hoy - timedelta(days=3)  # lunes - 3 días = viernes
+        fecha_final = hoy - timedelta(days=1)    # lunes - 1 día = domingo
     else:  # Fin de semana, domingo (5) y sábado (6)
         fecha_inicial = hoy - timedelta(days=2)  # Domingo - 2 días = Viernes
         fecha_final = hoy - timedelta(days=1)    # Domingo - 1 día = Sábado
