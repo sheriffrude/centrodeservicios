@@ -87,8 +87,9 @@ urlpatterns = [
     path('cargar_excel_compramed/', views.cargar_excel_compramed, name='cargar_excel_compramed'),
     path('cargar_excel_preciocanal/', views.cargar_excel_preciocanal, name='cargar_excel_preciocanal'),
     path('cargar_excel_clientes/', views.cargar_excel_clientes, name='cargar_excel_clientes'),
-    
-    
+    path('cargar_excel_evolucion_precio_canal/', views.cargar_excel_evolucion_precio_canal, name='cargar_excel_evolucion_precio_canal'),
+    path('cargar_excel_costo_kg_producido_kg_vendido/', views.cargar_excel_costo_kg_producido_kg_vendido, name='cargar_excel_costo_kg_producido_kg_vendido'),
+    path('cargar_excel_indicadores_economicos/', views.cargar_excel_indicadores_economicos, name='cargar_excel_indicadores_economicos'),
     
     path('financiera/', views.financiera, name='financiera'),
     path('repoprove/', views.repoprove, name='repoprove'),

@@ -1308,7 +1308,7 @@ def cargar_excel_inideco(request):
     return render(request, '/home/')
 # ----------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------
-#--------------------------------- CARGA DE----G Admin Financiera ------------------------------------------------
+#--------------------------------- CARGA DE----Gestion Admin Financiera ------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------
 #-------- vista para el cargue de excel en  Compras Materia Prima ------------------------------------------------
 
@@ -1504,9 +1504,94 @@ def cargar_excel_clientes(request):
             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
         return redirect('home')
     return render(request, '/home/')
+#------ vista para el cargue de excel en Evolucion Precio Canal----------------------------------------------
+@never_cache
+@login_required
+def cargar_excel_evolucion_precio_canal(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+            guid = str(uuid4())
+            usuario = request.user
+            # Abre una conexión a la base de datos b_gc
+            with connections['B_GAF'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    FECHA_REPORTE,PRECIO_PROM_CANAL_FRIA,PRECIO_PROM_KG_GRANJA,CANTIDAD_CERDOS_VENDIDOS = row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla compromiso_mes
+                    cursor.execute(
+                        'INSERT INTO evolucion_precio_canal ( FECHA_REPORTE,PRECIO_PROM_CANAL_FRIA,PRECIO_PROM_KG_GRANJA,CANTIDAD_CERDOS_VENDIDOS,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s)',
+                        ( FECHA_REPORTE.value,PRECIO_PROM_CANAL_FRIA.value,PRECIO_PROM_KG_GRANJA.value,CANTIDAD_CERDOS_VENDIDOS.value,guid,usuario.username)
+                    )
+            messages.success(request, 'Carga de datos en evolucion_precio_canal exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+#------ vista para el cargue de excel en costo_kg_producido_kg_vendido----------------------------------------------
+@never_cache
+@login_required
+def cargar_excel_costo_kg_producido_kg_vendido(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+            guid = str(uuid4())
+            usuario = request.user
+            # Abre una conexión a la base de datos b_gc
+            with connections['B_GAF'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
 
-
-
+                    FECHA_REPORTE,TONELADAS_PRODUCIDAS,COSTO_PROMEDIO_PRO,TONELADAS_VENDIDAS,VALOR_PROMEDIO_VENTA_KG,MARGEN_BRUTO = row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla compromiso_mes
+                    cursor.execute(
+                        'INSERT INTO costo_kg_producido_kg_vendido ( FECHA_REPORTE,TONELADAS_PRODUCIDAS,COSTO_PROMEDIO_PRO,TONELADAS_VENDIDAS,VALOR_PROMEDIO_VENTA_KG,MARGEN_BRUTO,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s, %s, %s)',
+                        ( FECHA_REPORTE.value,TONELADAS_PRODUCIDAS.value,COSTO_PROMEDIO_PRO.value,TONELADAS_VENDIDAS.value,VALOR_PROMEDIO_VENTA_KG.value,MARGEN_BRUTO.value,guid,usuario.username)
+                    )
+            messages.success(request, 'Carga de datos en costo_kg_producido_kg_vendido exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+#------ vista para el cargue de excel en indicadores_economicos----------------------------------------------
+@never_cache
+@login_required
+def cargar_excel_indicadores_economicos(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+            guid = str(uuid4())
+            usuario = request.user
+            # Abre una conexión a la base de datos b_gc
+            with connections['B_GAF'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    FECHA_REPORTE,INDICADOR,VALOR,FUENTE,LINK = row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla compromiso_mes
+                    cursor.execute(
+                        'INSERT INTO indicadores_economicos (FECHA_REPORTE,INDICADOR,VALOR,FUENTE,LINK,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s, %s)',
+                        ( FECHA_REPORTE.value,INDICADOR.value,VALOR.value,FUENTE.value,LINK.value,guid,usuario.username)
+                    )
+            messages.success(request, 'Carga de datos en indicadores_economicos exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
 
 # ------------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------------------
