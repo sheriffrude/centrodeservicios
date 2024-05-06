@@ -110,6 +110,20 @@ DATABASES = {
         'PASSWORD': '1234',
         'HOST': 'localhost',
         'PORT': '3306',
+        
+    },
+    'int': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'intranetcercafe2',
+        'USER': 'DEV_USER',
+        'PASSWORD': 'D3V-US3R1234+*+*',
+        'HOST': '192.241.142.141',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',
+            'version': '5.7.40' 
+        }
     },
    
 }

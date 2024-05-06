@@ -1445,10 +1445,10 @@ def cargar_excel_preciocanal(request):
                         messages.error(request, f'Error: El NIT {NIT.value} no existe en la base de datos de clientes.')
                         return redirect('home')
 
-                    # Verificar si el NIT está repetido en el archivo subido
-                    if NIT.value in nits_vistos:
-                        messages.error(request, f'Error: El NIT {NIT.value} está repetido en el archivo.')
-                        return redirect('home')
+                    # # Verificar si el NIT está repetido en el archivo subido
+                    # if NIT.value in nits_vistos:
+                    #     messages.error(request, f'Error: El NIT {NIT.value} está repetido en el archivo.')
+                    #     return redirect('home')
                     
                     # Añadir el NIT al conjunto de NITs vistos
                     nits_vistos.add(NIT.value)
@@ -2137,7 +2137,7 @@ def repremision(request):
 
 
 
-
+#----- generar tabla de remisiones solo visualizacion de  informacion
 def tablaremisionnew(consecutivo_cercafe):
     intranetcercafe2_connection = connections['intranetcercafe2']
     with intranetcercafe2_connection.cursor() as cursor:
@@ -2148,7 +2148,7 @@ def tablaremisionnew(consecutivo_cercafe):
         remisionnew = cursor.fetchall()
     return remisionnew
 
-
+#--- filtar por fechas para descargar el excel
 def filtered_data(start_date, end_date):
     with connections['intranetcercafe2'].cursor() as cursor:
         cursor.execute('''
@@ -2164,6 +2164,8 @@ def filtered_data(start_date, end_date):
 
     return fechas
 
+
+#-- generar excel de remisiones para reporte
 def generar_excel(request):
     # Obtener las fechas de inicio y fin del request
     start_date = request.GET.get('start_date')
@@ -2210,7 +2212,7 @@ def generar_excel(request):
         return response
 
 
-#--- VISTA para creacion del PDF EN  REMISIONES
+#------ VISTA para creacion del PDF EN  REMISIONES------------
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 import pdfkit
@@ -2219,21 +2221,21 @@ from django.db import connections
 from django.template.loader import render_to_string
 
 def generate_qr_code(input_data):
-    # Obtener la ruta absoluta del directorio 'static/images' dentro de tu proyecto Django
+    # Obtener la ruta absoluta del directorio 'static/images' dentro de Django
     static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
     images_dir = os.path.join(static_dir, 'images')
     filename = 'qrcercafe.png'
     filepath = os.path.join(images_dir, filename)
 
-    # Crear el directorio si no existe
+    # Crea el directorio si no existe
     os.makedirs(images_dir, exist_ok=True)
 
-    # Crear el código QR
+    # Crea el código QR
     qr = qrcode.QRCode(version=1, box_size=10, border=5)
     qr.add_data(input_data)
     qr.make(fit=True)
 
-    # Crear la imagen del código QR
+    # Crea la imagen del código QR
     img = qr.make_image(fill='black', back_color='white')
 
     # Guardar la imagen en la ruta especificada
@@ -2280,7 +2282,7 @@ def generar_pdf(request):
                 resultados_dhc = cursor.fetchall()
         print(resultados_dhc)
 
-        # Combinar los resultados de ambas consultas si es necesario
+        # Combinar los resultados de ambas consulta
         
         total_cantidad = sum(remisionne[7] for remisionne in remisionnew)
         
@@ -2302,7 +2304,7 @@ def generar_pdf(request):
         response['Content-Disposition'] = 'attachment; filename="reporte_remisiones.pdf"'
         return response
     else:
-        # Si no se proporciona un consecutivo, devolver un mensaje de error o redireccionar a otra página
+        # Si no se proporciona un consecutivo, devolver un mensaje de error
         return HttpResponse("No se proporcionó un consecutivo válido.")
 
 
