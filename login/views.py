@@ -1441,7 +1441,7 @@ def cargar_excel_preciocanal(request):
                     NIT, CLIENTE, ZONA, VALOR, SEMANA = row
                     
                     # Verificar si el NIT existe en la lista de NITs existentes
-                    if int(NIT.value) not in map(int, nits_existentes):
+                    if NIT.value is not None and int(NIT.value) not in map(int, nits_existentes):
                         messages.error(request, f'Error: El NIT {NIT.value} no existe en la base de datos de clientes.')
                         return redirect('home')
 
