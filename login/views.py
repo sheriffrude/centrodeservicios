@@ -1141,7 +1141,7 @@ def cargar_excel_oinc(request):
                     F_Ingreso = row_data[7].value
                     F_Beneficio = row_data[8].value
                     F_Vencimiento = row_data[9].value
-                    Proveedor = row_data[10].value
+                    Solicitante = row_data[10].value
                     Propietario = row_data[11].value
                     Granja = row_data[12].value
                     Rem_Granja = row_data[13].value
@@ -1191,8 +1191,8 @@ def cargar_excel_oinc(request):
                     
                     # Ejecutar una consulta SQL para insertar los datos en la tabla TRAZABILIDAD_OINC
                     cursor.execute(
-                        'INSERT INTO TRAZABILIDAD_OINC (Mes, Año, Semana, Lote, Lote_Turn_Bene, Lote_Cod_Canal, Fase, F_Ingreso, F_Beneficio, F_Vencimiento, Proveedor, Propietario, Granja, Rem_Granja, Rem_Solicitante, Mun_Granja, Guia_ICA, Verificacion_ICA, Lab_IC, Registro_IC, Turno_Beneficio, Cod_Canal, Genero, PROM_Peso_Pie, Presentacion, C_Caliente, Grasa_Dorsal, RTO_PCC, C_Fria, RTO_PCF, Clasificacion, Merma, Magro, Cava, Tiempo_Cava, Clas_SEUROP, Clas_ABC, F_Remision, Destino_Cliente, Destino_Remision, Direccion_Remision, Mun_destino, Dep_destino, Remision, Tipo_Remision, Desposte, G_Invima, Placa_Furgon, Factura_Beneficio, Decomiso, Patologia, Observacion) VALUES (%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s, %s, %s)',
-                        (Mes, Año, Semana, Lote, Lote_Turn_Bene, Lote_Cod_Canal, Fase, F_Ingreso, F_Beneficio, F_Vencimiento, Proveedor, Propietario, Granja, Rem_Granja, Rem_Solicitante, Mun_Granja, Guia_ICA, Verificacion_ICA, Lab_IC, Registro_IC, Turno_Beneficio, Cod_Canal, Genero, PROM_Peso_Pie, Presentacion, C_Caliente, Grasa_Dorsal, RTO_PCC, C_Fria, RTO_PCF, Clasificacion, Merma, Magro, Cava, Tiempo_Cava, Clas_SEUROP, Clas_ABC, F_Remision, Destino_Cliente, Destino_Remision, Direccion_Remision, Mun_destino, Dep_destino, Remision, Tipo_Remision, Desposte, G_Invima, Placa_Furgon, Factura_Beneficio, Decomiso, Patologia, Observacion)
+                        'INSERT INTO TRAZABILIDAD_OINC (Mes, Año, Semana, Lote, Lote_Turn_Bene, Lote_Cod_Canal, Fase, F_Ingreso, F_Beneficio, F_Vencimiento, Solicitante, Propietario, Granja, Rem_Granja, Rem_Solicitante, Mun_Granja, Guia_ICA, Verificacion_ICA, Lab_IC, Registro_IC, Turno_Beneficio, Cod_Canal, Genero, PROM_Peso_Pie, Presentacion, C_Caliente, Grasa_Dorsal, RTO_PCC, C_Fria, RTO_PCF, Clasificacion, Merma, Magro, Cava, Tiempo_Cava, Clas_SEUROP, Clas_ABC, F_Remision, Destino_Cliente, Destino_Remision, Direccion_Remision, Mun_destino, Dep_destino, Remision, Tipo_Remision, Desposte, G_Invima, Placa_Furgon, Factura_Beneficio, Decomiso, Patologia, Observacion) VALUES (%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s, %s, %s)',
+                        (Mes, Año, Semana, Lote, Lote_Turn_Bene, Lote_Cod_Canal, Fase, F_Ingreso, F_Beneficio, F_Vencimiento, Solicitante, Propietario, Granja, Rem_Granja, Rem_Solicitante, Mun_Granja, Guia_ICA, Verificacion_ICA, Lab_IC, Registro_IC, Turno_Beneficio, Cod_Canal, Genero, PROM_Peso_Pie, Presentacion, C_Caliente, Grasa_Dorsal, RTO_PCC, C_Fria, RTO_PCF, Clasificacion, Merma, Magro, Cava, Tiempo_Cava, Clas_SEUROP, Clas_ABC, F_Remision, Destino_Cliente, Destino_Remision, Direccion_Remision, Mun_destino, Dep_destino, Remision, Tipo_Remision, Desposte, G_Invima, Placa_Furgon, Factura_Beneficio, Decomiso, Patologia, Observacion)
                     )
                 messages.success(request, 'Carga de datos en TRAZABILIDAD_OINC exitosa')
         except KeyError:
@@ -1764,7 +1764,7 @@ def save_changes(request):
 def get_filtered_data_by_group(start_date, end_date, selected_group):
     with connections['B_GAF'].cursor() as cursor:
         cursor.execute('''
-            SELECT Granja,Cliente,Unidades,Peso_canal_fria,Valor_kilo,Valor,Retencion,Valor_a_pagar_asociado
+            SELECT Asociado,Granja,Cliente,Unidades,Peso_canal_fria,Valor_kilo,Valor,Retencion,Valor_a_pagar_asociado
             FROM B_GAF.OPERACION_DESPOSTE
             WHERE Fecha_transformacion BETWEEN %s AND %s AND Grupo_Granja = %s
         ''', [start_date, end_date, selected_group])
@@ -1776,8 +1776,11 @@ def get_filtered_data_by_group(start_date, end_date, selected_group):
     return compromisos
 
 from collections import defaultdict
-    
+from django.http import HttpResponse 
+
 def generate_excel_report(request):
+    import xlsxwriter
+
     # Obtener los datos para exportar
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
@@ -1786,33 +1789,132 @@ def generate_excel_report(request):
     # Obtener los datos filtrados para el grupo seleccionado
     compromisos = get_filtered_data_by_group(start_date, end_date, selected_group)
 
+    # Convertir las tuplas en listas para que puedan ser ordenadas
+    compromisos = list(compromisos)
+
+    # Ordenar los compromisos por asociado, granja y cliente
+    compromisos.sort(key=lambda x: (x[0], x[1], x[2]))  
+
     # Crear el archivo Excel
     workbook = xlsxwriter.Workbook('reporte_grupo_' + selected_group + '.xlsx')
     worksheet = workbook.add_worksheet()
 
+    # Formato para las celdas que cumplen la condición
+    formato_azul = workbook.add_format({'bg_color': '#9BC2E6', 'bold': True})  # Encabezados en azul y en negrita
+    bordeado = workbook.add_format({'border': 1})  # Formato para bordes
+    formato_amarillo = workbook.add_format({'bg_color': 'yellow'})
+
     # Escribir los encabezados
-    headers = ['Granja', 'Cliente', 'Unidades', 'Peso Canal', 'Valor Kilo', 'Valor a facturar', 'Retención',
+    headers = ['Asociado', 'Granja', 'Cliente', 'Unidades', 'Peso Canal', 'Valor Kilo', 'Valor a facturar', 'Retención',
                'Valor a Pagar Asociado']
     for i, header in enumerate(headers):
-        worksheet.write(0, i, header)
-
+        worksheet.write(0, i, header, bordeado)
+        worksheet.write(0, i, header, formato_azul) 
+        
+    # Ajustar automáticamente el ancho de las columnas al texto de los encabezados
+    for i, header in enumerate(headers):
+        worksheet.set_column(i, i, len(header) + 2)  # Ajustar el ancho de la columna al tamaño del encabezado más un margen
+        worksheet.freeze_panes(1, 0)
     # Escribir los datos
-    current_granja = None
     current_row = 1
+    current_granja = None
+    granja_total_values = [0, 0, 0, 0, 0, 0, 0, 0, 0]  # Inicializar los valores totales para cada columna
+    consolidado_unidades = 0
+    consolidado_kilos = 0
+    consolidado_valor_total = 0
     for compromiso in compromisos:
-        if current_granja is None or current_granja != compromiso[0]:
-            # Si la granja cambió, agregar dos líneas vacías
+        if current_granja is None or current_granja != compromiso[1]:
+            # Si la granja cambió, escribir los totales y reiniciar los valores totales
             if current_row > 1:
-                current_row += 2
-            current_granja = compromiso[0]
-            worksheet.write(current_row, 0, current_granja)  
-            current_row += 1
+                current_row += 1
+                worksheet.write(current_row, 0, "")
+                worksheet.write(current_row, 1, "TOTAL :")
+                # Escribir los totales de la granja anterior con bordes y formato amarillo
+                for col, total_value in enumerate(granja_total_values[3:], start=3):
+                    worksheet.write(current_row, col, total_value, bordeado)
+                    worksheet.write(current_row, col, total_value, formato_amarillo)  # Aplicar formato amarillo a las celdas de estas columnas
+                      # Aplicar bordes
+                current_row += 2  # Saltar dos filas para separar los bloques
+            current_granja = compromiso[1]
+            granja_total_values = [0, 0, 0, 0, 0, 0, 0, 0, 0]  # Reiniciar los valores totales
 
-        # Escribir los demás valores en las columnas correspondientes
-        for col, value in enumerate(compromiso[1:], start=1):
-            worksheet.write(current_row, col, value)
-
+        # Escribir los valores en las columnas correspondientes
+        for col, value in enumerate(compromiso):
+            worksheet.write(current_row, col, value, bordeado)  # Aplicar bordes a todas las celdas
+            if col in [3, 4, 6, 7, 8]:  # Columnas para las cuales calcular los totales
+                granja_total_values[col] += float(value.replace(',', '.')) if isinstance(value, str) else value
+        
+        # Actualizar los totales consolidados
+        consolidado_unidades += compromiso[3]
+        consolidado_kilos += float(compromiso[4].replace(',', '.')) if isinstance(compromiso[4], str) else compromiso[4]
+        consolidado_valor_total += float(compromiso[6].replace(',', '.')) if isinstance(compromiso[6], str) else compromiso[6]
         current_row += 1
+
+    # Escribir los totales para la última granja con bordes y formato amarillo
+    if granja_total_values:
+        current_row += 1
+        worksheet.write(current_row, 0, "")
+        worksheet.write(current_row, 5, "")
+        worksheet.write(current_row, 1, "TOTAL :")
+        # Escribir los totales de la última granja con bordes y formato amarillo
+        for col, total_value in enumerate(granja_total_values[3:], start=3):
+            worksheet.write(current_row, col, total_value, bordeado)
+            worksheet.write(current_row, col, total_value, formato_amarillo)  # Aplicar formato amarillo a las celdas de estas columnas
+              # Aplicar bordes
+
+    for i, header in enumerate(headers):
+        worksheet.set_column(i, i, len(header) + 2) 
+
+    consolidado_data = {}
+    total_unidades = 0
+    total_kilos = 0
+    total_valor_total = 0
+
+    for compromiso in compromisos:
+        # Tu código para escribir los datos del bloque
+
+        # Acumular información para el cuadro consolidado
+        asociado = compromiso[0]
+        granja = compromiso[1]
+        unidades = compromiso[3]
+        kilos = float(compromiso[4].replace(',', '.')) if isinstance(compromiso[4], str) else compromiso[4]
+        valor_total = float(compromiso[6].replace(',', '.')) if isinstance(compromiso[6], str) else compromiso[6]
+
+        if asociado not in consolidado_data:
+            consolidado_data[asociado] = {}
+        if granja not in consolidado_data[asociado]:
+            consolidado_data[asociado][granja] = {'unidades': 0, 'kilos': 0, 'valor_total': 0}
+
+        consolidado_data[asociado][granja]['unidades'] += unidades
+        consolidado_data[asociado][granja]['kilos'] += kilos
+        consolidado_data[asociado][granja]['valor_total'] += valor_total
+
+        # Acumular totales globales
+        total_unidades += unidades
+        total_kilos += kilos
+        total_valor_total += valor_total
+
+    
+    cuadro_data = [["","CONSOLIDADO","","",""], ["Asociado", "Granja", "Unidades", "Kilos", "Valor Total"]]
+    row_start = current_row + 3
+    for asociado, granjas in consolidado_data.items():
+        for granja, datos in granjas.items():
+            cuadro_data.append([asociado, granja, datos['unidades'], datos['kilos'], "${:,.2f}".format(datos['valor_total'])])
+
+    # Agregar la fila de totales al final del cuadro consolidado
+    worksheet.write(current_row, 0, "")
+    cuadro_data.append(['', 'TOTAL :', total_unidades, total_kilos, "${:,.2f}".format(total_valor_total)])
+
+    for row_num, row_data in enumerate(cuadro_data):
+        for col_num, col_data in enumerate(row_data):
+            worksheet.write(row_start + row_num, col_num, col_data, bordeado)
+            if row_num == 0 or row_num == 1:  # Formato para las primeras dos filas
+                worksheet.write(row_start + row_num, col_num, col_data, formato_azul)
+            elif row_num == len(cuadro_data) - 1:  # Formato para la última fila
+                worksheet.write(row_start + row_num, col_num, col_data, formato_amarillo)
+
+                    
+
 
     # Cerrar el archivo Excel
     workbook.close()
@@ -1822,7 +1924,10 @@ def generate_excel_report(request):
         response = HttpResponse(file.read(),
                                 content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename="reporte_grupo_' + selected_group + '.xlsx"'
-        return response
+        return response  
+
+
+
 
 def grupos_asociados(request):
     with connections['DHC'].cursor() as cursor:
@@ -2037,6 +2142,7 @@ def tablarepnuevosclientes(request):
     return nuevosclientes
 
 #---------------- TABLAS DE REPORTES GESTION HUMANA------------------------------------------
+#---------------------------------------------------------------------------------------------
 @never_cache
 @login_required
 def repgestionhumana(request):
@@ -2427,7 +2533,7 @@ def generar_pdf(request):
 
 def api_hembras_registradas(request):
     # Obtener la conexión a la base de datos intranetcercafe2
-    intranetcercafe2_connection = connections['intranet']
+    intranetcercafe2_connection = connections['int']
 
     # Realizar la consulta a la base de datos
     with intranetcercafe2_connection.cursor() as cursor:

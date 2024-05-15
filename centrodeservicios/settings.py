@@ -113,18 +113,18 @@ DATABASES = {
         
     },
     'int': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'intranetcercafe2',
-        'USER': 'DEV_USER',
-        'PASSWORD': 'D3V-US3R1234+*+*',
-        'HOST': '192.241.142.141',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            'charset': 'utf8mb4',
-            'version': '5.7.40' 
-        }
-    },
+    'ENGINE': 'django.db.backends.mysql',
+    'NAME': 'intranetcercafe2',
+    'USER': 'DEV_USER',
+    'PASSWORD': 'D3V-US3R1234+*+*',
+    'HOST': '192.241.142.141',
+    'PORT': '3306',
+    'OPTIONS': {
+        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        'charset': 'utf8mb4'
+    }
+}
+
    
 }
 
@@ -211,14 +211,14 @@ CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.office365.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'mendietap874@gmail.com'
-EMAIL_HOST_PASSWORD = 'Teamohij4'
+EMAIL_HOST_USER = 'mesadeservicios@cercafe.com.co'
+EMAIL_HOST_PASSWORD = 'pnnbbgtztcfbtddf'
 
-email_from = 'mendietap874@gmail.com'
-recipient_list = ['mendietap874@gmail.com']
+email_from = 'mesadeservicios@cercafe.com.co'
+recipient_list = ['mesadeservicios@cercafe.com.co']
 from celery.schedules import crontab
 from datetime import datetime
 today = datetime.now().weekday()
@@ -237,3 +237,7 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": 50.0,
     }
 }
+
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
