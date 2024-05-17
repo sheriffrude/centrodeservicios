@@ -1320,7 +1320,7 @@ def cargar_excel_avantransfordig(request):
             with connections['B_C'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                     print(row)
-                    ACTIVIDAD,AVANCE,FECHA_CORTE,FECHA_DATOS= row
+                    ACTIVIDAD,AVANCE,FECHA_CORTE= row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla TRANSFORMACION_DIGITAL
                     cursor.execute(
                         'INSERT INTO avance_transformacion_difital (ACTIVIDAD,AVANCE,FECHA_CORTE,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s)',
