@@ -73,7 +73,7 @@ urlpatterns = [
      #--------------------------------- T.I ------------------------------------------------
     path('ti/', views.ti, name='ti'),
   
-    
+    path('cargar_excel_avantransfordig/', views.cargar_excel_avantransfordig, name='cargar_excel_avantransfordig'),
     path('cargar_excel_transfordig/', views.cargar_excel_transfordig, name='cargar_excel_transfordig'),
     path('cargar_excel_inideco/', views.cargar_excel_inideco, name='cargar_excel_inideco'),
      #--------------------------------- T.I ------------------------------------------------

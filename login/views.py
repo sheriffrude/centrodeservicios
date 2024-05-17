@@ -807,7 +807,7 @@ def cargar_excel_fortuitos(request):
                     FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL= row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla SST_SEVERIDAD_Y_FRECUENCIA
                     cursor.execute(
-                        'INSERT INTO FORTUITOS3 (FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s, %s,%s, %s, %s)',
+                        'INSERT INTO FORTUITOS3 (FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s, %s,%s, %s, %s,%s)',
                         (FECHA_CORTE.value,PLANTA.value,GRANJA.value,CANTIDAD_MUERTE_TRANSPORTE.value,CANTIDAD_MUERTE_REPOSO.value,AGITADOS.value,LESIONADOS.value,RETOMAS.value,TOTAL.value,guid,usuario.username)
                     )
                 messages.success(request, 'Carga de datos en FORTUITOS exitosa')
@@ -1298,6 +1298,35 @@ def cargar_excel_inideco(request):
                         tuple(valores)
                     )
                 messages.success(request, 'Carga de datos en Indicadores Economicos exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+#-------- vista para el cargue de excel en Transformacion Digital --------------------------------------------------------
+@login_required
+def cargar_excel_avantransfordig(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = load_workbook(archivo_excel)
+            ws = wb.active
+            guid = str(uuid4())
+            usuario = request.user
+            # Abre una conexión a la base de datos b_ti
+            with connections['B_C'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    print(row)
+                    ACTIVIDAD,AVANCE,FECHA_CORTE,FECHA_DATOS= row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla TRANSFORMACION_DIGITAL
+                    cursor.execute(
+                        'INSERT INTO avance_transformacion_difital (ACTIVIDAD,AVANCE,FECHA_CORTE,FECHA_DATOS,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s)',
+                        (ACTIVIDAD.value,AVANCE.value,FECHA_CORTE.value,FECHA_DATOS.value,guid,usuario.username)
+                    )
+                messages.success(request, 'Carga de datos en avance transformacion digital exitosa')
         except KeyError:
             messages.error(request, 'No se ha proporcionado un archivo Excel.')
         except IntegrityError as e:
