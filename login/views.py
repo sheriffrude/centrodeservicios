@@ -1323,8 +1323,8 @@ def cargar_excel_avantransfordig(request):
                     ACTIVIDAD,AVANCE,FECHA_CORTE,FECHA_DATOS= row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla TRANSFORMACION_DIGITAL
                     cursor.execute(
-                        'INSERT INTO avance_transformacion_difital (ACTIVIDAD,AVANCE,FECHA_CORTE,FECHA_DATOS,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s)',
-                        (ACTIVIDAD.value,AVANCE.value,FECHA_CORTE.value,FECHA_DATOS.value,guid,usuario.username)
+                        'INSERT INTO avance_transformacion_difital (ACTIVIDAD,AVANCE,FECHA_CORTE,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s)',
+                        (ACTIVIDAD.value,AVANCE.value,FECHA_CORTE.value,guid,usuario.username)
                     )
                 messages.success(request, 'Carga de datos en avance transformacion digital exitosa')
         except KeyError:
