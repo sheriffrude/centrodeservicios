@@ -1317,7 +1317,7 @@ def cargar_excel_avantransfordig(request):
             guid = str(uuid4())
             usuario = request.user
             # Abre una conexión a la base de datos b_ti
-            with connections['B_C'].cursor() as cursor:
+            with connections['B_TI'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                     print(row)
                     ACTIVIDAD,AVANCE,FECHA_CORTE= row
