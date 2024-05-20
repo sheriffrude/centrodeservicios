@@ -27,7 +27,13 @@ from uuid import uuid4
 import os
 import datetime
 
+from django.contrib.auth.views import PasswordChangeView
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 
+class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    template_name = 'registration/password_change_form.html'
+    success_url = reverse_lazy('password_change_done')
 
 
 #---Define La Vista del login-----

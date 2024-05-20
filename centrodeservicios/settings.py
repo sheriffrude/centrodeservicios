@@ -216,6 +216,8 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mesadeservicios@cercafe.com.co'
 EMAIL_HOST_PASSWORD = 'pnnbbgtztcfbtddf'
+DEFAULT_FROM_EMAIL = 'mesadeservicios@cercafe.com.co'
+
 
 email_from = 'mesadeservicios@cercafe.com.co'
 recipient_list = ['mesadeservicios@cercafe.com.co']
