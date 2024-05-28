@@ -482,7 +482,7 @@ def cargar_excel_clientesactivos(request):
                         'INSERT INTO CLIENTES (NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION, ID_VENDEDOR,ID_SEGMENTO,ID_MIX_VENTAS,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)',
                         (NIT.value,RAZON_SOCIAL.value,CUPO.value,DIRECCION_SEDE_PRINCIPAL.value,DIRECCION_EXPENDIO.value,ID_CLASIFICACION.value,ID_MUNICIPIO.value,ID_DEPARTAMENTO.value,ID_REGION.value, ID_VENDEDOR.value,ID_SEGMENTO.value,ID_MIX_VENTAS.value,guid,usuario.username)
                     )
-            messages.success(request, 'Carga de datos en CLIENTES ACTIVOS exitosa')
+            messages.success(request, 'Carga de datos en CLIENTES  exitosa')
         except KeyError:
             messages.error(request, 'No se ha proporcionado un archivo Excel.')
         except IntegrityError as e:
