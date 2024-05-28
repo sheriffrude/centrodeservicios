@@ -1985,13 +1985,13 @@ def repgcomercial(request):
 def tablarepclient(request):
     with connections['B_GC'].cursor() as cursor:
         cursor.execute('''SELECT FECHA_CORTE,CANTIDAD_CLIENTES,ZONA_CLIENTE,KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE FROM B_GC.CLIENTES_ACTIVOS
-                          WHERE GUID = (SELECT MAX(GUID) FROM B_GC.CLIENTES_ACTIVOS) ''')
+                          WHERE GUID = (SELECT MIN(GUID) FROM B_GC.CLIENTES_ACTIVOS) ''')
         clientes_act = cursor.fetchall()   
     return clientes_act
 def tablarepventas(request):
     with connections['B_GC'].cursor() as cursor:
         cursor.execute('''SELECT FECHA_CORTE,LINEA_NEGOCIO,PRESUPUESTO_UNIDADES,PRESUPUESTO_KG,UNIDADES_VENDIDAS,KG_VENDIDO,VALOR_VENTA,PRESUPUESTO_VENTA FROM B_GC.VENTAS 
-                          WHERE GUID = (SELECT MAX(GUID) FROM B_GC.VENTAS)''')
+                          WHERE GUID = (SELECT MIN(GUID) FROM B_GC.VENTAS)''')
         repventas = cursor.fetchall()   
     return repventas
 #---------------- TABLAS DE REPORTES G TECNICA------------------------------------------
@@ -2009,33 +2009,33 @@ def repgtecnica(request):
 def tablarepabhembras(request):
     with connections['B_GT'].cursor() as cursor:
         cursor.execute('''SELECT GRANJA,CANTIDAD_ENTREGADA,PORCENTAJE_CUMPLIMIENTO,FECHA_CORTE FROM B_GT.ABASTECIMIENTO_HEMBRAS
-                        WHERE GUID = (SELECT MAX(GUID) FROM B_GT.ABASTECIMIENTO_HEMBRAS)''')
+                        WHERE GUID = (SELECT MIN(GUID) FROM B_GT.ABASTECIMIENTO_HEMBRAS)''')
         abhembras = cursor.fetchall()   
     return abhembras
 def tablarepfortuitos(request):
     with connections['B_GT'].cursor() as cursor:
         cursor.execute('''SELECT FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL FROM B_GT.FORTUITOS3
-                       WHERE GUID = (SELECT MAX(GUID) FROM B_GT.FORTUITOS3)''')
+                       WHERE GUID = (SELECT MIN(GUID) FROM B_GT.FORTUITOS3)''')
         fortuitos = cursor.fetchall()   
     return fortuitos
 def tablarepkgvendidos(request):
     with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT GRANJA,KG_V_H_A,ASOCIADO,FECHA_CORTE FROM B_GT.KG_VENDIDOS_HEMBRA WHERE GUID = (SELECT MAX(GUID) FROM B_GT.KG_VENDIDOS_HEMBRA)''')
+        cursor.execute('''SELECT GRANJA,KG_V_H_A,ASOCIADO,FECHA_CORTE FROM B_GT.KG_VENDIDOS_HEMBRA WHERE GUID = (SELECT MIN(GUID) FROM B_GT.KG_VENDIDOS_HEMBRA)''')
         kgvendidos = cursor.fetchall()   
     return kgvendidos
 def tablareppfinalcon(request):
     with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT GRANJA,PESO,META_PESO,CONVERSION_META,CONVERSION,FECHA_CORTE FROM B_GT.PESO_FINAL_CONVERSION WHERE GUID = (SELECT MAX(GUID) FROM B_GT.PESO_FINAL_CONVERSION)''')
+        cursor.execute('''SELECT GRANJA,PESO,META_PESO,CONVERSION_META,CONVERSION,FECHA_CORTE FROM B_GT.PESO_FINAL_CONVERSION WHERE GUID = (SELECT MIN(GUID) FROM B_GT.PESO_FINAL_CONVERSION)''')
         pfinalcon = cursor.fetchall()   
     return pfinalcon
 def tablarepprohembras(request):
     with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE FROM B_GT.PROYECCION_HEMBRAS WHERE GUID = (SELECT MAX(GUID) FROM B_GT.PROYECCION_HEMBRAS)''')
+        cursor.execute('''SELECT PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE FROM B_GT.PROYECCION_HEMBRAS WHERE GUID = (SELECT MIN(GUID) FROM B_GT.PROYECCION_HEMBRAS)''')
         prohembras = cursor.fetchall()   
     return prohembras
 def tablareptecnicacia(request):
     with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT LINEA_GENETICA,CANTIDAD_MACHOS,PORCENTAJE_DISTRIBUCION_MACHOS,CANTIDAD_DESECHADO,PORCENTAJE_DESCECHADO,DOSIS_PRODUCIDAS,DOSIS_VENDIDAS,PROMEDIO_MORFOLOGIA,OBSERVACION,FECHA_CORTE FROM B_GT.TECNICA_CIA WHERE GUID = (SELECT MAX(GUID) FROM B_GT.TECNICA_CIA)''')
+        cursor.execute('''SELECT LINEA_GENETICA,CANTIDAD_MACHOS,PORCENTAJE_DISTRIBUCION_MACHOS,CANTIDAD_DESECHADO,PORCENTAJE_DESCECHADO,DOSIS_PRODUCIDAS,DOSIS_VENDIDAS,PROMEDIO_MORFOLOGIA,OBSERVACION,FECHA_CORTE FROM B_GT.TECNICA_CIA WHERE GUID = (SELECT MIN(GUID) FROM B_GT.TECNICA_CIA)''')
         tecnicacia = cursor.fetchall()   
     return tecnicacia
 #---------------- TABLAS DE REPORTES CADENA DE ABASTECIMIENTO------------------------------------------
