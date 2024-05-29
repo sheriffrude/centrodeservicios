@@ -140,7 +140,7 @@ base_config = {
     'ENGINE': 'django.db.backends.mysql',
     'USER': 'DEV_USER',
     'PASSWORD': 'DEV-USER12345',
-    'HOST': '192.168.9.200',
+    'HOST': '192.168.9.130',
     'PORT': '3308',
 }
 
@@ -215,7 +215,7 @@ EMAIL_HOST = 'smtp.office365.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mesadeservicios@cercafe.com.co'
-EMAIL_HOST_PASSWORD = 'pnnbbgtztcfbtddf'
+EMAIL_HOST_PASSWORD = 'zxyskzbzpmstbyfm'
 DEFAULT_FROM_EMAIL = 'mesadeservicios@cercafe.com.co'
 
 
