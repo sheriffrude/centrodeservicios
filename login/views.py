@@ -2167,7 +2167,7 @@ def tablarepcompramed(request):
     return compramed
 def tablareppreciocanal(request):
     with connections['B_GAF'].cursor() as cursor:
-        cursor.execute('''SELECT NIT,CLIENTE,ZONA,VALOR  FROM B_GAF.precio_canales_semana''')
+        cursor.execute('''SELECT NIT,CLIENTE,ZONA,VALOR,SEMANA  FROM B_GAF.precio_canales_semana WHERE GUID = (SELECT MAX(GUID) FROM B_GAF.precio_canales_semana)''')
         preciocanal = cursor.fetchall()   
     return preciocanal
 def tablarepnuevosclientes(request):
