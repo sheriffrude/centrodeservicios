@@ -126,6 +126,7 @@ urlpatterns = [
     path('generar_pdf/', views.generar_pdf, name='generar_pdf'),
     path('api/hembras-registradas/', views.api_hembras_registradas),
     path('generar_excel/', views.generar_excel, name='generar_excel'),
+    path('informe_inventario/', views.informe_view, name='informe_inventario'),
     
 
 

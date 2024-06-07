@@ -445,7 +445,7 @@ def cargar_excel_toneladasimport(request):
 #             guid = str(uuid4())
 #             usuario = request.user
 #             # Abre una conexión a la base de datos b_gc
-#             with connections['B_GC'].cursor() as cursor:
+#             with connections['b_gc'].cursor() as cursor:
 #                 for row in ws.iter_rows(min_row=2):
 #                     FECHA_CORTE, CANTIDAD_CLIENTES, ZONA_CLIENTE, KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE = row
 #                     # Ejecuta una consulta SQL para insertar los datos en la tabla compromiso_mes
@@ -474,7 +474,7 @@ def cargar_excel_clientesactivos(request):
             guid = str(uuid4())
             usuario = request.user
             # Abre una conexión a la base de datos b_gc
-            with connections['DHC'].cursor() as cursor:
+            with connections['dhc'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                     NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION, ID_VENDEDOR,ID_SEGMENTO,ID_MIX_VENTAS = row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla compromiso_mes
@@ -503,12 +503,12 @@ def cargar_excel_ventas(request):
             guid = str(uuid4())
             usuario = request.user
             # Abre una conexión a la base de datos b_gc
-            with connections['B_GC'].cursor() as cursor:
+            with connections['b_gc'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                     FECHA_CORTE,LINEA_NEGOCIO,PRESUPUESTO_UNIDADES,PRESUPUESTO_KG,UNIDADES_VENDIDAS,KG_VENDIDO,VALOR_VENTA,PRESUPUESTO_VENTA= row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla VENTAS
                     cursor.execute(
-                        'INSERT INTO VENTAS (FECHA_CORTE,LINEA_NEGOCIO,PRESUPUESTO_UNIDADES,PRESUPUESTO_KG,UNIDADES_VENDIDAS,KG_VENDIDO,VALOR_VENTA,PRESUPUESTO_VENTA,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s,%s,%s,%s,%s)',
+                        'INSERT INTO ventas (FECHA_CORTE,LINEA_NEGOCIO,PRESUPUESTO_UNIDADES,PRESUPUESTO_KG,UNIDADES_VENDIDAS,KG_VENDIDO,VALOR_VENTA,PRESUPUESTO_VENTA,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s,%s,%s,%s,%s)',
                         (FECHA_CORTE.value, LINEA_NEGOCIO.value, PRESUPUESTO_UNIDADES.value, PRESUPUESTO_KG.value,UNIDADES_VENDIDAS.value,KG_VENDIDO.value,VALOR_VENTA.value,PRESUPUESTO_VENTA.value,guid,usuario.username)
                     )
             messages.success(request, 'Carga de datos en VENTAS exitosa')
@@ -776,13 +776,13 @@ def cargar_excel_abashem(request):
             guid = str(uuid4())
             usuario = request.user
             # Abre una conexión a la base de datos b_gt
-            with connections['B_GT'].cursor() as cursor:
+            with connections['b_gt'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                    
                     GRANJA,CANTIDAD_ENTREGADA,PORCENTAJE_CUMPLIMIENTO,FECHA_CORTE= row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla SST_SEVERIDAD_Y_FRECUENCIA
                     cursor.execute(
-                        'INSERT INTO ABASTECIMIENTO_HEMBRAS (GRANJA,CANTIDAD_ENTREGADA,PORCENTAJE_CUMPLIMIENTO,FECHA_CORTE,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s)',
+                        'INSERT INTO abastecimiento_hembras (GRANJA,CANTIDAD_ENTREGADA,PORCENTAJE_CUMPLIMIENTO,FECHA_CORTE,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s)',
                         (GRANJA.value,CANTIDAD_ENTREGADA.value,PORCENTAJE_CUMPLIMIENTO.value,FECHA_CORTE.value,guid,usuario.username)
                     )
                 messages.success(request, 'Carga de datos en ABASTECIMIENTO HEMBRAS exitosa')
@@ -807,13 +807,13 @@ def cargar_excel_fortuitos(request):
             guid = str(uuid4())
             usuario = request.user
             # Abre una conexión a la base de datos b_gt
-            with connections['B_GT'].cursor() as cursor:
+            with connections['b_gt'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                   
                     FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL= row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla SST_SEVERIDAD_Y_FRECUENCIA
                     cursor.execute(
-                        'INSERT INTO FORTUITOS3 (FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s, %s,%s, %s, %s,%s)',
+                        'INSERT INTO fortuitos3 (FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s, %s,%s, %s, %s,%s)',
                         (FECHA_CORTE.value,PLANTA.value,GRANJA.value,CANTIDAD_MUERTE_TRANSPORTE.value,CANTIDAD_MUERTE_REPOSO.value,AGITADOS.value,LESIONADOS.value,RETOMAS.value,TOTAL.value,guid,usuario.username)
                     )
                 messages.success(request, 'Carga de datos en FORTUITOS exitosa')
@@ -837,7 +837,7 @@ def cargar_excel_kgvend(request):
             guid = str(uuid4())
             usuario = request.user
             # Abre una conexión a la base de datos b_gt
-            with connections['B_GT'].cursor() as cursor:
+            with connections['b_gt'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                   
                     GRANJA,KG_V_H_A,ASOCIADO,FECHA_CORTE= row
@@ -868,7 +868,7 @@ def cargar_excel_pesofinconver(request):
             usuario = request.user
 
             # Abre una conexión a la base de datos b_gt
-            with connections['B_GT'].cursor() as cursor:
+            with connections['b_gt'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                   
                     GRANJA,PESO,META_PESO,CONVERSION_META,CONVERSION,FECHA_CORTE= row
@@ -898,7 +898,7 @@ def cargar_excel_proyhem(request):
             guid = str(uuid4())
             usuario = request.user
             # Abre una conexión a la base de datos b_gt
-            with connections['B_GT'].cursor() as cursor:
+            with connections['b_gt'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                     
                     PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE= row
@@ -929,7 +929,7 @@ def cargar_excel_tecnicacia(request):
             usuario = request.user
 
             # Abre una conexión a la base de datos b_gt
-            with connections['B_GT'].cursor() as cursor:
+            with connections['b_gt'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                     
                     LINEA_GENETICA,CANTIDAD_MACHOS,PORCENTAJE_DISTRIBUCION_MACHOS,CANTIDAD_DESECHADO,PORCENTAJE_DESCECHADO,DOSIS_PRODUCIDAS,DOSIS_VENDIDAS,PROMEDIO_MORFOLOGIA,OBSERVACION,FECHA_CORTE= row
@@ -1983,15 +1983,15 @@ def repgcomercial(request):
     return render(request, 'report_gcomercial.html', {'clientes_act': clientes, 'repventas': ventas})
 
 def tablarepclient(request):
-    with connections['B_GC'].cursor() as cursor:
-        cursor.execute('''SELECT FECHA_CORTE,CANTIDAD_CLIENTES,ZONA_CLIENTE,KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE FROM B_GC.CLIENTES_ACTIVOS
-                          WHERE GUID = (SELECT MAX(GUID) FROM B_GC.CLIENTES_ACTIVOS) ''')
+    with connections['b_gc'].cursor() as cursor:
+        cursor.execute('''SELECT FECHA_CORTE,CANTIDAD_CLIENTES,ZONA_CLIENTE,KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE FROM b_gc.clientes_activos
+                          WHERE GUID = (SELECT MAX(GUID) FROM b_gc.clientes_activos) ''')
         clientes_act = cursor.fetchall()   
     return clientes_act
 def tablarepventas(request):
-    with connections['B_GC'].cursor() as cursor:
-        cursor.execute('''SELECT FECHA_CORTE,LINEA_NEGOCIO,PRESUPUESTO_UNIDADES,PRESUPUESTO_KG,UNIDADES_VENDIDAS,KG_VENDIDO,VALOR_VENTA,PRESUPUESTO_VENTA FROM B_GC.VENTAS 
-                          WHERE GUID = (SELECT MAX(GUID) FROM B_GC.VENTAS)''')
+    with connections['b_gc'].cursor() as cursor:
+        cursor.execute('''SELECT FECHA_CORTE,LINEA_NEGOCIO,PRESUPUESTO_UNIDADES,PRESUPUESTO_KG,UNIDADES_VENDIDAS,KG_VENDIDO,VALOR_VENTA,PRESUPUESTO_VENTA FROM b_gc.ventas 
+                          WHERE GUID = (SELECT MAX(GUID) FROM b_gc.ventas)''')
         repventas = cursor.fetchall()   
     return repventas
 #---------------- TABLAS DE REPORTES G TECNICA------------------------------------------
@@ -2007,35 +2007,35 @@ def repgtecnica(request):
     return render(request, 'report_gtecnica.html', {'abhembras': abhembras,'fortuitos':fortuitos,'kgvendidos':kgvendidos,'pfinalcon':pfinalcon,'prohembras':prohembras,'tecnicacia':tecnicacia})
 
 def tablarepabhembras(request):
-    with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT GRANJA,CANTIDAD_ENTREGADA,PORCENTAJE_CUMPLIMIENTO,FECHA_CORTE FROM B_GT.ABASTECIMIENTO_HEMBRAS
-                        WHERE GUID = (SELECT MIN(GUID) FROM B_GT.ABASTECIMIENTO_HEMBRAS)''')
+    with connections['b_gt'].cursor() as cursor:
+        cursor.execute('''SELECT GRANJA,CANTIDAD_ENTREGADA,PORCENTAJE_CUMPLIMIENTO,FECHA_CORTE FROM b_gt.ABASTECIMIENTO_HEMBRAS
+                        WHERE GUID = (SELECT MIN(GUID) FROM b_gt.ABASTECIMIENTO_HEMBRAS)''')
         abhembras = cursor.fetchall()   
     return abhembras
 def tablarepfortuitos(request):
-    with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL FROM B_GT.FORTUITOS3
-                       WHERE GUID = (SELECT MAX(GUID) FROM B_GT.FORTUITOS3)''')
+    with connections['b_gt'].cursor() as cursor:
+        cursor.execute('''SELECT FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL FROM b_gt.FORTUITOS3
+                       WHERE GUID = (SELECT MAX(GUID) FROM b_gt.FORTUITOS3)''')
         fortuitos = cursor.fetchall()   
     return fortuitos
 def tablarepkgvendidos(request):
-    with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT GRANJA,KG_V_H_A,ASOCIADO,FECHA_CORTE FROM B_GT.KG_VENDIDOS_HEMBRA WHERE GUID = (SELECT MAX(GUID) FROM B_GT.KG_VENDIDOS_HEMBRA)''')
+    with connections['b_gt'].cursor() as cursor:
+        cursor.execute('''SELECT GRANJA,KG_V_H_A,ASOCIADO,FECHA_CORTE FROM b_gt.KG_VENDIDOS_HEMBRA WHERE GUID = (SELECT MAX(GUID) FROM b_gt.KG_VENDIDOS_HEMBRA)''')
         kgvendidos = cursor.fetchall()   
     return kgvendidos
 def tablareppfinalcon(request):
-    with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT GRANJA,PESO,META_PESO,CONVERSION_META,CONVERSION,FECHA_CORTE FROM B_GT.PESO_FINAL_CONVERSION WHERE GUID = (SELECT MAX(GUID) FROM B_GT.PESO_FINAL_CONVERSION)''')
+    with connections['b_gt'].cursor() as cursor:
+        cursor.execute('''SELECT GRANJA,PESO,META_PESO,CONVERSION_META,CONVERSION,FECHA_CORTE FROM b_gt.PESO_FINAL_CONVERSION WHERE GUID = (SELECT MAX(GUID) FROM b_gt.PESO_FINAL_CONVERSION)''')
         pfinalcon = cursor.fetchall()   
     return pfinalcon
 def tablarepprohembras(request):
-    with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE FROM B_GT.PROYECCION_HEMBRAS WHERE GUID = (SELECT MAX(GUID) FROM B_GT.PROYECCION_HEMBRAS)''')
+    with connections['b_gt'].cursor() as cursor:
+        cursor.execute('''SELECT PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE FROM b_gt.PROYECCION_HEMBRAS WHERE GUID = (SELECT MAX(GUID) FROM b_gt.PROYECCION_HEMBRAS)''')
         prohembras = cursor.fetchall()   
     return prohembras
 def tablareptecnicacia(request):
-    with connections['B_GT'].cursor() as cursor:
-        cursor.execute('''SELECT LINEA_GENETICA,CANTIDAD_MACHOS,PORCENTAJE_DISTRIBUCION_MACHOS,CANTIDAD_DESECHADO,PORCENTAJE_DESCECHADO,DOSIS_PRODUCIDAS,DOSIS_VENDIDAS,PROMEDIO_MORFOLOGIA,OBSERVACION,FECHA_CORTE FROM B_GT.TECNICA_CIA WHERE GUID = (SELECT MAX(GUID) FROM B_GT.TECNICA_CIA)''')
+    with connections['b_gt'].cursor() as cursor:
+        cursor.execute('''SELECT LINEA_GENETICA,CANTIDAD_MACHOS,PORCENTAJE_DISTRIBUCION_MACHOS,CANTIDAD_DESECHADO,PORCENTAJE_DESCECHADO,DOSIS_PRODUCIDAS,DOSIS_VENDIDAS,PROMEDIO_MORFOLOGIA,OBSERVACION,FECHA_CORTE FROM b_gt.TECNICA_CIA WHERE GUID = (SELECT MAX(GUID) FROM b_gt.TECNICA_CIA)''')
         tecnicacia = cursor.fetchall()   
     return tecnicacia
 #---------------- TABLAS DE REPORTES CADENA DE ABASTECIMIENTO------------------------------------------
@@ -2597,4 +2597,64 @@ def api_hembras_registradas(request):
 
 
 
+
+import requests
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+def obtener_token():
+    url = "https://cercafe.yeminus.com/apicercafe/token"
+    payload = {
+        "userName": "API",
+        "password": "4p1C3rcaf3",
+        "grant_type": "password"
+    }
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+
+    response = requests.post(url, data=payload, headers=headers)
+    if response.status_code == 200:
+        return response.json().get("access_token")
+    else:
+        raise Exception("Error al obtener el token: " + response.text)
+
+def obtener_informeinventario(token, fecha_corte):
+    url = "https://cercafe.yeminus.com/apicercafe/app/informes/informespersonalizados/ejecutarconsultainforme"
+    payload = {
+        "crearArchivo": False,
+        "idInforme": 27,
+        "filtroVariableInforme": [],
+        "variablesFiltro": [
+            {
+                "codigo": "FECHA_CORTE",
+                "valor": fecha_corte
+            }
+        ]
+    }
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+        "id_empresa": "01",  # Se agrega el id_empresa como header
+        "usuario": "API"     # Se agrega el usuario como header
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        raise Exception("Error al obtener el informe: " + response.text)
+
+@csrf_exempt
+def informe_view(request):
+    if request.method == "POST" or request.method == "GET":
+        try:
+            token = obtener_token()
+            fecha_corte = request.GET.get("fecha_corte", "01-02-2024")  # Cambiado a GET
+            informe = obtener_informeinventario(token, fecha_corte)
+            return JsonResponse(informe)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request method."}, status=400)
 

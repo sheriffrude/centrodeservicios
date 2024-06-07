@@ -130,9 +130,10 @@ DATABASES = {
 
 # Lista de nombres de esquemas adicionales
 esquemas = [
-    'B_GC', 'B_GT', 'B_CA', 'B_GAB', 'B_CI',
-    'B_M', 'B_C', 'B_GD', 'B_GAF', 'B_GH',
-    'B_TI', 'B_SAC', 'B_SIG', 'B_GG', 'DHC','intranetcercafe2','oinc','frigotun'
+    'b_gc', 'b_gt', 'b_ca', 'b_gab', 'b_ci',
+    'b_m', 'b_c', 'b_gd', 'b_gaf', 'b_gh',
+    'b_ti', 'b_sac', 'b_sig', 'b_gg', 'dhc','intranetcercafe2','oinc','frigotun'
+
 ]
 
 # Configuración base para todas las bases de datos adicionales
@@ -140,7 +141,7 @@ base_config = {
     'ENGINE': 'django.db.backends.mysql',
     'USER': 'DEV_USER',
     'PASSWORD': 'DEV-USER12345',
-    'HOST': '192.168.9.130',
+    'HOST': '192.168.9.200',
     'PORT': '3308',
 }
 
