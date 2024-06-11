@@ -841,7 +841,7 @@ def cargar_excel_kgvend(request):
                 for row in ws.iter_rows(min_row=2):
                   
                     GRANJA,KG_V_H_A,ASOCIADO,FECHA_CORTE= row
-                    # Ejecuta una consulta SQL para insertar los datos en la tabla KG_VENDIDOS_HEMBRA
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla kg_vendidos_hembra
                     cursor.execute(
                         'INSERT INTO kg_vendidos_hembra (GRANJA,KG_V_H_A,ASOCIADO,FECHA_CORTE,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s)',
                         (GRANJA.value,KG_V_H_A.value,ASOCIADO.value,FECHA_CORTE.value,guid,usuario.username)
@@ -872,7 +872,7 @@ def cargar_excel_pesofinconver(request):
                 for row in ws.iter_rows(min_row=2):
                   
                     GRANJA,PESO,META_PESO,CONVERSION_META,CONVERSION,FECHA_CORTE= row
-                    # Ejecuta una consulta SQL para insertar los datos en la tabla PESO_FINAL_CONVERSION
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla peso_final_conversion
                     cursor.execute(
                         'INSERT INTO peso_final_conversion (GRANJA,PESO,META_PESO,CONVERSION_META,CONVERSION,FECHA_CORTE,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s, %s, %s)',
                         (GRANJA.value,PESO.value,META_PESO.value,CONVERSION_META.value,CONVERSION.value,FECHA_CORTE.value,guid,usuario.username)
@@ -1256,7 +1256,7 @@ def cargar_excel_transfordig(request):
             guid = str(uuid4())
             usuario = request.user
             # Abre una conexión a la base de datos b_ti
-            with connections['b_c'].cursor() as cursor:
+            with connections['b_ti'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                     print(row)
                     PROYECTO_ESTRATEGICO,CAPA_ARQUITECTURA,NOMBRE_PROYECTO,PESO_CAPA,PESO_PROYECTO_ESTRATEGICO,PORCENTAJE_AVANCE,PORCENTAJE_META,PORCENTAJE_META_PROYECTO,TAREAS_PROYECTO,TAREAS_PLANEADAS,TAREAS_EJECUTADAS,COSTO_PLANEADO,COSTO_EJECUTADO,FECHA_CORTE = row
@@ -1361,12 +1361,12 @@ def cargar_excel_compramatprima(request):
                 for row in ws.iter_rows(min_row=2):
                     print(row)
                     MATERIA_PRIMA, COSTO_PROMEDIO, CANTIDAD_COMPRADA, DIAS_INVENTARIO, FECHA_CORTE = row
-                    # Ejecuta una consulta SQL para insertar los datos en la tabla COMPRAS_MATERIA_PRIMA
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla compras_materia_prima
                     cursor.execute(
                         'INSERT INTO compras_materia_prima (MATERIA_PRIMA, COSTO_PROMEDIO, CANTIDAD_COMPRADA, DIAS_INVENTARIO, FECHA_CORTE,GUID,USUARIO) VALUES (%s, %s, %s, %s, %s, %s, %s)',
                         (MATERIA_PRIMA.value , COSTO_PROMEDIO.value, CANTIDAD_COMPRADA.value, DIAS_INVENTARIO.value,FECHA_CORTE.value,guid, usuario.username)
                     )
-                messages.success(request, 'Carga de datos en COMPRAS_MATERIA_PRIMA exitosa')
+                messages.success(request, 'Carga de datos en compras_materia_prima exitosa')
         except KeyError:
             messages.error(request, 'No se ha proporcionado un archivo Excel.')
         except IntegrityError as e:
@@ -1403,12 +1403,12 @@ def cargar_excel_compramatprima(request):
 #                         else:
 #                             valores.append(None)
 #                     print(valores)
-#                     # Ejecuta una consulta SQL para insertar los datos en la tabla COMPRAS_MEDICAMENTOS
+#                     # Ejecuta una consulta SQL para insertar los datos en la tabla compras_medicamentos
 #                     cursor.execute(
-#                         'INSERT INTO COMPRAS_MEDICAMENTOS (VALOR, MEDICAMENTO, CLASIFICACION, CANTIDAD, TIPO, FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s)',
+#                         'INSERT INTO compras_medicamentos (VALOR, MEDICAMENTO, CLASIFICACION, CANTIDAD, TIPO, FECHA_CORTE) VALUES (%s, %s, %s, %s, %s, %s)',
 #                        tuple(valores)
 #                     )
-#                 messages.success(request, 'Carga de datos en COMPRAS_MEDICAMENTOS exitosa')
+#                 messages.success(request, 'Carga de datos en compras_medicamentos exitosa')
 #         except KeyError:
 #             messages.error(request, 'No se ha proporcionado un archivo Excel.')
 #         except IntegrityError as e:
@@ -1433,12 +1433,12 @@ def cargar_excel_compramed(request):
                 for row in ws.iter_rows(min_row=2):
                     print(row)
                     VALOR, MEDICAMENTO, CLASIFICACION, CANTIDAD, TIPO, FECHA_CORTE= row
-                    # Ejecuta una consulta SQL para insertar los datos en la tabla COMPRAS_MEDICAMENTOS
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla compras_medicamentos
                     cursor.execute(
                         'INSERT INTO compras_medicamentos (VALOR, MEDICAMENTO, CLASIFICACION, CANTIDAD, TIPO, FECHA_CORTE, GUID, USUARIO) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
                         (VALOR.value, MEDICAMENTO.value, CLASIFICACION.value, CANTIDAD.value, TIPO.value, FECHA_CORTE.value, guid, usuario.username)
                     )
-                messages.success(request, 'Carga de datos en COMPRAS_MEDICAMENTOS exitosa')
+                messages.success(request, 'Carga de datos en compras_medicamentos exitosa')
         except KeyError:
             messages.error(request, 'No se ha proporcionado un archivo Excel.')
         except IntegrityError as e:
@@ -2008,34 +2008,34 @@ def repgtecnica(request):
 
 def tablarepabhembras(request):
     with connections['b_gt'].cursor() as cursor:
-        cursor.execute('''SELECT GRANJA,CANTIDAD_ENTREGADA,PORCENTAJE_CUMPLIMIENTO,FECHA_CORTE FROM b_gt.ABASTECIMIENTO_HEMBRAS
-                        WHERE GUID = (SELECT MIN(GUID) FROM b_gt.ABASTECIMIENTO_HEMBRAS)''')
+        cursor.execute('''SELECT GRANJA,CANTIDAD_ENTREGADA,PORCENTAJE_CUMPLIMIENTO,FECHA_CORTE FROM b_gt.abastecimiento_hembras
+                        WHERE GUID = (SELECT MIN(GUID) FROM b_gt.abastecimiento_hembras)''')
         abhembras = cursor.fetchall()   
     return abhembras
 def tablarepfortuitos(request):
     with connections['b_gt'].cursor() as cursor:
-        cursor.execute('''SELECT FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL FROM b_gt.FORTUITOS3
-                       WHERE GUID = (SELECT MAX(GUID) FROM b_gt.FORTUITOS3)''')
+        cursor.execute('''SELECT FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL FROM b_gt.fortuitos3
+                       WHERE GUID = (SELECT MAX(GUID) FROM b_gt.fortuitos3)''')
         fortuitos = cursor.fetchall()   
     return fortuitos
 def tablarepkgvendidos(request):
     with connections['b_gt'].cursor() as cursor:
-        cursor.execute('''SELECT GRANJA,KG_V_H_A,ASOCIADO,FECHA_CORTE FROM b_gt.KG_VENDIDOS_HEMBRA WHERE GUID = (SELECT MAX(GUID) FROM b_gt.KG_VENDIDOS_HEMBRA)''')
+        cursor.execute('''SELECT GRANJA,KG_V_H_A,ASOCIADO,FECHA_CORTE FROM b_gt.kg_vendidos_hembra WHERE GUID = (SELECT MAX(GUID) FROM b_gt.kg_vendidos_hembra)''')
         kgvendidos = cursor.fetchall()   
     return kgvendidos
 def tablareppfinalcon(request):
     with connections['b_gt'].cursor() as cursor:
-        cursor.execute('''SELECT GRANJA,PESO,META_PESO,CONVERSION_META,CONVERSION,FECHA_CORTE FROM b_gt.PESO_FINAL_CONVERSION WHERE GUID = (SELECT MAX(GUID) FROM b_gt.PESO_FINAL_CONVERSION)''')
+        cursor.execute('''SELECT GRANJA,PESO,META_PESO,CONVERSION_META,CONVERSION,FECHA_CORTE FROM b_gt.peso_final_conversion WHERE GUID = (SELECT MAX(GUID) FROM b_gt.peso_final_conversion)''')
         pfinalcon = cursor.fetchall()   
     return pfinalcon
 def tablarepprohembras(request):
     with connections['b_gt'].cursor() as cursor:
-        cursor.execute('''SELECT PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE FROM b_gt.PROYECCION_HEMBRAS WHERE GUID = (SELECT MAX(GUID) FROM b_gt.PROYECCION_HEMBRAS)''')
+        cursor.execute('''SELECT PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE FROM b_gt.proyeccion_hembras WHERE GUID = (SELECT MAX(GUID) FROM b_gt.proyeccion_hembras)''')
         prohembras = cursor.fetchall()   
     return prohembras
 def tablareptecnicacia(request):
     with connections['b_gt'].cursor() as cursor:
-        cursor.execute('''SELECT LINEA_GENETICA,CANTIDAD_MACHOS,PORCENTAJE_DISTRIBUCION_MACHOS,CANTIDAD_DESECHADO,PORCENTAJE_DESCECHADO,DOSIS_PRODUCIDAS,DOSIS_VENDIDAS,PROMEDIO_MORFOLOGIA,OBSERVACION,FECHA_CORTE FROM b_gt.TECNICA_CIA WHERE GUID = (SELECT MAX(GUID) FROM b_gt.TECNICA_CIA)''')
+        cursor.execute('''SELECT LINEA_GENETICA,CANTIDAD_MACHOS,PORCENTAJE_DISTRIBUCION_MACHOS,CANTIDAD_DESECHADO,PORCENTAJE_DESCECHADO,DOSIS_PRODUCIDAS,DOSIS_VENDIDAS,PROMEDIO_MORFOLOGIA,OBSERVACION,FECHA_CORTE FROM b_gt.tecnica_cia WHERE GUID = (SELECT MAX(GUID) FROM b_gt.tecnica_cia)''')
         tecnicacia = cursor.fetchall()   
     return tecnicacia
 #---------------- TABLAS DE REPORTES CADENA DE ABASTECIMIENTO------------------------------------------
@@ -2157,12 +2157,12 @@ def repadminfinan(request):
 
 def tablarepmateriapr(request):
     with connections['b_gaf'].cursor() as cursor:
-        cursor.execute('''SELECT MATERIA_PRIMA,COSTO_PROMEDIO,CANTIDAD_COMPRADA,DIAS_INVENTARIO,FECHA_CORTE FROM b_gaf.COMPRAS_MATERIA_PRIMA''')
+        cursor.execute('''SELECT MATERIA_PRIMA,COSTO_PROMEDIO,CANTIDAD_COMPRADA,DIAS_INVENTARIO,FECHA_CORTE FROM b_gaf.compras_materia_prima''')
         materiapr = cursor.fetchall()   
     return materiapr
 def tablarepcompramed(request):
     with connections['b_gaf'].cursor() as cursor:
-        cursor.execute('''SELECT VALOR,MEDICAMENTO,CLASIFICACION,CANTIDAD,TIPO,FECHA_CORTE FROM b_gaf.COMPRAS_MEDICAMENTOS''')
+        cursor.execute('''SELECT VALOR,MEDICAMENTO,CLASIFICACION,CANTIDAD,TIPO,FECHA_CORTE FROM b_gaf.compras_medicamentos''')
         compramed = cursor.fetchall()   
     return compramed
 def tablareppreciocanal(request):
