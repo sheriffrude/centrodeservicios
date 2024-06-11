@@ -135,7 +135,7 @@ esquemas = [
     'b_ti', 'b_sac', 'b_sig', 'b_gg', 'dhc','intranetcercafe2','oinc','frigotun'
 
 ]
-# eeeeeeeeee
+# eeeeeeeeeeaaaaaaaaaaaa
 # Configuración base para todas las bases de datos adicionales
 base_config = {
     'ENGINE': 'django.db.backends.mysql',
