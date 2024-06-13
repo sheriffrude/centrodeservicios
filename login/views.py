@@ -2221,8 +2221,9 @@ def repgestionhumana(request):
     rotacion = tablareprotacion(request) 
     sstdiagindi = tablarepsstdiagindi(request) 
     sstindi = tablarepsstindi(request) 
-    sstseveridad = tablarepsstseveridad(request) 
-    return render(request, 'report_gestionhumana.html', {'nomina': nomina,'promociones': promociones,'procesosele':procesosele,'retencion':retencion,'rotacion':rotacion,'sstdiagindi':sstdiagindi,'sstindi':sstindi,'sstseveridad':sstseveridad})
+    sstseveridad = tablarepsstseveridad(request)
+    recupnomina = tablareprecunomina(request)
+    return render(request, 'report_gestionhumana.html', {'nomina': nomina,'promociones': promociones,'procesosele':procesosele,'retencion':retencion,'rotacion':rotacion,'sstdiagindi':sstdiagindi,'sstindi':sstindi,'sstseveridad':sstseveridad,'recupnomina':recupnomina})
 
 def tablarepnomina(request):
     with connections['b_gh'].cursor() as cursor:
@@ -2230,7 +2231,12 @@ def tablarepnomina(request):
         nomina = cursor.fetchall()
       
     return nomina
-
+def tablareprecunomina(request):
+    with connections['b_gh'].cursor() as cursor:
+        cursor.execute('''SELECT VALOR_RECUPERADO,FECHA_CORTE FROM b_gh.recuperado_nomina WHERE GUID = (SELECT MAX(GUID) FROM b_gh.recuperado_nomina)''')
+        recupnomina = cursor.fetchall()
+      
+    return recupnomina
 def tablareppromociones(request):
     with connections['b_gh'].cursor() as cursor:
         cursor.execute('''SELECT FECHA_CORTE,NOMBRE,ANTIGUO_CARGO,NUEVO_CARGO FROM b_gh.promociones''')

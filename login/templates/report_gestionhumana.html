@@ -81,6 +81,7 @@
                     <button id="btn_sstdiagindi" class="btn btn-repor btn-lg" onclick="mostrarsstdiagindi()">Reporte SST Diagnosticos</button>
                     <button id="btn_sstindi" class="btn btn-repor btn-lg" onclick="mostrarsstindi()">Reporte SST Indicadores</button>
                     <button id="btn_sstseveridad" class="btn btn-repor btn-lg" onclick="mostrarsstseveridad()" style="margin-top: 8px;">Reporte SST Severidad Y Frecuencia</button>
+                    <button id="btn_recupnomina" class="btn btn-repor btn-lg" onclick="mostrarrecupnomina()" style="margin-top: 8px;">Reporte SST Recuperado Nomina</button>
                 </div>
             </section>
   
@@ -114,6 +115,40 @@
                                         <td>{{ nomin.3 }}</td>
                                         <td>{{ nomin.4 }}</td>
                                     </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="recupnomina_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DE  RECUPERADO NOMINA</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_recupnomina" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>VALOR RECUPERADO</th>
+                                        <th>FECHA CORTE</th>
+                                     
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for recupnomin in recupnomina %}
+                                    <tr>
+                                        <td>{{ recupnomin.0 }}</td>
+                                        <td>{{ recupnomin.1 }}</td>
+                                        
                                     {% endfor %}
 
 
@@ -457,7 +492,7 @@
                     document.getElementById("sstdiagindi_table").style.display = "none";
                     document.getElementById("sstindi_table").style.display = "none";
                     document.getElementById("sstseveridad_table").style.display = "none";
-
+                    document.getElementById("recupnomina_table").style.display = "none";
                 }
                 function mostrarpromociones() {
                     document.getElementById("nomina_table").style.display = "none";
@@ -468,7 +503,7 @@
                     document.getElementById("sstdiagindi_table").style.display = "none";
                     document.getElementById("sstindi_table").style.display = "none";
                     document.getElementById("sstseveridad_table").style.display = "none";
-
+                    document.getElementById("recupnomina_table").style.display = "none";
                 }
                 function mostrarprocesosele() {
                     document.getElementById("nomina_table").style.display = "none";
@@ -479,7 +514,7 @@
                     document.getElementById("sstdiagindi_table").style.display = "none";
                     document.getElementById("sstindi_table").style.display = "none";
                     document.getElementById("sstseveridad_table").style.display = "none";
-
+                    document.getElementById("recupnomina_table").style.display = "none";
                 }
                 function mostrarretencion() {
                     document.getElementById("nomina_table").style.display = "none";
@@ -490,7 +525,7 @@
                     document.getElementById("sstdiagindi_table").style.display = "none";
                     document.getElementById("sstindi_table").style.display = "none";
                     document.getElementById("sstseveridad_table").style.display = "none";
-
+                    document.getElementById("recupnomina_table").style.display = "none";
                 }
                 function mostrarrotacion() {
                     document.getElementById("nomina_table").style.display = "none";
@@ -501,7 +536,7 @@
                     document.getElementById("sstdiagindi_table").style.display = "none";
                     document.getElementById("sstindi_table").style.display = "none";
                     document.getElementById("sstseveridad_table").style.display = "none";
-
+                    document.getElementById("recupnomina_table").style.display = "none";
                 }
                 function mostrarsstdiagindi() {
                     document.getElementById("nomina_table").style.display = "none";
@@ -512,7 +547,7 @@
                     document.getElementById("sstdiagindi_table").style.display = "block";
                     document.getElementById("sstindi_table").style.display = "none";
                     document.getElementById("sstseveridad_table").style.display = "none";
-
+                    document.getElementById("recupnomina_table").style.display = "none";
                 }
                 function mostrarsstindi() {
                     document.getElementById("nomina_table").style.display = "none";
@@ -523,7 +558,7 @@
                     document.getElementById("sstdiagindi_table").style.display = "none";
                     document.getElementById("sstindi_table").style.display = "block";
                     document.getElementById("sstseveridad_table").style.display = "none";
-
+                    document.getElementById("recupnomina_table").style.display = "none";
                 }
                 function mostrarsstseveridad() {
                     document.getElementById("nomina_table").style.display = "none";
@@ -534,7 +569,18 @@
                     document.getElementById("sstdiagindi_table").style.display = "none";
                     document.getElementById("sstindi_table").style.display = "none";
                     document.getElementById("sstseveridad_table").style.display = "block";
-
+                    document.getElementById("recupnomina_table").style.display = "none";
+                }
+                function mostrarrecupnomina() {
+                    document.getElementById("nomina_table").style.display = "none";
+                    document.getElementById("promociones_table").style.display = "none";
+                    document.getElementById("procesosele_table").style.display = "none";
+                    document.getElementById("retencion_table").style.display = "none";
+                    document.getElementById("rotacion_table").style.display = "none";
+                    document.getElementById("sstdiagindi_table").style.display = "none";
+                    document.getElementById("sstindi_table").style.display = "none";
+                    document.getElementById("sstseveridad_table").style.display = "none";
+                    document.getElementById("recupnomina_table").style.display = "block";
                 }
 
               
@@ -547,6 +593,7 @@
                     $("#tabla_sstdiagindi").DataTable();
                     $("#tabla_sstindi").DataTable();
                     $("#tabla_sstseveridad").DataTable();
+                    $("#tabla_recupnomina").DataTable();
                 });
             </script>
             <!-- script para llamar los html en el contenido -->
