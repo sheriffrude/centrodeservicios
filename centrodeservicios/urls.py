@@ -49,7 +49,7 @@ urlpatterns = [
     path('cargar_excel_sstdiag/', views.cargar_excel_sstdiag, name='cargar_excel_sstdiag'),
     path('cargar_excel_sstindi/', views.cargar_excel_sstindi, name='cargar_excel_sstindi'),
     path('cargar_excel_sstseveridad/', views.cargar_excel_sstseveridad, name='cargar_excel_sstseveridad'),
-    
+    path('cargar_excel_recunomina/', views.cargar_excel_recunomina, name='cargar_excel_recunomina'),
     #------------------------gestion Tecnica ------------------------------------------------
     path('gestiontecnica/', views.gestiontecnica, name='gestiontecnica'),
   
