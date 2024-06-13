@@ -4,6 +4,8 @@ from centrodeservicios import settings
 from login import views
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 #--Todas las urls de Centro de servicios ---
 
 urlpatterns = [
@@ -17,7 +19,8 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
-     
+    path('decomisos/', views.decomisos_view, name='decomisos'),
+
     path('password_change/', views.CustomPasswordChangeView.as_view(), name='password_change'),
     path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='registration/password_change_done.html'), name='password_change_done'),
     #----------------------cadena de abastecimiento ----------------------------------
@@ -131,3 +134,5 @@ urlpatterns = [
 
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

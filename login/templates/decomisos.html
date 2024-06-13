@@ -1,0 +1,338 @@
+{% load adminlte_helpers i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    
+    {% block meta %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% endblock %}
+    
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    {% block stylesheets %}
+    {% include 'adminlte/lib/_styles.html' %}
+    <style type="text/css">
+        .btn-circle.btn-xl {
+            width: 130px;
+            height: 130px;
+            padding: 13px 18px;
+            border-radius: 100px;
+            font-size: 15px;
+            text-align: center;
+            margin-left: 50px;
+        }
+
+        .btn-repor {
+            background-color: #651410;
+            color: aliceblue;
+        }
+    </style>
+    {% endblock %}
+    <style>
+        .valor-kilo {
+            background-color: #e9e9e9;
+        }
+
+        .btn-danger1 {
+            background-color: #c45454;
+            color: #ffffff;
+        }
+
+        .custom-container {
+            margin-left: 130px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body class="hold-transition sidebar-mini {% block body_class %}{% block bodyclass %}{% endblock %}{% endblock %}">
+    <div class="wrapper">
+        {% block nav_header %}
+        {% include '_main_header.html' %}
+        {% endblock %}
+
+        {% block nav_sidebar %}
+        {% include '_main_sidebar.html' %}
+        {% endblock %}
+
+        {% block content_wrapper %}
+        <div class="content-wrapper">
+            {% block content_header %}
+            <section class="content-header">
+                {% block no_heading %}
+                <h1>
+                    {% block page_name %}{% endblock %}
+                    <div class="header-actions">
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                    {% block no_description %}
+                    <small>{% block page_description %}{% endblock %}</small>
+                    {% endblock %}
+                </h1>
+                {% block breadcrumbs %}
+                {# Breadcrumb implementation left to developers #}
+                {% endblock %}
+                {% endblock no_heading %}
+               
+            </section>
+            {% endblock %}{% endblock %}
+<body>
+    <h1>Consulta de Decomisos por Fecha</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+       <button type="submit" class="btn btn-success">Exportar a Excel<img
+        src="/static/images/icons8-excel-48.png" height="35" width="35" /></button>
+    </form>
+</body>
+</html>
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="{% static 'custom.js' %}"></script>
+    {% block javascript %}
+    {% include 'adminlte/lib/_scripts.html' %}
+    
+    {% endblock %}
+    <script>
+
+
+        $(document).ready(function () {
+            $('#example1').DataTable();
+        });
+        $(document).ready(function () {
+            // Inicializar los datepickers
+            $("#datepicker-start").datepicker({
+                dateFormat: 'yy/mm/dd'
+            });
+            $("#datepicker-end").datepicker({
+                dateFormat: 'yy/mm/dd'
+            });
+
+
+            // Al hacer clic en el botón Filtrar
+            $("#filter-btn").click(function () {
+                // Obtener las fechas seleccionadas
+                var startDate = $("#datepicker-start").val();
+                var endDate = $("#datepicker-end").val();
+
+                // Hacer la solicitud AJAX con las fechas como parámetros
+                $.ajax({
+                    url: '/repfinan/',
+                    type: 'GET',
+                    data: {
+                        start_date: startDate,
+                        end_date: endDate,
+
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        // Limpiar la tabla
+                        $('#example1 tbody').empty();
+
+                        // Agregar las filas con los datos
+                        response.data.forEach(function (compromiso) {
+                            compromiso.Peso_canal_fria = parseFloat(compromiso.Peso_canal_fria).toFixed(2);
+                            compromiso.Valor = parseFloat(compromiso.Valor).toFixed(2);
+                            compromiso.Retencion = parseFloat(compromiso.Retencion).toFixed(2);
+                            compromiso.Valor_a_pagar_asociado = parseFloat(compromiso.Valor_a_pagar_asociado).toFixed(2);
+                            compromiso.Valor_kilo = parseFloat(compromiso.Valor_kilo).toFixed(2);
+                            // Construir la fila de la tabla y establecer el ID como un atributo de datos
+                            var row = '<tr data-id="' + compromiso.id + '">';
+                            row += '<td>' + compromiso.Fecha_transformacion + '</td>';
+                            row += '<td>' + compromiso.Unidades + '</td>';
+                            row += '<td>' + compromiso.Peso_canal_fria + '</td>';
+                            row += '<td>' + compromiso.Consecutivo_Cercafe + '</td>';
+                            row += '<td>' + compromiso.Codigo_granja + '</td>';
+                            row += '<td>' + compromiso.Remision + '</td>';
+                            row += '<td>' + compromiso.Valor + '</td>';
+                            row += '<td>' + compromiso.Cliente + '</td>';
+                            row += '<td>' + compromiso.Planta_Beneficio + '</td>';
+                            row += '<td>' + compromiso.Granja + '</td>';
+                            row += '<td>' + compromiso.Nit_asociado + '</td>';
+                            row += '<td>' + compromiso.Asociado + '</td>';
+                            row += '<td>' + compromiso.Grupo_Granja + '</td>';
+                            row += '<td>' + compromiso.Retencion + '</td>';
+                            row += '<td>' + compromiso.Valor_a_pagar_asociado + '</td>';
+                            row += '<td contenteditable="true" class="editable valor-kilo font-weight-bold">' + compromiso.Valor_kilo + '</td>';
+                            row += '<td><button class="save-btn btn btn-outline-secondary">Guardar</button></td>';
+                            row += '</tr>';
+
+                            // Agregar la fila a la tabla
+                            $('#example1 tbody').append(row);
+                        });
+
+                        var currentDate = new Date();
+                        var currentMonth = currentDate.getMonth(); // Mes actual (0-11)
+                        var currentYear = currentDate.getFullYear(); // Año actual
+                        var startDate = new Date($("#datepicker-start").val());
+                        var endDate = new Date($("#datepicker-end").val());
+
+
+                        // Determinar las fechas de corte del mes actual
+                        var firstCutOffDate = new Date(currentYear, currentMonth, 16); // Fecha de corte del día 16
+                        var lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0); // Último día del mes
+
+
+                        $('#example1 tbody tr').each(function () {
+                            var rowDate = new Date($(this).find("td:nth-child(1)").text()); // Obtener la fecha de la fila
+
+                            // Comprobar si el mes seleccionado es el mes actual y si la fecha actual está dentro del rango
+                            if (rowDate.getMonth() === currentMonth && rowDate.getFullYear() === currentYear &&
+                                rowDate >= startDate && rowDate <= endDate) {
+                                // Permitir la edición del campo editable
+                                $(this).find(".editable").prop("contenteditable", true);
+                            } else {
+                                // Deshabilitar la edición del campo editable
+                                $(this).find(".editable").prop("contenteditable", false);
+                            }
+                        });
+
+
+
+                    }
+
+                });
+
+            });
+        });
+
+
+
+        $("#export-pdf").click(function () {
+            // Obtener los valores seleccionados
+            var startDate = $("#datepicker-start").val();
+            var endDate = $("#datepicker-end").val();
+
+            // Crear un formulario dinámicamente
+            var form = $('<form action="/export-pdf/" method="GET"></form>');
+            form.append('<input type="hidden" name="start_date" value="' + startDate + '">');
+            form.append('<input type="hidden" name="end_date" value="' + endDate + '">');
+
+            // Agregar el formulario al cuerpo del documento
+            $('body').append(form);
+
+            // Enviar el formulario
+            form.submit();
+
+            // Eliminar el formulario después de enviarlo
+            form.remove();
+        });
+
+
+
+        // Exportar a Excel
+        $("#export-excel").click(function () {
+            // Obtener las fechas seleccionadas
+            var startDate = $("#datepicker-start").val();
+            var endDate = $("#datepicker-end").val();
+
+            // Redireccionar al usuario a la vista export_excel con las fechas como parámetros
+            window.location.href = '/export-excel/?start_date=' + startDate + '&end_date=' + endDate;
+        });
+
+        $("#generate-report-btn").click(function () {
+            // Obtener los valores seleccionados
+            var selectedGroup = $("#grupo-granja-selector").val();
+            var startDate = $("#datepicker-start").val();
+            var endDate = $("#datepicker-end").val();
+
+            // Redireccionar al usuario a la vista generate_excel_report con los parámetros
+            window.location.href = '/generate_excel_report/?start_date=' + startDate + '&end_date=' + endDate + '&selected_group=' + selectedGroup;
+        });
+
+
+        $(document).ready(function () {
+            // Evento focus para vaciar el campo editable al seleccionarlo
+            $("body").on("focus", ".editable", function () {
+                $(this).text(""); // Vaciar el contenido del campo editable
+            });
+
+            // Evento click para el botón de guardar
+            $("body").on("click", ".save-btn", function () {
+                // Obtener el campo editable asociado
+                var editableField = $(this).closest("tr").find(".editable");
+
+                // Verificar si el campo editable está habilitado
+                if (editableField.prop("contenteditable") === "true") {
+                    // Obtener el valor modificado
+                    var newValue = editableField.text();
+                    // Obtener el ID de la fila
+                    var id = $(this).closest("tr").data("id");
+                    console.log("ID:", id);
+
+                    var csrfToken = $("[name=csrfmiddlewaretoken]").val();
+                    // Hacer la solicitud AJAX para guardar los cambios
+                    $.ajax({
+                        url: '/save-changes/',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            newValue: newValue,
+                            csrfmiddlewaretoken: csrfToken
+                        },
+                        success: function (response) {
+                            // Si la operación fue exitosa, actualizar la tabla
+                            if (response.success) {
+                                alert('Cambios guardados exitosamente.');
+                            } else {
+                                alert('Error al guardar los cambios.');
+                            }
+                        },
+                        error: function () {
+                            alert('Error al guardar los cambios.');
+                        }
+                    });
+                } else {
+                    // El campo editable está deshabilitado, no se puede guardar
+                    alert('No se puede guardar cambios en un campo deshabilitado.');
+                }
+            });
+        });
+
+
+        $(document).ready(function () {
+            $("#search-input").on("input", function () {
+                // Obtener el texto de búsqueda
+                var searchText = $(this).val().toLowerCase();
+
+                // Filtrar las filas de la tabla
+                $("#example1 tbody tr").each(function () {
+                    // Obtener los valores de las columnas relevantes
+                    var consecutivoCercafe = $(this).find("td:nth-child(4)").text().toLowerCase();
+                    var remision = $(this).find("td:nth-child(6)").text().toLowerCase();
+                    var cliente = $(this).find("td:nth-child(8)").text().toLowerCase();
+
+                    // Ocultar o mostrar la fila según el texto de búsqueda
+                    if (consecutivoCercafe.indexOf(searchText) > -1 || remision.indexOf(searchText) > -1 || cliente.indexOf(searchText) > -1) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+
+
+            // Evento click para el botón de generar informe en Excel
+
+        });
+       
+       
+
+
+    </script>
+
+
+</body>
+
+</html>

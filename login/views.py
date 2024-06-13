@@ -2690,7 +2690,7 @@ def informe_view(request):
     if request.method == "POST" or request.method == "GET":
         try:
             token = obtener_token()
-            fecha_corte = request.GET.get("fecha_corte", "01-02-2024")  # Cambiado a GET
+            fecha_corte = request.GET.get("fecha_corte", "01-02-2024")  
             informe = obtener_informeinventario(token, fecha_corte)
             return JsonResponse(informe)
         except Exception as e:
@@ -2698,3 +2698,51 @@ def informe_view(request):
     else:
         return JsonResponse({"error": "Invalid request method."}, status=400)
 
+from django.shortcuts import render
+from django.http import HttpResponse
+import requests
+import pandas as pd
+from .forms import DateRangeForm
+
+def get_decomisos():
+    response = requests.get('https://intranet.cercafe.com/FRIGOTUN/public/apiDecomisos')
+    if response.status_code == 200:
+        return response.json()['data']['decomisos']
+    else:
+        return []
+    pass
+
+def filter_decomisos_by_date(decomisos, start_date, end_date):
+    start_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
+    return [decomiso for decomiso in decomisos if start_date <= pd.to_datetime(decomiso['fecha_decomiso']) <= end_date]
+    pass
+
+def to_excel(decomisos):
+    df = pd.DataFrame(decomisos)
+    filename = 'decomisos.xlsx'
+    file_path = os.path.join(settings.MEDIA_ROOT, filename)
+    df.to_excel(file_path, index=False)
+    return file_path
+
+def decomisos_view(request):
+    if request.method == 'POST':
+        form = DateRangeForm(request.POST)
+        if form.is_valid():
+            # Corrige aquí los nombres para acceder correctamente a la data del formulario
+            start_date = form.cleaned_data['start_date']
+            end_date = form.cleaned_data['end_date']  # Corregido de 'end_post' a 'end_date'
+            decomisos = get_decomisos()
+            filtered_decomisos = filter_decomisos_by_date(decomisos, start_date, end_date)
+            excel_file_path = to_excel(filtered_decomisos)
+            
+            if os.path.exists(excel_file_path):
+                response = FileResponse(open(excel_file_path, 'rb'), content_type='application/vnd.ms-excel')
+                response['Content-Disposition'] = 'attachment; filename="decomisos.xlsx"'
+                return response
+            else:
+                return HttpResponse("Error al generar el archivo Excel", status=500)
+    else:
+        form = DateRangeForm()
+    
+    return render(request, 'decomisos.html', {'form': form})

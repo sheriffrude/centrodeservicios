@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultado de Decomisos</title>
+</head>
+<body>
+    <h1>Resultado de la Consulta de Decomisos</h1>
+    {% if excel_file %}
+    <p>El archivo ha sido generado:</p>
+    <a href="{{ excel_file }}">Descargar archivo Excel</a>
+    {% else %}
+    <p>No se encontraron datos para las fechas seleccionadas.</p>
+    {% endif %}
+</body>
+</URL.html>
