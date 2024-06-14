@@ -49,6 +49,19 @@
             padding-top: 20px;
             padding-bottom: 20px;
         }
+        #loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 </head>
 
@@ -83,15 +96,29 @@
                
             </section>
             {% endblock %}{% endblock %}
-<body>
-    <h1>Consulta de Decomisos por Fecha</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-       <button type="submit" class="btn btn-success">Exportar a Excel<img
-        src="/static/images/icons8-excel-48.png" height="35" width="35" /></button>
-    </form>
-</body>
+            <body>
+                <h1>Consulta de Decomisos por Fecha</h1>
+                <div id="loading" style="display:none;">
+                    <img src="/static/images/logo.gif" alt="Cargando...">
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-success">Exportar a Excel<img src="/static/images/icons8-excel-48.png" height="35" width="35" /></button>
+                </form>
+                <script type="text/javascript">
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const form = document.querySelector('form');
+                        form.addEventListener('submit', function() {
+                            document.getElementById('loading').style.display = 'flex';
+                            
+                            setTimeout(function() {
+                                document.getElementById('loading').style.display = 'none';
+                            }, 10000);
+                        });
+                    });
+                </script>
+            </body>
 </html>
 <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 
