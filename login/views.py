@@ -2233,7 +2233,7 @@ def tablarepnomina(request):
     return nomina
 def tablareprecunomina(request):
     with connections['b_gh'].cursor() as cursor:
-        cursor.execute('''SELECT VALOR_RECUPERADO,FECHA_CORTE FROM b_gh.recuperado_nomina WHERE GUID = (SELECT MAX(GUID) FROM b_gh.recuperado_nomina)''')
+        cursor.execute('''SELECT VALOR_RECUPERADO,FECHA_CORTE FROM b_gh.recuperado_nomina WHERE GUID = (SELECT MIN(GUID) FROM b_gh.recuperado_nomina)''')
         recupnomina = cursor.fetchall()
       
     return recupnomina
