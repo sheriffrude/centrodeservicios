@@ -2322,9 +2322,9 @@ def tablaremisionnew(consecutivo_cercafe):
     intranetcercafe2_connection = connections['intranetcercafe2']
     with intranetcercafe2_connection.cursor() as cursor:
         if consecutivo_cercafe:
-            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from intranetcercafe2.despacholotesgranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
+            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from intranetcercafe2.despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
         else:
-            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from intranetcercafe2.despacholotesgranjas")
+            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from intranetcercafe2.despachoLotesGranjas")
         remisionnew = cursor.fetchall()
     return remisionnew
 
@@ -2334,7 +2334,7 @@ def filtered_data(start_date, end_date):
         cursor.execute('''
             SELECT ConsecutivoDespacho, idSolicitud, granja, lote, cerdosDespachados, frigorifico, 
             fechaEntrega, pesoTotal, conductor, placa, regic, regica, retiroalimento, edadprom 
-            FROM intranetcercafe2.despacholotesgranjas
+            FROM intranetcercafe2.despachoLotesGranjas
             WHERE fechaentrega BETWEEN %s AND %s
         ''', [start_date, end_date])
         fechas = cursor.fetchall()
@@ -2436,9 +2436,9 @@ def generar_pdf(request):
         # Consultar los datos de la tabla despachoLotesGranjas de intranetcercafe2
         with intranetcercafe2_connection.cursor() as cursor:
             if consecutivo_cercafe:
-                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom FROM despacholotesgranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
+                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom FROM despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
             else:
-                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom FROM despacholotesgranjas")
+                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom FROM despachoLotesGranjas")
             remisionnew = cursor.fetchall()
             
         granja_primera_consulta = remisionnew[0][2] if remisionnew else None
