@@ -434,35 +434,6 @@ def cargar_excel_toneladasimport(request):
 #------------------ CARGA DE GESTION COMERCIAL --------------------------------------------------------
 #------------------------------------------------------------------------------------------------------
 #------ vista para el cargue de excel en clientes activos----------------------------------------------
-# @never_cache
-# @login_required
-# def cargar_excel_clientesactivos(request):
-#     if request.method == 'POST':
-#         try:
-#             archivo_excel = request.FILES['archivo_excel']
-#             wb = openpyxl.load_workbook(archivo_excel)
-#             ws = wb.active
-#             guid = str(uuid4())
-#             usuario = request.user
-#             # Abre una conexión a la base de datos b_gc
-#             with connections['b_gc'].cursor() as cursor:
-#                 for row in ws.iter_rows(min_row=2):
-#                     FECHA_CORTE, CANTIDAD_CLIENTES, ZONA_CLIENTE, KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE = row
-#                     # Ejecuta una consulta SQL para insertar los datos en la tabla compromiso_mes
-#                     cursor.execute(
-#                         'INSERT INTO CLIENTES_ACTIVOS (FECHA_CORTE,CANTIDAD_CLIENTES,ZONA_CLIENTE,KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s,%s,%s)',
-#                         (FECHA_CORTE.value, CANTIDAD_CLIENTES.value, ZONA_CLIENTE.value, KG_FACTURADOS.value,DINERO_APORTADO.value,ESTADO_CLIENTE.value,guid,usuario.username)
-#                     )
-#             messages.success(request, 'Carga de datos en CLIENTES ACTIVOS exitosa')
-#         except KeyError:
-#             messages.error(request, 'No se ha proporcionado un archivo Excel.')
-#         except IntegrityError as e:
-#             messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
-#         except Exception as e:
-#             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
-#         return redirect('home')
-#     return render(request, '/home/')
-#------ vista para el cargue de excel en clientes activos----------------------------------------------
 @never_cache
 @login_required
 def cargar_excel_clientesactivos(request):
@@ -474,15 +445,15 @@ def cargar_excel_clientesactivos(request):
             guid = str(uuid4())
             usuario = request.user
             # Abre una conexión a la base de datos b_gc
-            with connections['dhc'].cursor() as cursor:
+            with connections['b_gc'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
-                    NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION, ID_VENDEDOR,ID_SEGMENTO,ID_MIX_VENTAS = row
+                    FECHA_CORTE, CANTIDAD_CLIENTES, ZONA_CLIENTE, KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE = row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla compromiso_mes
                     cursor.execute(
-                        'INSERT INTO clientes (NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION, ID_VENDEDOR,ID_SEGMENTO,ID_MIX_VENTAS,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)',
-                        (NIT.value,RAZON_SOCIAL.value,CUPO.value,DIRECCION_SEDE_PRINCIPAL.value,DIRECCION_EXPENDIO.value,ID_CLASIFICACION.value,ID_MUNICIPIO.value,ID_DEPARTAMENTO.value,ID_REGION.value, ID_VENDEDOR.value,ID_SEGMENTO.value,ID_MIX_VENTAS.value,guid,usuario.username)
+                        'INSERT INTO clientes_activos (FECHA_CORTE,CANTIDAD_CLIENTES,ZONA_CLIENTE,KG_FACTURADOS,DINERO_APORTADO,ESTADO_CLIENTE,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s,%s,%s)',
+                        (FECHA_CORTE.value, CANTIDAD_CLIENTES.value, ZONA_CLIENTE.value, KG_FACTURADOS.value,DINERO_APORTADO.value,ESTADO_CLIENTE.value,guid,usuario.username)
                     )
-            messages.success(request, 'Carga de datos en CLIENTES  exitosa')
+            messages.success(request, 'Carga de datos en CLIENTES ACTIVOS exitosa')
         except KeyError:
             messages.error(request, 'No se ha proporcionado un archivo Excel.')
         except IntegrityError as e:
@@ -491,6 +462,35 @@ def cargar_excel_clientesactivos(request):
             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
         return redirect('home')
     return render(request, '/home/')
+#------ vista para el cargue de excel en clientes----------------------------------------------
+# @never_cache
+# @login_required
+# def cargar_excel_clientesactivos(request):
+#     if request.method == 'POST':
+#         try:
+#             archivo_excel = request.FILES['archivo_excel']
+#             wb = openpyxl.load_workbook(archivo_excel)
+#             ws = wb.active
+#             guid = str(uuid4())
+#             usuario = request.user
+#             # Abre una conexión a la base de datos b_gc
+#             with connections['dhc'].cursor() as cursor:
+#                 for row in ws.iter_rows(min_row=2):
+#                     NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION, ID_VENDEDOR,ID_SEGMENTO,ID_MIX_VENTAS = row
+#                     # Ejecuta una consulta SQL para insertar los datos en la tabla compromiso_mes
+#                     cursor.execute(
+#                         'INSERT INTO clientes (NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION, ID_VENDEDOR,ID_SEGMENTO,ID_MIX_VENTAS,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)',
+#                         (NIT.value,RAZON_SOCIAL.value,CUPO.value,DIRECCION_SEDE_PRINCIPAL.value,DIRECCION_EXPENDIO.value,ID_CLASIFICACION.value,ID_MUNICIPIO.value,ID_DEPARTAMENTO.value,ID_REGION.value, ID_VENDEDOR.value,ID_SEGMENTO.value,ID_MIX_VENTAS.value,guid,usuario.username)
+#                     )
+#             messages.success(request, 'Carga de datos en CLIENTES  exitosa')
+#         except KeyError:
+#             messages.error(request, 'No se ha proporcionado un archivo Excel.')
+#         except IntegrityError as e:
+#             messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+#         except Exception as e:
+#             messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+#         return redirect('home')
+#     return render(request, '/home/')
 #------ vista para el cargue de excel en ventas---------------------------------------------------------------
 @never_cache
 @login_required
@@ -843,11 +843,11 @@ def cargar_excel_fortuitos(request):
             with connections['b_gt'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                   
-                    FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL= row
+                    FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,CAIDOS,RETOMAS,TOTAL= row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla SST_SEVERIDAD_Y_FRECUENCIA
                     cursor.execute(
-                        'INSERT INTO fortuitos3 (FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,RETOMAS,TOTAL,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s, %s,%s, %s, %s,%s)',
-                        (FECHA_CORTE.value,PLANTA.value,GRANJA.value,CANTIDAD_MUERTE_TRANSPORTE.value,CANTIDAD_MUERTE_REPOSO.value,AGITADOS.value,LESIONADOS.value,RETOMAS.value,TOTAL.value,guid,usuario.username)
+                        'INSERT INTO fortuitos3 (FECHA_CORTE,PLANTA,GRANJA,CANTIDAD_MUERTE_TRANSPORTE,CANTIDAD_MUERTE_REPOSO,AGITADOS,LESIONADOS,CAIDOS,RETOMAS,TOTAL,GUID,USUARIO) VALUES (%s, %s,%s, %s, %0s, %s, %s,%s, %s, %s,%s,%s)',
+                        (FECHA_CORTE.value,PLANTA.value,GRANJA.value,CANTIDAD_MUERTE_TRANSPORTE.value,CANTIDAD_MUERTE_REPOSO.value,AGITADOS.value,LESIONADOS.value,CAIDOS.value,RETOMAS.value,TOTAL.value,guid,usuario.username)
                     )
                 messages.success(request, 'Carga de datos en FORTUITOS exitosa')
         except KeyError:
@@ -934,11 +934,11 @@ def cargar_excel_proyhem(request):
             with connections['b_gt'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                     
-                    PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE= row
+                    PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE,CANTIDAD_PROYECCION_HEMBRAS,CANTIDAD_REAL= row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla PROYECCION_HEMBRAS
                     cursor.execute(
-                        'INSERT INTO proyeccion_hembras (PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s, %s, %s, %s)',
-                        (PARTOS.value,TASA_PARTOS.value,CUMPLIMIENTO_PROYECTADO.value,CUMPLIMIENTO_REAL.value,AÑO_SERVICIO.value,OBSERVACIONES.value,FECHA_CORTE.value,guid,usuario.username)
+                        'INSERT INTO proyeccion_hembras (PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE,CANTIDAD_PROYECCION_HEMBRAS,CANTIDAD_REAL,GUID,USUARIO) VALUES (%s, %s,%s, %s,%s, %s, %s, %s, %s, %s, %s)',
+                        (PARTOS.value,TASA_PARTOS.value,CUMPLIMIENTO_PROYECTADO.value,CUMPLIMIENTO_REAL.value,AÑO_SERVICIO.value,OBSERVACIONES.value,FECHA_CORTE.value,CANTIDAD_PROYECCION_HEMBRAS.value,CANTIDAD_REAL.value,guid,usuario.username)
                     )
                 messages.success(request, 'Carga de datos en PROYECCION HEMBRAS exitosa')
         except KeyError:
@@ -2063,7 +2063,7 @@ def tablareppfinalcon(request):
     return pfinalcon
 def tablarepprohembras(request):
     with connections['b_gt'].cursor() as cursor:
-        cursor.execute('''SELECT PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE FROM b_gt.proyeccion_hembras WHERE GUID = (SELECT MAX(GUID) FROM b_gt.proyeccion_hembras)''')
+        cursor.execute('''SELECT PARTOS,TASA_PARTOS,CUMPLIMIENTO_PROYECTADO,CUMPLIMIENTO_REAL,AÑO_SERVICIO,OBSERVACIONES,FECHA_CORTE,CANTIDAD_PROYECCION_HEMBRAS,CANTIDAD_REAL FROM b_gt.proyeccion_hembras WHERE GUID = (SELECT MAX(GUID) FROM b_gt.proyeccion_hembras)''')
         prohembras = cursor.fetchall()   
     return prohembras
 def tablareptecnicacia(request):
