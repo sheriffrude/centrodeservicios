@@ -18,11 +18,9 @@ urlpatterns = [
     path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
-
-    path('decomisos/', views.decomisos_view, name='decomisos'),
-
     path('password_change/', views.CustomPasswordChangeView.as_view(), name='password_change'),
     path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='registration/password_change_done.html'), name='password_change_done'),
+
     #----------------------cadena de abastecimiento ----------------------------------
     path('cadenaabastecimiento/', views.cadenaabastecimiento, name='cadenaabastecimiento'),
     path('cargar_excel_disponibilidad/', views.cargar_excel_disponibilidad, name='cargar_excel_disponibilidad'),
@@ -66,7 +64,6 @@ urlpatterns = [
     #------------------------gestion Alimento Balanceado ------------------------------------------------
     path('gestionalbal/', views.gestionalbal, name='gestionalbal'),
     
-    
     path('cargar_excel_alibal/', views.cargar_excel_alibal, name='cargar_excel_alibal'),
     
      #--------------------------------- CALIDAD ------------------------------------------------
@@ -77,13 +74,13 @@ urlpatterns = [
     path('cargar_excel_causasdes/', views.cargar_excel_causasdes, name='cargar_excel_causasdes'),
     path('cargar_excel_pqrsf/', views.cargar_excel_pqrsf, name='cargar_excel_pqrsf'),
     
-     #--------------------------------- T.I ------------------------------------------------
+     #--------------------------------- T.I --------------------------------------------------------------
     path('ti/', views.ti, name='ti'),
   
     path('cargar_excel_avantransfordig/', views.cargar_excel_avantransfordig, name='cargar_excel_avantransfordig'),
     path('cargar_excel_transfordig/', views.cargar_excel_transfordig, name='cargar_excel_transfordig'),
     path('cargar_excel_inideco/', views.cargar_excel_inideco, name='cargar_excel_inideco'),
-     #--------------------------------- T.I ------------------------------------------------
+     #--------------------------------- SIG --------------------------------------------------------------
     path('sig/', views.sig, name='sig'),
     path('cargar_excel_bsc/', views.cargar_excel_bsc, name='cargar_excel_bsc'),
     
@@ -97,6 +94,8 @@ urlpatterns = [
     path('cargar_excel_evolucion_precio_canal/', views.cargar_excel_evolucion_precio_canal, name='cargar_excel_evolucion_precio_canal'),
     path('cargar_excel_costo_kg_producido_kg_vendido/', views.cargar_excel_costo_kg_producido_kg_vendido, name='cargar_excel_costo_kg_producido_kg_vendido'),
     path('cargar_excel_indicadores_economicos/', views.cargar_excel_indicadores_economicos, name='cargar_excel_indicadores_economicos'),
+    path('cargar_excel_costopromediomp/', views.cargar_excel_costopromediomp, name='cargar_excel_costopromediomp'),
+
     
     path('financiera/', views.financiera, name='financiera'),
     path('repoprove/', views.repoprove, name='repoprove'),
@@ -114,6 +113,10 @@ urlpatterns = [
     path('tabla/', views.tablarepclient, name='tablarepclient'),
     path('frigorificos/', views.frigorificos, name='frigorificos'),
     path('cargar_excel_oinc/', views.cargar_excel_oinc, name='cargar_excel_oinc'),
+    path('cargar_excel_ingresoinc/', views.cargar_excel_ingresoinc, name='cargar_excel_ingresoinc'),
+    path('cargar_excel_despachoinc/', views.cargar_excel_despachoinc, name='cargar_excel_despachoinc'),
+    path('cargar_excel_beneficiorendimientoinc/', views.cargar_excel_beneficiorendimientoinc, name='cargar_excel_beneficiorendimientoinc'),
+    
 
 #--------------------------------- REPORTES------------------------------------------------
     
@@ -127,8 +130,19 @@ urlpatterns = [
     path('repgestionhumana/', views.repgestionhumana, name='repgestionhumana'),
     path('repremision/', views.repremision, name='repremision'),
     path('generar_pdf/', views.generar_pdf, name='generar_pdf'),
-    path('api/hembras-registradas/', views.api_hembras_registradas),
     path('generar_excel/', views.generar_excel, name='generar_excel'),
+
+#-------------------------------API's ------------------------------------------
+#-----------------------------GENERADAS-----------------------------------------
+#------------------------------INTERNAS-----------------------------------------
+
+    path('api/hembras-registradas/', views.api_hembras_registradas),
+    path('decomisos/', views.decomisos_view, name='decomisos'),
+
+#-------------------------------------------------------------------------------
+#----------------API YEMINUS----------------------------------------------------
+#-------------------------------------------------------------------------------
+
     path('informe_inventario/', views.informe_view, name='informe_inventario'),
     
 

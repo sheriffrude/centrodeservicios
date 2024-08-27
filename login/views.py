@@ -1150,6 +1150,128 @@ def cargar_excel_causasdes(request):
 
 
 #-------- vista para el cargue de excel en oinc --------------------------------------------------------
+
+@never_cache
+@login_required
+def cargar_excel_ingresoinc(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+            guid = str(uuid4())
+            usuario = request.user
+            # Abre una conexión a la base de datos b_c
+            with connections['oinc'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    print(row)
+                    mes,año,semana,lote,lote_cod_canal,f_ingreso,solicitante,propietario,granja,rem_granja,rem_solicitante,mun_granja,guia_ica,verificacion_ica, laboratorio_ic, registro_ic,cod_canal,genero,prom_peso_pie,observacion= row
+
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla CAUSAS_DESVIACIONES
+                    cursor.execute(
+                        'INSERT INTO ingreso (mes,año,semana,lote,lote_cod_canal,f_ingreso,solicitante,propietario,granja,rem_granja,rem_solicitante,mun_granja,guia_ica,verificacion_ica, laboratorio_ic, registro_ic,cod_canal,genero,prom_peso_pie,observacion,GUID,USUARIO) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
+                        (mes.value ,año.value ,semana.value ,lote.value ,lote_cod_canal.value ,f_ingreso.value ,solicitante.value ,propietario.value ,granja.value ,rem_granja.value ,rem_solicitante.value ,mun_granja.value ,guia_ica.value ,verificacion_ica.value , laboratorio_ic.value , registro_ic.value ,cod_canal.value ,genero.value ,prom_peso_pie.value ,observacion.value ,guid,usuario.username)
+                    )
+                messages.success(request, 'Carga de datos en ingreso exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+
+
+@never_cache
+@login_required
+def cargar_excel_despachoinc(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+            guid = str(uuid4())
+            usuario = request.user
+            # Abre una conexión a la base de datos b_c
+            with connections['oinc'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    print(row)
+                    mes,año,semana,lote,lote_cod_canal,fase,f_ingreso,solicitante, propietario,granja,rem_solicitante,c_fria,clas_abc,f_remision,destino_cliente,destino_remision, direccion_remision, municipio_destino,departamento_destino,remision,tipo_remision,g_invima,placa_furgon,observacion= row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla CAUSAS_DESVIACIONES
+                    cursor.execute(
+                        'INSERT INTO despacho (mes,año,semana,lote,lote_cod_canal,fase,f_ingreso,solicitante, propietario,granja,rem_solicitante,c_fria,clas_abc,f_remision,destino_cliente,destino_remision, direccion_remision, municipio_destino,departamento_destino,remision,tipo_remision,g_invima,placa_furgon,observacion,GUID,USUARIO) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,)',
+                        (mes.value,año.value,semana.value,lote.value,lote_cod_canal.value,fase.value,f_ingreso.value,solicitante.value, propietario.value,granja.value,rem_solicitante.value,c_fria.value,clas_abc.value,f_remision.value,destino_cliente.value,destino_remision.value, direccion_remision.value, municipio_destino.value,departamento_destino.value,remision.value,tipo_remision.value,g_invima.value,placa_furgon.value,observacion.value,guid,usuario.username)
+                    )
+                messages.success(request, 'Carga de datos en despacho exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+
+
+@never_cache
+@login_required
+def cargar_excel_beneficiorendimientoinc(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+            guid = str(uuid4())
+            usuario = request.user
+            # Abre una conexión a la base de datos b_c
+            with connections['oinc'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    print(row)
+                    mes,año, semana, lote, lote_turno_beneficio, lote_cod_canal, fase, f_ingreso, f_beneficio, f_vencimiento, solicitante, propietario, granja, rem_solicitante, mun_granja, guia_ica, verificacion_ica, laboratorio_ic, registro_ic, turno_beneficio, cod_canal, presentacion, c_caliente, grasa_dorsal, rto_pcc, c_fria, rto_pcf, clasificacion, merma, magro, cava, tiempo_cava, clas_seurop, clase_abc, factura_beneficio, observacion= row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla CAUSAS_DESVIACIONES
+                    cursor.execute(
+                        'INSERT INTO beneficio_rendimiento (mes,año, semana, lote, lote_turno_beneficio, lote_cod_canal, fase, f_ingreso, f_beneficio, f_vencimiento, solicitante, propietario, granja, rem_solicitante, mun_granja, guia_ica, verificacion_ica, laboratorio_ic, registro_ic, turno_beneficio, cod_canal, presentacion, c_caliente, grasa_dorsal, rto_pcc, c_fria, rto_pcf, clasificacion, merma, magro, cava, tiempo_cava, clas_seurop, clase_abc, factura_beneficio, observacion,GUID,USUARIO) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
+                        (mes.value,año.value, semana.value, lote.value, lote_turno_beneficio.value, lote_cod_canal.value, fase.value, f_ingreso.value, f_beneficio.value, f_vencimiento.value, solicitante.value, propietario.value, granja.value, rem_solicitante.value, mun_granja.value, guia_ica.value, verificacion_ica.value, laboratorio_ic.value, registro_ic.value, turno_beneficio.value, cod_canal.value, presentacion.value, c_caliente.value, grasa_dorsal.value, rto_pcc.value, c_fria.value, rto_pcf.value, clasificacion.value, merma.value, magro.value, cava.value, tiempo_cava.value, clas_seurop.value, clase_abc.value, factura_beneficio.value, observacion.value,guid,usuario.username)
+                    )
+                messages.success(request, 'Carga de datos en despacho exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 from datetime import datetime as dt
 from openpyxl.cell.cell import Cell
 
@@ -1650,6 +1772,35 @@ def cargar_excel_indicadores_economicos(request):
                     cursor.execute(
                         'INSERT INTO indicadores_economicos (FECHA_REPORTE,INDICADOR,VALOR,FUENTE,LINK,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s, %s)',
                         ( FECHA_REPORTE.value,INDICADOR.value,VALOR.value,FUENTE.value,LINK.value,guid,usuario.username)
+                    )
+            messages.success(request, 'Carga de datos en indicadores_economicos exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
+
+@never_cache
+@login_required
+def cargar_excel_costopromediomp(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+            guid = str(uuid4())
+            usuario = request.user
+            # Abre una conexión a la base de datos b_gc
+            with connections['b_gaf'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    fecha_reporte,materia_prima,valor_promedio = row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla compromiso_mes
+                    cursor.execute(
+                        'INSERT INTO costo_promedio_mp (fecha_reporte,materia_prima,valor_promedio,guid,usuario) VALUES (%s, %s,%s, %s, %s)',
+                        ( fecha_reporte.value,materia_prima.value,valor_promedio.value,guid,usuario.username)
                     )
             messages.success(request, 'Carga de datos en indicadores_economicos exitosa')
         except KeyError:
@@ -2598,12 +2749,15 @@ def generar_pdf(request):
 
 
 
-
-
-
-
-
-
+#*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-**-*-*-
+#*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-**-*-*-
+#*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-**-*-*-
+#*-*-*-*-*-*-*-*-*-*-*-*                    *-*-*-*-*-*-*-*-*-*-*-**-*-*-
+#*-*-*-*-*-*-*-*-*-*-*-*        APIS        **-*-*-*-*-*-*-*-*-*-*-*-**-**-*
+#*-*-*-*-*-*-*-*-*-*-*-*                    -**-*-*-*-*-*-*-*-*-*-*-**-*-*-
+#*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-**-*-*-
+#*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-**-*-*-
+#*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-**-*-*-
 
 
 def api_hembras_registradas(request):

@@ -261,7 +261,7 @@
  <!------------------------------------------------------- carga 8vo excel  -------------------------->
  <div class="card card-default  collapsed collapsed-card">
   <div class="card-header bg-dark" data-card-widget="collapse">
-    <h3 class="card-title">Ingreso de Trazabilidad Oinc</h3>
+    <h3 class="card-title">Ingreso-Oinc</h3>
 
     <div class="card-tools">
       <button type="button" class="btn btn-tool"><i class="fas fa-minus"></i></button>
@@ -271,7 +271,61 @@
   <div class="card-body">
     <div class="row">
       <div class="col-md-6">
-        <form method="post" action="{% url 'cargar_excel_oinc' %}" enctype="multipart/form-data">
+        <form method="post" action="{% url 'cargar_excel_ingresoinc' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <label for="archivo_excel">Selecciona un archivo Excel:</label>
+          <input class="btn btn-info1" type="file" name="archivo_excel" accept=".xlsx, .xls">
+          <br>
+          <button class="btn bg-gradient-primary " type="submit">Cargar Datos</button>
+        </form>
+      </div>
+    </div>
+    <div class="card-footer">
+      Los valores ingresados aquí no pueden ser cambiados luego de ingresarlos.
+    </div>
+  </div>
+</div>
+<!------------------------------------------------------- carga 9no excel  -------------------------->
+<div class="card card-default  collapsed collapsed-card">
+  <div class="card-header bg-dark" data-card-widget="collapse">
+    <h3 class="card-title">Ingreso de Despacho-Oinc</h3>
+
+    <div class="card-tools">
+      <button type="button" class="btn btn-tool"><i class="fas fa-minus"></i></button>
+    </div>
+  </div>
+  <!-- /.card-header -->
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <form method="post" action="{% url 'cargar_excel_despachoinc' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <label for="archivo_excel">Selecciona un archivo Excel:</label>
+          <input class="btn btn-info1" type="file" name="archivo_excel" accept=".xlsx, .xls">
+          <br>
+          <button class="btn bg-gradient-primary " type="submit">Cargar Datos</button>
+        </form>
+      </div>
+    </div>
+    <div class="card-footer">
+      Los valores ingresados aquí no pueden ser cambiados luego de ingresarlos.
+    </div>
+  </div>
+</div>
+<!------------------------------------------------------- carga 10mo excel  -------------------------->
+<div class="card card-default  collapsed collapsed-card">
+  <div class="card-header bg-dark" data-card-widget="collapse">
+    <h3 class="card-title">Ingreso de Beneficio rendimiento</h3>
+
+    <div class="card-tools">
+      <button type="button" class="btn btn-tool"><i class="fas fa-minus"></i></button>
+    </div>
+  </div>
+  <!-- /.card-header -->
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <form method="post" action="{% url 'cargar_excel_beneficiorendimientoinc' %}" enctype="multipart/form-data">
           {% csrf_token %}
           <label for="archivo_excel">Selecciona un archivo Excel:</label>
           <input class="btn btn-info1" type="file" name="archivo_excel" accept=".xlsx, .xls">
