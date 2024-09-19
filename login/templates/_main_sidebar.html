@@ -67,7 +67,7 @@
                         {% if request.user|user_belongs_to_group:'tecnica' %}
                         <li class="nav-item">
                             <a id="cargarContenido" href="{% url 'gestiontecnica' %}" class="nav-link">
-                                <i class="nav-icon fas fa-piggy-bank"></i>Gestion Tecnica
+                                <i class="nav-icon fas fa-piggy-bank"></i>Producción Sostenible
                             </a>
                         </li>
                         {% endif %}
@@ -182,7 +182,7 @@
                         {% if request.user|user_belongs_to_group:'tecnica' %}
                         <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
                             <a  href="{% url 'repgtecnica' %}"  >
-                                <i class="nav-icon fas fa-piggy-bank"></i>Gestion Tecnica
+                                <i class="nav-icon fas fa-piggy-bank"></i>Producción Sostenible
                             </a>
                         </li>
                         {% endif %}
