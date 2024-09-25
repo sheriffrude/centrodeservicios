@@ -1,0 +1,271 @@
+{% load adminlte_helpers i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>comercial</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+
+
+
+    {% block meta %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% endblock %}
+
+    {% block stylesheets %}
+    {% include 'adminlte/lib/_styles.html' %}
+    <style type="text/css">
+        .btn-circle.btn-xl {
+            width: 130px;
+            height: 100px;
+            padding: 13px 18px;
+            border-radius: 100px;
+            font-size: 15px;
+            text-align: center;
+            margin-left: 50px;
+        }
+
+        .btn-repor {
+            background-color: #651410;
+            color: aliceblue;
+        }
+        .btn-pdf{
+            margin-bottom: 17px;
+        }
+        .btn-export-excel {
+            width: 167px;
+            height: 46px;
+            margin-bottom: 50px;
+            margin-inline: 10px;
+            margin-top: 23px;
+        }
+        .row{
+            margin-left: 19.5px !important;
+        }
+        .h3, h3 {
+            margin-left: 8px !important;
+        }
+        .btn-danger1 {
+            background-color: #c45454;
+            color: #ffffff;
+        }
+    </style>
+    </style>
+    {% endblock %}
+
+    {% block extra_head %}
+
+    {% endblock %}
+</head>
+</head>
+
+<body class="hold-transition sidebar-mini {% block body_class %}{% block bodyclass %}{% endblock %}{% endblock %}">
+    <div class="wrapper">
+        {% block nav_header %}
+        {% include '_main_header.html' %}
+        {% endblock %}
+
+        {% block nav_sidebar %}
+        {% include '_main_sidebar.html' %}
+        {% endblock %}
+
+        {% block content_wrapper %}
+        <div class="content-wrapper">
+            {% block content_header %}
+            <section class="content-header">
+                {% block no_heading %}
+                <h1>
+                    {% block page_name %}{% endblock %}
+                    <div class="header-actions">
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                    {% block no_description %}
+                    <small>{% block page_description %}{% endblock %}</small>
+                    {% endblock %}
+                </h1>
+                {% block breadcrumbs %}
+                {# Breadcrumb implementation left to developers #}
+                {% endblock %}
+                {% endblock no_heading %}
+                <h1>Disponibilidad</h1>
+            </section>
+            {% endblock %}{% endblock %}
+            <form method="POST" action="https://intranet.cercafe.com/intranet/public/admin/graficasforms" accept-charset="UTF-8" class="form-horizontal" id="dispo">
+                <div class="form-group">
+                    
+                    <label for="granja" class="col-lg-4 control-label">Granja: </label>
+                    <div class="col-lg-4">
+                       
+                        <select name="granjas1" class="form-control" required="" id="granjas1">
+                            {% for granja in granjas %}
+                            <option value="{{ granja }}">{{ granja }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+
+                    <div class="form-group">
+                    <label for="fecha_disponibilidad" class="col-lg-4 control-label">Fecha Disponibilidad: </label>
+                    <div class="col-lg-4">
+                        <input class="form-control" required="" placeholder="..." onchange="verificarFecha()" name="fecha_disponibilidad" type="date" id="fecha_disponibilidad">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="caracteristica" class="col-lg-4 control-label">Caracteristica: </label>
+                    <div class="col-lg-4">
+                        <select name="caracteristica" class="form-control" required="">
+                            <option value="">Seleccione...</option>
+                            <option value="1">Comercial</option>
+                            <option value="2">Descartes</option>
+                            <option value="3">Pesados</option>
+                            <option value="4">Livianos</option>
+                            <option value="5">Materno</option>
+                            <option value="6">Colas</option>
+                        </select>
+                    </div>
+                </div>
+                    <div class="form-group">
+                    <label for="genero" class="col-lg-4 control-label">Genero: </label>
+                    <div class="col-lg-4">
+                        <select name="genero" class="form-control" required="">
+                            <option value="">Seleccione...</option>
+                            <option value="1">Macho</option>
+                            <option value="2">Hembra</option>
+                            <option value="3">Mixto</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="disponibilidad_cantidad" class="col-lg-4 control-label">Disponibilidad Cantidad: </label>
+                    <div class="col-lg-4">
+                        <input class="form-control" required="" name="disponibilidad_cantidad" type="number" id="disponibilidad_cantidad">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="peso_promedio_limite_inferior" class="col-lg-4 control-label">Peso Promedio Limite Inferior: </label>
+                    <div class="col-lg-4">
+                        <input class="form-control" required="" name="peso_promedio_limite_inferior" type="number" id="peso_promedio_limite_inferior">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="peso_promedio_limite_superior" class="col-lg-4 control-label">Peso Promedio Limite Superior: </label>
+                    <div class="col-lg-4">
+                        <input class="form-control" required="" name="peso_promedio_limite_superior" type="number" id="peso_promedio_limite_superior">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="observaciones" class="col-lg-4 control-label">Observaciones: </label>
+                    <div class="col-lg-4">
+                        <input class="form-control" name="observaciones" type="text" id="observaciones">
+                    </div>
+                </div>
+
+
+                <div class="form-group col-lg-12 col-xs-12">
+                    <ul class="list-inline" align="center">
+
+                        <li><input class="btn btn-success btn-md" id="botonSubirDisponibilidad" type="submit" value="Subir"></li>
+                    </ul>
+                </div>
+            </form>
+
+
+            <!-- Pie de página -->
+            <!-- Agrega aquí el código para el pie de página si es necesario -->
+
+
+
+
+            {% block javascript %}
+            {% include 'adminlte/lib/_scripts.html' %}
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+            <script>
+
+                $(document).ready(function () {
+                    $('#consultaForm').submit(function (event) {
+                        event.preventDefault();
+
+                        var consecutivoCercafe = $('#consecutivoCercafe').val(); // Obtener el valor del input
+                        $.ajax({
+                            type: 'GET',
+                            url: '{% url "repremision" %}',
+                            data: { consecutivoCercafe: consecutivoCercafe },
+                            dataType: 'json', // Especificar que esperamos JSON como respuesta
+                            success: function (response) {
+                                // Limpiar la tabla antes de agregar nuevas filas
+                                $('#tabla_remisionnew tbody').empty();
+
+                                // Verificar si la respuesta contiene los datos de la tabla
+                                if ('remisionnew' in response) {
+                                    var remisionnew = response.remisionnew;
+                                    // Iterar sobre los datos y agregar filas a la tabla
+                                    $.each(remisionnew, function (index, data) {
+                                        console.log(remisionnew)
+                                        var row = '<tr>';
+                                        row += '<td>' + data[0] + '</td>';
+                                        row += '<td>' + data[1] + '</td>';
+                                        row += '<td>' + data[2] + '</td>';
+                                        row += '<td>' + data[3] + '</td>';
+                                        row += '<td>' + data[4] + '</td>';
+                                        row += '<td>' + data[5] + '</td>';
+                                        row += '<td>' + data[6] + '</td>';
+                                        row += '<td>' + data[7] + '</td>';
+                                        row += '<td>' + data[8] + '</td>';
+                                        row += '<td>' + data[9] + '</td>';
+                                        row += '<td>' + data[10] + '</td>';
+                                        row += '<td>' + data[11] + '</td>';
+                                        row += '<td>' + data[12] + '</td>';
+                                        row += '<td>' + data[13] + '</td>';
+                                        row += '</tr>';
+                                        $('#tabla_remisionnew tbody').append(row);
+                                    });
+                                    // Mostrar la tabla después de agregar los datos
+                                    $('#remisionnew_table').show();
+                                    // Inicializar el plugin DataTable en la tabla actualizada
+                                    $('#tabla_remisionnew').DataTable();
+                                } else {
+                                    console.error('Error: No se recibieron datos válidos desde el servidor');
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error en la solicitud AJAX:', error);
+                            }
+                        });
+                    });
+                });
+                $("#export-excel").click(function () {
+                    // Obtener las fechas seleccionadas
+                    var startDate = $("#fecha_inicio").val();
+                    var endDate = $("#fecha_fin").val();
+
+                    // Redireccionar al usuario a la vista export_excel con las fechas como parámetros
+                    window.location.href = '/generar_excel/?start_date=' + startDate + '&end_date=' + endDate;
+                });
+                $(document).ready(function () {
+                    $('#generatePdfBtn').click(function () {
+                        var consecutivoCercafe = $('#consecutivoCercafe').val();
+                        console.log(consecutivoCercafe)
+                        window.location.href = '/generar_pdf/?consecutivoCercafe=' + consecutivoCercafe;
+                    });
+                });
+            </script>
+
+
+
+            <!-- script para llamar los html en el contenido -->
+            <script src="{% static 'custom.js' %}"></script>
+            {% endblock %}
+
+</body>
+
+</html>

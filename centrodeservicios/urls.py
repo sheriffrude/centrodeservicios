@@ -109,6 +109,7 @@ urlpatterns = [
     path('export-pdf/', views.export_pdf, name='export-pdf'),
     path('save-changes/', views.save_changes, name='save_changes'),
     path('generate_excel_report/', views.generate_excel_report, name='generate_excel_report'),
+    path('granjas/', views.granjas, name='granjas'),
     path('grupos/', views.grupos_asociados, name='grupos_asociados'),
     path('tabla/', views.tablarepclient, name='tablarepclient'),
     path('frigorificos/', views.frigorificos, name='frigorificos'),
@@ -129,6 +130,7 @@ urlpatterns = [
     path('repadminfinan/', views.repadminfinan, name='repadminfinan'),
     path('repgestionhumana/', views.repgestionhumana, name='repgestionhumana'),
     path('repremision/', views.repremision, name='repremision'),
+    path('disponiblilidad/', views.disponiblilidad, name='disponiblilidad'),
     path('generar_pdf/', views.generar_pdf, name='generar_pdf'),
     path('generar_excel/', views.generar_excel, name='generar_excel'),
 

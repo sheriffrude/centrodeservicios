@@ -2155,6 +2155,12 @@ def grupos_asociados(request):
         print(grupos_asociados)  
     return grupos_asociados
 
+def granjas(request):
+    with connections['dhc'].cursor() as cursor:
+        cursor.execute('''SELECT GRANJAS FROM dhc.granjas''')
+        granjas = [row[0] for row in cursor.fetchall()]
+        print(granjas)  
+    return granjas
 
 
 #---------------- TABLAS DE REPORTES G COMERCIAL------------------------------------------
@@ -2466,7 +2472,17 @@ def repremision(request):
         # Si no se proporciona un consecutivo, simplemente renderiza la plantilla HTML
         return render(request, 'remision.html')
 
-
+@never_cache
+@login_required
+def disponiblilidad(request):
+    consecutivo_cercafe = request.GET.get('consecutivoCercafe', None)
+    if consecutivo_cercafe:
+        remisionnew = tablaremisionnew(consecutivo_cercafe)
+        print(consecutivo_cercafe)
+        return JsonResponse({'remisionnew': remisionnew})
+    else:
+        # Si no se proporciona un consecutivo, simplemente renderiza la plantilla HTML
+        return render(request, 'disponible.html', {'granjas': granjas})
 
 #----- generar tabla de remisiones solo visualizacion de  informacion
 def tablaremisionnew(consecutivo_cercafe):
