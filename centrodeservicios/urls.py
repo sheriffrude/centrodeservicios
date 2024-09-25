@@ -131,6 +131,7 @@ urlpatterns = [
     path('repgestionhumana/', views.repgestionhumana, name='repgestionhumana'),
     path('repremision/', views.repremision, name='repremision'),
     path('disponiblilidad/', views.disponiblilidad, name='disponiblilidad'),
+    path('guardar_disponibilidad/', views.guardar_disponibilidad, name='guardar_disponibilidad'),
     path('generar_pdf/', views.generar_pdf, name='generar_pdf'),
     path('generar_excel/', views.generar_excel, name='generar_excel'),
 

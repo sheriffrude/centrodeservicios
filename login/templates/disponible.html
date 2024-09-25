@@ -97,16 +97,99 @@
                 <h1>Disponibilidad</h1>
             </section>
             {% endblock %}{% endblock %}
-            <form method="POST" action="https://intranet.cercafe.com/intranet/public/admin/graficasforms" accept-charset="UTF-8" class="form-horizontal" id="dispo">
+            <form method="POST" action="{% url 'guardar_disponibilidad' %}" accept-charset="UTF-8" class="form-horizontal" id="dispo">
+                {% csrf_token %}
                 <div class="form-group">
-                    
                     <label for="granja" class="col-lg-4 control-label">Granja: </label>
                     <div class="col-lg-4">
-                       
-                        <select name="granjas1" class="form-control" required="" id="granjas1">
-                            {% for granja in granjas %}
-                            <option value="{{ granja }}">{{ granja }}</option>
-                            {% endfor %}
+                        <select name="granja" class="form-control select2-hidden-accessible" required id="granjas" tabindex="-1" aria-hidden="true">
+                            <option value="" disabled selected>Seleccione una granja</option>
+                            <option value="1">La Fabiola</option>
+                            <option value="2">Campeon</option>
+                            <option value="3">La Cecilia</option>
+                            <option value="4">Los Arrastres</option>
+                            <option value="5">El PorFin</option>
+                            <option value="6">Salamanca</option>
+                            <option value="7">Bosque</option>
+                            <option value="8">Lago</option>
+                            <option value="9">Chambacu</option>
+                            <option value="10">Buenos Aires Cer</option>
+                            <option value="11">El Faro</option>
+                            <option value="12">Corcega</option>
+                            <option value="13">Versalles</option>
+                            <option value="14">San Antonio</option>
+                            <option value="15">Pontevedra</option>
+                            <option value="16">San Miguel</option>
+                            <option value="17">Cortijo</option>
+                            <option value="18">Alabama</option>
+                            <option value="19">Sierra Morena</option>
+                            <option value="20">Don Benito</option>
+                            <option value="21">La Selva</option>
+                            <option value="22">El Oasis</option>
+                            <option value="23">Buenos Aires GAM</option>
+                            <option value="24">La Virtud</option>
+                            <option value="25">El Placer</option>
+                            <option value="26">Pitingo</option>
+                            <option value="27">El Trebol</option>
+                            <option value="28">Genetica</option>
+                            <option value="29">G_PRUEBA</option>
+                            <option value="30">CIA</option>
+                            <option value="31">La Meseta</option>
+                            <option value="35">El Manzano</option>
+                            <option value="36">La Mongolia</option>
+                            <option value="37">El Retiro</option>
+                            <option value="38">El Recreo</option>
+                            <option value="39">Agropecuaria Iberoandina</option>
+                            <option value="43">La Siberita</option>
+                            <option value="44">La Palma</option>
+                            <option value="45">Fatima</option>
+                            <option value="46">Corcega CRIA</option>
+                            <option value="47">Agrocerdos-Versalles</option>
+                            <option value="48">Jazmín</option>
+                            <option value="54">La estrella</option>
+                            <option value="55">Agroversalles - La Estrella</option>
+                            <option value="56">G.A. SANJOSE S.A.</option>
+                            <option value="57">Megacerdos</option>
+                            <option value="58">Corcega WTF</option>
+                            <option value="59">Porcilandia Buenos Aires </option>
+                            <option value="60">San Luis</option>
+                            <option value="61">Ciberita</option>
+                            <option value="62">Praga</option>
+                            <option value="63">Milonga</option>
+                            <option value="64">AURORA</option>
+                            <option value="65">No usar - Crecerdos</option>
+                            <option value="66">El Estero</option>
+                            <option value="67">San Luis Ceba</option>
+                            <option value="68"></option>
+                            <option value="69">Buenos Aires - El Establo</option>
+                            <option value="70">San Jose</option>
+                            <option value="71">Camiones</option>
+                            <option value="72">Miraflores</option>
+                            <option value="73">Los alamos</option>
+                            <option value="74">g_prueba2</option>
+                            <option value="75">Los Mellos</option>
+                            <option value="76">El Triunfo</option>
+                            <option value="77">Topigenetica-cia</option>
+                            <option value="78">Corcega WTF2</option>
+                            <option value="79">Agroversalles - Llanadas</option>
+                            <option value="80">Agro Jabar Porfin</option>
+                            <option value="81">Agro Jabar La Cecilia</option>
+                            <option value="82">no usar</option>
+                            <option value="83">Fatima HBM</option>
+                            <option value="84">Yerbabuena- Italcol</option>
+                            <option value="85">Buenos Aires - Italcol</option>
+                            <option value="86">El Ruby</option>
+                            <option value="87">La Maravilla</option>
+                            <option value="88">Guaymaral</option>
+                            <option value="89">CRECERDOS MR</option>
+                            <option value="90">PROCERDOS MR</option>
+                            <option value="91">La Meseta - Cerdos del Otun </option>
+                            <option value="92">La Ciberita - Cerdos del Otun</option>
+                            <option value="93">La Cima - Cerdos Del Otun</option>
+                            <option value="94">San Luis Ceba - Cerdos del Otun</option>
+                            <option value="95">Praga Ceba - Cerdos del Otun</option>
+                            <option value="96">Fatima - Cerdos del Otun</option>
+                            <option value="97">Topigenetica - Don Benito</option>
                         </select>
                     </div>
                 </div>
@@ -179,7 +262,7 @@
 
 
             <!-- Pie de página -->
-            <!-- Agrega aquí el código para el pie de página si es necesario -->
+        
 
 
 
@@ -190,74 +273,15 @@
             <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
             <script>
-
-                $(document).ready(function () {
-                    $('#consultaForm').submit(function (event) {
-                        event.preventDefault();
-
-                        var consecutivoCercafe = $('#consecutivoCercafe').val(); // Obtener el valor del input
-                        $.ajax({
-                            type: 'GET',
-                            url: '{% url "repremision" %}',
-                            data: { consecutivoCercafe: consecutivoCercafe },
-                            dataType: 'json', // Especificar que esperamos JSON como respuesta
-                            success: function (response) {
-                                // Limpiar la tabla antes de agregar nuevas filas
-                                $('#tabla_remisionnew tbody').empty();
-
-                                // Verificar si la respuesta contiene los datos de la tabla
-                                if ('remisionnew' in response) {
-                                    var remisionnew = response.remisionnew;
-                                    // Iterar sobre los datos y agregar filas a la tabla
-                                    $.each(remisionnew, function (index, data) {
-                                        console.log(remisionnew)
-                                        var row = '<tr>';
-                                        row += '<td>' + data[0] + '</td>';
-                                        row += '<td>' + data[1] + '</td>';
-                                        row += '<td>' + data[2] + '</td>';
-                                        row += '<td>' + data[3] + '</td>';
-                                        row += '<td>' + data[4] + '</td>';
-                                        row += '<td>' + data[5] + '</td>';
-                                        row += '<td>' + data[6] + '</td>';
-                                        row += '<td>' + data[7] + '</td>';
-                                        row += '<td>' + data[8] + '</td>';
-                                        row += '<td>' + data[9] + '</td>';
-                                        row += '<td>' + data[10] + '</td>';
-                                        row += '<td>' + data[11] + '</td>';
-                                        row += '<td>' + data[12] + '</td>';
-                                        row += '<td>' + data[13] + '</td>';
-                                        row += '</tr>';
-                                        $('#tabla_remisionnew tbody').append(row);
-                                    });
-                                    // Mostrar la tabla después de agregar los datos
-                                    $('#remisionnew_table').show();
-                                    // Inicializar el plugin DataTable en la tabla actualizada
-                                    $('#tabla_remisionnew').DataTable();
-                                } else {
-                                    console.error('Error: No se recibieron datos válidos desde el servidor');
-                                }
-                            },
-                            error: function (xhr, status, error) {
-                                console.error('Error en la solicitud AJAX:', error);
-                            }
-                        });
-                    });
+                document.getElementById('dispo').addEventListener('submit', function(event) {
+                    const granjaSelect = document.getElementById('granjas');
+                    if (!granjaSelect.value) {
+                        alert("Por favor seleccione una granja.");
+                        event.preventDefault(); // Evitar que el formulario se envíe
+                    }
                 });
-                $("#export-excel").click(function () {
-                    // Obtener las fechas seleccionadas
-                    var startDate = $("#fecha_inicio").val();
-                    var endDate = $("#fecha_fin").val();
 
-                    // Redireccionar al usuario a la vista export_excel con las fechas como parámetros
-                    window.location.href = '/generar_excel/?start_date=' + startDate + '&end_date=' + endDate;
-                });
-                $(document).ready(function () {
-                    $('#generatePdfBtn').click(function () {
-                        var consecutivoCercafe = $('#consecutivoCercafe').val();
-                        console.log(consecutivoCercafe)
-                        window.location.href = '/generar_pdf/?consecutivoCercafe=' + consecutivoCercafe;
-                    });
-                });
+                
             </script>
 
 

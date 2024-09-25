@@ -2483,6 +2483,42 @@ def disponiblilidad(request):
     else:
         # Si no se proporciona un consecutivo, simplemente renderiza la plantilla HTML
         return render(request, 'disponible.html', {'granjas': granjas})
+def guardar_disponibilidad(request):
+    if request.method == 'POST':
+        # Obtén los datos del formulario
+        granja = request.POST.get('granja')
+        
+        fecha_disponibilidad = request.POST.get('fecha_disponibilidad')
+        caracteristica = request.POST.get('caracteristica')
+        genero = request.POST.get('genero')
+        disponibilidad_cantidad = request.POST.get('disponibilidad_cantidad')
+        disponibilidad_restante = disponibilidad_cantidad
+        peso_promedio_limite_inferior = request.POST.get('peso_promedio_limite_inferior')
+        peso_promedio_limite_superior = request.POST.get('peso_promedio_limite_superior')
+        observaciones = request.POST.get('observaciones', '')
+
+        # Abre una conexión a la base de datos
+        with connections['intranetcercafe2'].cursor() as cursor:
+            # Insertar los datos en la tabla
+            cursor.execute("""
+                INSERT INTO disponiblidad_semanal 
+                (granja, fecha_disponibilidad, caracteristica, genero, disponibilidad_cantidad,disponibilidadRestante, 
+                peso_promedio_limite_inferior, peso_promedio_limite_superior, observaciones) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, [granja, fecha_disponibilidad, caracteristica, genero, disponibilidad_cantidad,disponibilidad_restante, 
+                    peso_promedio_limite_inferior, peso_promedio_limite_superior, observaciones])
+
+    
+        messages.success(request, 'Disponibilidad subida Exitosamente')
+
+        return redirect('home')
+    return render(request, '/home/')
+
+
+
+
+
+
 
 #----- generar tabla de remisiones solo visualizacion de  informacion
 def tablaremisionnew(consecutivo_cercafe):
