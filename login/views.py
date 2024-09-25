@@ -2157,10 +2157,11 @@ def grupos_asociados(request):
 
 def granjas(request):
     with connections['dhc'].cursor() as cursor:
-        cursor.execute('''SELECT GRANJAS FROM dhc.granjas''')
-        granjas = [row[0] for row in cursor.fetchall()]
-        print(granjas)  
-    return granjas
+        cursor.execute('''SELECT id, GRANJAS FROM dhc.granjas''')  
+        granjas = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]  
+    
+    return JsonResponse({'granjas': granjas})
+
 
 
 #---------------- TABLAS DE REPORTES G COMERCIAL------------------------------------------
