@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>comercial</title>
+    <title>Disponibilidad</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
@@ -119,25 +119,18 @@
                 <div class="form-group">
                     <label for="caracteristica" class="col-lg-4 control-label">Caracteristica: </label>
                     <div class="col-lg-4">
-                        <select name="caracteristica" class="form-control" required="">
-                            <option value="">Seleccione...</option>
-                            <option value="1">Comercial</option>
-                            <option value="2">Descartes</option>
-                            <option value="3">Pesados</option>
-                            <option value="4">Livianos</option>
-                            <option value="5">Materno</option>
-                            <option value="6">Colas</option>
+                        <select name="caracteristica" class="form-control select2-hidden-accessible" required id="caracteristicas" tabindex="-1" aria-hidden="true">
+                            <option value="">Selecciona una opción</option>
+                            <!-- Aquí se llenarán las opciones con AJAX -->
                         </select>
                     </div>
                 </div>
                     <div class="form-group">
                     <label for="genero" class="col-lg-4 control-label">Genero: </label>
                     <div class="col-lg-4">
-                        <select name="genero" class="form-control" required="">
-                            <option value="">Seleccione...</option>
-                            <option value="1">Macho</option>
-                            <option value="2">Hembra</option>
-                            <option value="3">Mixto</option>
+                        <select name="genero" class="form-control select2-hidden-accessible" required id="genero" tabindex="-1" aria-hidden="true">
+                            <option value="">Selecciona una opción</option>
+                            <!-- Aquí se llenarán las opciones con AJAX -->
                         </select>
                     </div>
                 </div>
@@ -200,6 +193,44 @@
                             granjas.forEach(function(granja) {
                                 // Crear opciones con el valor del ID y mostrar el nombre
                                 var option = $('<option></option>').attr('value', granja.id).text(granja.nombre);
+                                select.append(option);
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error al cargar las granjas: " + error);
+                        }
+                    });
+                });
+                $(document).ready(function() {
+                    $.ajax({
+                        url: "{% url 'caracteristicas' %}",
+                        method: "GET",
+                        success: function(response) {
+                            var caracteristicas = response.caracteristicas;
+                            var select = $('#caracteristicas');
+            
+                            caracteristicas.forEach(function(caracteristica) {
+                                // Crear opciones con el valor del ID y mostrar el nombre
+                                var option = $('<option></option>').attr('value', caracteristica.id).text(caracteristica.nombre);
+                                select.append(option);
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error al cargar las granjas: " + error);
+                        }
+                    });
+                });
+                $(document).ready(function() {
+                    $.ajax({
+                        url: "{% url 'genero' %}",
+                        method: "GET",
+                        success: function(response) {
+                            var genero = response.genero;
+                            var select = $('#genero');
+            
+                            genero.forEach(function(gener) {
+                                // Crear opciones con el valor del ID y mostrar el nombre
+                                var option = $('<option></option>').attr('value', gener.id).text(gener.nombre);
                                 select.append(option);
                             });
                         },

@@ -2146,7 +2146,7 @@ def generate_excel_report(request):
         return response  
 
 
-
+##-------------------- PARAMETROS GENERALES-----------------------
 
 def grupos_asociados(request):
     with connections['dhc'].cursor() as cursor:
@@ -2162,7 +2162,19 @@ def granjas(request):
     
     return JsonResponse({'granjas': granjas})
 
+def caracteristicas(request):
+    with connections['dhc'].cursor() as cursor:
+        cursor.execute('''SELECT id, ncaracteristica FROM dhc.p_caracteristicas''')  
+        caracteristicas = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]  
+    
+    return JsonResponse({'caracteristicas': caracteristicas})
 
+def genero(request):
+    with connections['dhc'].cursor() as cursor:
+        cursor.execute('''SELECT id, ngenero FROM dhc.p_genero''')  
+        genero = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]  
+    
+    return JsonResponse({'genero': genero})
 
 #---------------- TABLAS DE REPORTES G COMERCIAL------------------------------------------
 #---Define La Vista Rep-gestion comercial----
@@ -2488,7 +2500,6 @@ def guardar_disponibilidad(request):
     if request.method == 'POST':
         # Obtén los datos del formulario
         granja = request.POST.get('granja')
-        
         fecha_disponibilidad = request.POST.get('fecha_disponibilidad')
         caracteristica = request.POST.get('caracteristica')
         genero = request.POST.get('genero')
@@ -2499,7 +2510,7 @@ def guardar_disponibilidad(request):
         observaciones = request.POST.get('observaciones', '')
 
         # Abre una conexión a la base de datos
-        with connections['intranetcercafe2'].cursor() as cursor:
+        with connections['prodsostenible'].cursor() as cursor:
             # Insertar los datos en la tabla
             cursor.execute("""
                 INSERT INTO disponiblidad_semanal 
