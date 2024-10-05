@@ -60,41 +60,30 @@
             background-color: #c45454;
             color: #ffffff;
         }
-
         .table-responsive {
             position: relative;
-            max-height: 400px;
-            /* Cambia esto según sea necesario */
-            overflow-y: auto;
-            /* Habilita el scroll vertical */
+            max-height: 400px; /* Cambia esto según sea necesario */
+            overflow-y: auto;  /* Habilita el scroll vertical */
         }
 
         .table {
-            width: 100%;
-            /* Asegúrate de que la tabla ocupe todo el ancho */
-            border-collapse: collapse;
-            /* Colapsa los bordes */
+            width: 100%; /* Asegúrate de que la tabla ocupe todo el ancho */
+            border-collapse: collapse; /* Colapsa los bordes */
         }
 
         .thead-light {
-            position: sticky;
-            /* Hace que el encabezado sea "pegajoso" */
-            top: 0;
-            /* Fija el encabezado en la parte superior del contenedor */
-            background-color: white;
-            /* Color de fondo del encabezado */
-            z-index: 10;
-            /* Asegúrate de que el encabezado esté por encima del resto de la tabla */
+            position: sticky; /* Hace que el encabezado sea "pegajoso" */
+            top: 0; /* Fija el encabezado en la parte superior del contenedor */
+            background-color: white; /* Color de fondo del encabezado */
+            z-index: 10; /* Asegúrate de que el encabezado esté por encima del resto de la tabla */
         }
 
         .tdd {
-            text-align: center;
-            /* Alinea el texto al centro */
-            padding: 8px;
-            /* Añade padding a las celdas */
-            border-bottom: 1px solid #dee2e6;
-            /* Añade un borde inferior a las celdas */
+            text-align: center; /* Alinea el texto al centro */
+            padding: 8px; /* Añade padding a las celdas */
+            border-bottom: 1px solid #dee2e6; /* Añade un borde inferior a las celdas */
         }
+
     </style>
     {% endblock %}
 
@@ -154,7 +143,6 @@
                                                 type="hidden" value="">
                                             <input id="Fechafin" name="Fechafin" class="form-control" type="hidden"
                                                 value="">
-
                                         </form>
                                     </div>
                                 </div>
@@ -181,7 +169,10 @@
                                                     id="total_domingo">0</th>
                                                 <th class="tdd" style="text-align: center;" scope="col"
                                                     id="total_ubicados">0</th>
-
+                                                <th class="tdd" style="text-align: center;" scope="col"
+                                                    id="total_disponibles">0</th>
+                                                <th class="tdd" style="text-align: center;" scope="col"
+                                                    id="total_porUbicar">0</th>
                                                 <th class="tdd" style="text-align: center;" scope="col"></th>
                                             </tr>
                                             <tr>
@@ -193,9 +184,9 @@
                                                 <th class="tdd" style="text-align: center;" scope="col">Vi</th>
                                                 <th class="tdd" style="text-align: center;" scope="col">Sa</th>
                                                 <th class="tdd" style="text-align: center;" scope="col">Do</th>
-
+                                                <th class="tdd" style="text-align: center;" scope="col">Ubicado</th>
                                                 <th class="tdd" style="text-align: center;" scope="col">Disponible</th>
-
+                                                <th class="tdd" style="text-align: center;" scope="col">Por Ubicar</th>
                                                 <th class="tdd" style="text-align: center;" scope="col">Acción</th>
                                             </tr>
                                         </thead>
@@ -243,199 +234,145 @@
                                     <b>Solicitar</b>
                                 </button>
                             </div>
-                            <!-- Modal para solicitar cerdo -->
-                            <div class="modal fade" id="solicitarCerdoModal" tabindex="-1"
-                                aria-labelledby="solicitarCerdoLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="solicitarCerdoLabel">Solicitar Cerdo</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="row" style="margin-top: 1.8%;">
-                                                <div class="col-sm-6">
-                                                    <input class="form-control" placeholder="Selecciona la Granja"
-                                                        list="datalistGranja" id="selectGranja">
-                                                    <datalist id="datalistGranja">
-                                                        <!-- Aquí irán las opciones de granja -->
-                                                    </datalist>
-                                                </div>
+
+                            <!-- Formularios ocultos para las acciones -->
+                            <div>
+                                <form action="https://intranet.cercafe.com/comercial/public/guardarPedidoDisponibilidad"
+                                    method="POST" id="formDisponibilidad">
+                                    <input type="hidden" name="_token" value="91PogaxPggvS12sy79eDhQn5lgWVHvq4SSWIIhrC">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal para el rango de fecha -->
+                    <div class="modal fade" id="ModalRangoFecha" data-backdrop="static" data-keyboard="false"
+                        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Semana</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <form id="formRangoFecha" onsubmit="return validarFechas()">
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label for="FechaIni">Fecha Inicio:</label>
+                                                <input id="FechaIni" name="FechaIni" class="form-control" type="date"
+                                                    required="">
                                             </div>
-                                            <div style="margin-top: 1%; margin-bottom: 2%;">
-                                                <div class="table-responsive scrollSolicitudGranja">
-                                                    <table class="table align-middle" id="tablaSolicitudCerdosGranja">
-                                                        <thead>
-                                                            <tr>
-                                                                <th scope="col">Producto</th>
-                                                                <th scope="col">Cantidad</th>
-                                                                <th scope="col">Observación</th>
-                                                                <th scope="col">Frigorífico</th>
-                                                                <th scope="col">Fecha</th>
-                                                                <th scope="col">Acción</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody id="TablaSolicitudGranja">
-                                                            <!-- Aquí se llenarán las filas dinámicamente con AJAX -->
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                            <div class="col-sm-6">
+                                                <label for="FechaFin">Fecha Fin:</label>
+                                                <input id="FechaFin" name="FechaFin" class="form-control" type="date" required="">
                                             </div>
-                                        </div>
-                                        <!-- Formularios ocultos para las acciones -->
-                                        <div>
-                                            <form
-                                                action="https://intranet.cercafe.com/comercial/public/guardarPedidoDisponibilidad"
-                                                method="POST" id="formDisponibilidad">
-                                                <input type="hidden" name="_token"
-                                                    value="91PogaxPggvS12sy79eDhQn5lgWVHvq4SSWIIhrC">
-                                            </form>
+                                            
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- Modal para el rango de fecha -->
-                                <div class="modal fade" id="ModalRangoFecha" data-backdrop="static"
-                                    data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
-                                    aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="staticBackdropLabel">Semana</h5>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">×</span>
-                                                </button>
-                                            </div>
-                                            <form id="formRangoFecha" onsubmit="return validarFechas()">
-                                                <div class="modal-body">
-                                                    <div class="row">
-                                                        <div class="col-sm-6">
-                                                            <label for="FechaIni">Fecha Inicio:</label>
-                                                            <input id="FechaIni" name="FechaIni" class="form-control"
-                                                                type="date" required="">
-                                                        </div>
-                                                        <div class="col-sm-6">
-                                                            <label for="FechaFin">Fecha Fin:</label>
-                                                            <input id="FechaFin" name="FechaFin" class="form-control"
-                                                                type="date" required="">
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal"><b>Cerrar</b></button>
-                                                    <button type="submit"
-                                                        class="btn btn-primary"><b>Filtrar</b></button>
-                                                </div>
-                                            </form>
-                                        </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal"><b>Cerrar</b></button>
+                                        <button type="submit" class="btn btn-primary"><b>Filtrar</b></button>
                                     </div>
-                                </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
 
-                                {% block javascript %}
-                                {% include 'adminlte/lib/_scripts.html' %}
+                    {% block javascript %}
+                    {% include 'adminlte/lib/_scripts.html' %}
 
-                                <!-- Importación de scripts -->
-                                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                                <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+                    <!-- Importación de scripts -->
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
-                                <!-- Scripts personalizados -->
-                                <script>
-                                    $(document).ready(function () {
-                                        $('#formRangoFecha').on('submit', function (e) {
-                                            e.preventDefault();
+                    <!-- Scripts personalizados -->
+                    <script>
+                       $(document).ready(function () {
+                            $('#formRangoFecha').on('submit', function (e) {
+                                e.preventDefault();
 
-                                            let fechaInicio = $('#FechaInicio').val();
-                                            let fechaFin = $('#FechaFin').val();
+                                let fechaInicio = $('#FechaIni').val();
+                                let fechaFin = $('#FechaFin').val();
 
-                                            if (!fechaInicio || !fechaFin) {
-                                                alert('Por favor, complete ambas fechas.');
-                                                return;
+                                if (!fechaInicio || !fechaFin) {
+                                    alert('Por favor, complete ambas fechas.');
+                                    return;
+                                }
+
+                                $.ajax({
+                                    url: '/disponibilidad_semanal/',
+                                    type: 'GET',
+                                    data: {
+                                        'FechaInicio': fechaInicio,
+                                        'FechaFin': fechaFin
+                                    },
+                                    success: function (response) {
+                                        // Limpiar la tabla antes de agregar nuevos datos
+                                        $('#tablaVistaSolicitud tbody').empty();
+
+                                        response.forEach(function (item) {
+                                            // Obtener el día de la semana de la fecha de disponibilidad
+                                            const fecha = new Date(item.fecha_disponibilidad);
+                                            const dia = fecha.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+                                            let diaNombre;
+
+                                            // Asignar el nombre del día correspondiente
+                                            switch (dia) {
+                                                case 0:
+                                                    diaNombre = 'Do';
+                                                    break;
+                                                case 1:
+                                                    diaNombre = 'Lu';
+                                                    break;
+                                                case 2:
+                                                    diaNombre = 'Ma';
+                                                    break;
+                                                case 3:
+                                                    diaNombre = 'Mi';
+                                                    break;
+                                                case 4:
+                                                    diaNombre = 'Ju';
+                                                    break;
+                                                case 5:
+                                                    diaNombre = 'Vi';
+                                                    break;
+                                                case 6:
+                                                    diaNombre = 'Sa';
+                                                    break;
                                             }
 
-                                            $.ajax({
-                                                url: '/disponibilidad_semanal/',
-                                                type: 'GET',
-                                                data: {
-                                                    'FechaInicio': fechaInicio,
-                                                    'FechaFin': fechaFin
-                                                },
-                                                success: function (response) {
-                                                    // Limpiar la tabla antes de agregar nuevos datos
-                                                    $('#tablaVistaSolicitud tbody').empty();
-
-                                                    // Inicializar los totales
-                                                    const totalesPorDia = {
-                                                        'Lu': 0,
-                                                        'Ma': 0,
-                                                        'Mi': 0,
-                                                        'Ju': 0,
-                                                        'Vi': 0,
-                                                        'Sa': 0,
-                                                        'Do': 0
-                                                    };
-
-                                                    // Procesar la respuesta y llenar la tabla
-                                                    response.forEach(function (item) {
-                                                        const fecha = new Date(item.fecha_disponibilidad);
-                                                        const dia = fecha.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
-                                                        let diaNombre;
-
-                                                        // Asignar el nombre del día correspondiente
-                                                        switch (dia) {
-                                                            case 0: diaNombre = 'Do'; break;
-                                                            case 1: diaNombre = 'Lu'; break;
-                                                            case 2: diaNombre = 'Ma'; break;
-                                                            case 3: diaNombre = 'Mi'; break;
-                                                            case 4: diaNombre = 'Ju'; break;
-                                                            case 5: diaNombre = 'Vi'; break;
-                                                            case 6: diaNombre = 'Sa'; break;
-                                                        }
-
-                                                        // Sumar la disponibilidad cantidad a los totales
-                                                        totalesPorDia[diaNombre] += item.disponibilidad_cantidad;
-
-                                                        // Crear una nueva fila para la granja
-                                                        $('#tablaVistaSolicitud tbody').append(
-                                                            `<tr>
-                            <td>${item.nombre_granja}</td>  <!-- Usando el nombre de la granja -->
-                            <td>${diaNombre === 'Lu' ? item.disponibilidad_cantidad : 0}</td>
-                            <td>${diaNombre === 'Ma' ? item.disponibilidad_cantidad : 0}</td>
-                            <td>${diaNombre === 'Mi' ? item.disponibilidad_cantidad : 0}</td>
-                            <td>${diaNombre === 'Ju' ? item.disponibilidad_cantidad : 0}</td>
-                            <td>${diaNombre === 'Vi' ? item.disponibilidad_cantidad : 0}</td>
-                            <td>${diaNombre === 'Sa' ? item.disponibilidad_cantidad : 0}</td>
-                            <td>${diaNombre === 'Do' ? item.disponibilidad_cantidad : 0}</td>
-                            <td>${item.disponibilidadRestante}</td> <!-- Mostrar disponibilidadRestante aquí -->
-                            <td><button class="btn btn-danger">Eliminar</button></td>
-                        </tr>`
-                                                        );
-                                                    });
-
-                                                    // Actualizar la fila de totales en la tabla
-                                                    $('#total_lunes').text(totalesPorDia['Lu']);
-                                                    $('#total_martes').text(totalesPorDia['Ma']);
-                                                    $('#total_miercoles').text(totalesPorDia['Mi']);
-                                                    $('#total_jueves').text(totalesPorDia['Ju']);
-                                                    $('#total_viernes').text(totalesPorDia['Vi']);
-                                                    $('#total_sabado').text(totalesPorDia['Sa']);
-                                                    $('#total_domingo').text(totalesPorDia['Do']);
-                                                },
-                                                error: function (error) {
-                                                    console.log('Error:', error);
-                                                }
-                                            });
+                                            // Crear una nueva fila para la granja
+                                            $('#tablaVistaSolicitud tbody').append(
+                                                `<tr>
+                                                    <td>${item.nombre_granja}</td> 
+                                                    <td>${diaNombre === 'Lu' ? item.disponibilidad_cantidad : 0}</td>
+                                                    <td>${diaNombre === 'Ma' ? item.disponibilidad_cantidad : 0}</td>
+                                                    <td>${diaNombre === 'Mi' ? item.disponibilidad_cantidad : 0}</td>
+                                                    <td>${diaNombre === 'Ju' ? item.disponibilidad_cantidad : 0}</td>
+                                                    <td>${diaNombre === 'Vi' ? item.disponibilidad_cantidad : 0}</td>
+                                                    <td>${diaNombre === 'Sa' ? item.disponibilidad_cantidad : 0}</td>
+                                                    <td>${diaNombre === 'Do' ? item.disponibilidad_cantidad : 0}</td>
+                                                    <td>${0}</td>
+                                                    <td>${item.disponibilidadRestante}</td> 
+                                                    <td>${0}</td> 
+                                                    <td><button class="btn btn-danger">Eliminar</button></td>
+                                                </tr>`
+                                            );
                                         });
-                                    });
+                                    },
+                                    error: function (error) {
+                                        console.log('Error:', error);
+                                    }
+                                });
+                            });
+                        });
+                    </script>
 
-                                </script>
-
-                                {% endblock %}
+                    {% endblock %}
 </body>
 
 </html>
