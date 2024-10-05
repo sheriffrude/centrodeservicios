@@ -243,6 +243,10 @@ CELERY_BEAT_SCHEDULE = {
     "scheduled_task2": {
         "task": "login.tasks.ejecutar_script2",
         "schedule": 15.0,
+    },
+    "scheduled_task3": {
+        "task": "login.tasks.ejecutar_script3",
+        "schedule": 15.0,
     }
 }
 
