@@ -2485,17 +2485,17 @@ def repremision(request):
         # Si no se proporciona un consecutivo, simplemente renderiza la plantilla HTML
         return render(request, 'remision.html')
 
+
 @never_cache
 @login_required
 def disponiblilidad(request):
-    consecutivo_cercafe = request.GET.get('consecutivoCercafe', None)
-    if consecutivo_cercafe:
-        remisionnew = tablaremisionnew(consecutivo_cercafe)
-        print(consecutivo_cercafe)
-        return JsonResponse({'remisionnew': remisionnew})
-    else:
-        # Si no se proporciona un consecutivo, simplemente renderiza la plantilla HTML
-        return render(request, 'disponible.html', {'granjas': granjas})
+    return render(request, 'disponible.html', {'granjas': granjas})
+@never_cache
+@login_required
+def pedido_granja(request):
+    return render(request, 'pedido_granja.html', {'granjas': granjas})
+    
+
 def guardar_disponibilidad(request):
     if request.method == 'POST':
         # Obtén los datos del formulario
@@ -2525,6 +2525,64 @@ def guardar_disponibilidad(request):
 
         return redirect('home')
     return render(request, '/home/')
+
+
+
+
+
+
+
+
+def disponibilidad_semanal(request):
+    if request.method == "GET" and "FechaInicio" in request.GET and "FechaFin" in request.GET:
+        fecha_inicio = request.GET.get('FechaInicio')
+        fecha_fin = request.GET.get('FechaFin')
+
+        # Convertir las fechas de texto a formato datetime
+        fecha_inicio = datetime.datetime.strptime(fecha_inicio, '%Y-%m-%d')
+        fecha_fin = datetime.datetime.strptime(fecha_fin, '%Y-%m-%d')
+
+        with connections['prodsostenible'].cursor() as cursor:
+            cursor.execute("""
+                SELECT g.GRANJAS, ds.fecha_disponibilidad, ds.disponibilidad_cantidad, ds.disponibilidadRestante
+                FROM prodsostenible.disponiblidad_semanal ds
+                JOIN dhc.granjas g ON ds.granja = g.ID
+                WHERE ds.fecha_disponibilidad BETWEEN %s AND %s
+            """, [fecha_inicio, fecha_fin])
+            rows = cursor.fetchall()
+
+            # Estructurar los datos para la tabla
+            data = []
+            for row in rows:
+                data.append({
+                    'nombre_granja': row[0],  # Ahora usamos el nombre de la granja desde GRANJAS
+                    'fecha_disponibilidad': row[1],  # Esta sigue siendo una cadena
+                    'disponibilidad_cantidad': row[2],
+                    'disponibilidadRestante': row[3],  # Agregar disponibilidadRestante aquí
+                })
+
+            return JsonResponse(data, safe=False)
+
+    return render(request, 'pedido_granja.html')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -234,15 +234,15 @@ friday = (5 - today) % 7
 
 
 
-horario_ejecucion = crontab(hour=9, minute=00)
+
 CELERY_BEAT_SCHEDULE = {
     "scheduled_task": {
         "task": "login.tasks.ejecutar_script",
-        "schedule": horario_ejecucion,
+        "schedule": 10.0,
     },
     "scheduled_task2": {
         "task": "login.tasks.ejecutar_script2",
-        "schedule": 50.0,
+        "schedule": 15.0,
     }
 }
 

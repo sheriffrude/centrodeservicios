@@ -13,6 +13,7 @@ from django.conf import settings
 
 @shared_task
 def ejecutar_script():
+    print("La tarea de prueba se ha ejecutado correctamente.")
     main()
 
 @shared_task

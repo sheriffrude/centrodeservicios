@@ -1,0 +1,441 @@
+{% load adminlte_helpers i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disponibilidad</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+
+    {% block meta %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% endblock %}
+
+    {% block stylesheets %}
+    {% include 'adminlte/lib/_styles.html' %}
+    <style type="text/css">
+        .btn-circle.btn-xl {
+            width: 130px;
+            height: 100px;
+            padding: 13px 18px;
+            border-radius: 100px;
+            font-size: 15px;
+            text-align: center;
+            margin-left: 50px;
+        }
+
+        .btn-repor {
+            background-color: #651410;
+            color: aliceblue;
+        }
+
+        .btn-pdf {
+            margin-bottom: 17px;
+        }
+
+        .btn-export-excel {
+            width: 167px;
+            height: 46px;
+            margin-bottom: 50px;
+            margin-inline: 10px;
+            margin-top: 23px;
+        }
+
+        .row {
+            margin-left: 19.5px !important;
+        }
+
+        .h3,
+        h3 {
+            margin-left: 8px !important;
+        }
+
+        .btn-danger1 {
+            background-color: #c45454;
+            color: #ffffff;
+        }
+
+        .table-responsive {
+            position: relative;
+            max-height: 400px;
+            /* Cambia esto según sea necesario */
+            overflow-y: auto;
+            /* Habilita el scroll vertical */
+        }
+
+        .table {
+            width: 100%;
+            /* Asegúrate de que la tabla ocupe todo el ancho */
+            border-collapse: collapse;
+            /* Colapsa los bordes */
+        }
+
+        .thead-light {
+            position: sticky;
+            /* Hace que el encabezado sea "pegajoso" */
+            top: 0;
+            /* Fija el encabezado en la parte superior del contenedor */
+            background-color: white;
+            /* Color de fondo del encabezado */
+            z-index: 10;
+            /* Asegúrate de que el encabezado esté por encima del resto de la tabla */
+        }
+
+        .tdd {
+            text-align: center;
+            /* Alinea el texto al centro */
+            padding: 8px;
+            /* Añade padding a las celdas */
+            border-bottom: 1px solid #dee2e6;
+            /* Añade un borde inferior a las celdas */
+        }
+    </style>
+    {% endblock %}
+
+    {% block extra_head %}
+
+    {% endblock %}
+</head>
+
+<body class="hold-transition sidebar-mini {% block body_class %}{% block bodyclass %}{% endblock %}{% endblock %}">
+    <div class="wrapper">
+        {% block nav_header %}
+        {% include '_main_header.html' %}
+        {% endblock %}
+
+        {% block nav_sidebar %}
+        {% include '_main_sidebar.html' %}
+        {% endblock %}
+
+        {% block content_wrapper %}
+        <div class="content-wrapper">
+            {% block content_header %}
+            <section class="content-header">
+                {% block no_heading %}
+                <h1>
+                    {% block page_name %}{% endblock %}
+                    <div class="header-actions">
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                    {% block no_description %}
+                    <small>{% block page_description %}{% endblock %}</small>
+                    {% endblock %}
+                </h1>
+                {% block breadcrumbs %}
+                {% endblock %}
+                {% endblock no_heading %}
+                <h1>Disponibilidad</h1>
+            </section>
+
+            {% endblock %}{% endblock %}
+            <div class="container-fluid">
+                <div class="">
+                    <div class="loader" style="display: none;"></div>
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6" style="border-right: 1px solid #ddd;">
+                                <div class="row" style="margin-top: 1.8%;">
+                                    <div class="col-sm-3">
+                                        <button type="button" class="btn btn-success" style="width: 100%;"
+                                            data-toggle="modal" data-target="#ModalRangoFecha">
+                                            <b>Semana</b>
+                                        </button>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <form class="form-inline">
+                                            <input id="FechaInicio" name="FechaInicio" class="form-control"
+                                                type="hidden" value="">
+                                            <input id="Fechafin" name="Fechafin" class="form-control" type="hidden"
+                                                value="">
+
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                    <table class="table align-middle" id="tablaVistaSolicitud">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th class="tdd" style="text-align: center;" scope="col">TOTAL POR DIA
+                                                </th>
+                                                <input type="hidden" id="total_antes" value="0">
+                                                <th class="tdd" style="text-align: center;" scope="col"
+                                                    id="total_lunes">0</th>
+                                                <th class="tdd" style="text-align: center;" scope="col"
+                                                    id="total_martes">0</th>
+                                                <th class="tdd" style="text-align: center;" scope="col"
+                                                    id="total_miercoles">0</th>
+                                                <th class="tdd" style="text-align: center;" scope="col"
+                                                    id="total_jueves">0</th>
+                                                <th class="tdd" style="text-align: center;" scope="col"
+                                                    id="total_viernes">0</th>
+                                                <th class="tdd" style="text-align: center;" scope="col"
+                                                    id="total_sabado">0</th>
+                                                <th class="tdd" style="text-align: center;" scope="col"
+                                                    id="total_domingo">0</th>
+                                                <th class="tdd" style="text-align: center;" scope="col"
+                                                    id="total_ubicados">0</th>
+
+                                                <th class="tdd" style="text-align: center;" scope="col"></th>
+                                            </tr>
+                                            <tr>
+                                                <th class="tdd" style="text-align: center;" scope="col">Granja</th>
+                                                <th class="tdd" style="text-align: center;" scope="col">Lu</th>
+                                                <th class="tdd" style="text-align: center;" scope="col">Ma</th>
+                                                <th class="tdd" style="text-align: center;" scope="col">Mi</th>
+                                                <th class="tdd" style="text-align: center;" scope="col">Ju</th>
+                                                <th class="tdd" style="text-align: center;" scope="col">Vi</th>
+                                                <th class="tdd" style="text-align: center;" scope="col">Sa</th>
+                                                <th class="tdd" style="text-align: center;" scope="col">Do</th>
+
+                                                <th class="tdd" style="text-align: center;" scope="col">Disponible</th>
+
+                                                <th class="tdd" style="text-align: center;" scope="col">Acción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Aquí se llenarán las filas dinámicamente con AJAX -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="row" style="margin-top: 1.8%; margin-bottom: 2%;">
+                                    <div class="col-sm-6">
+                                        <select name="granja" class="form-control select2-hidden-accessible" required
+                                            id="granjas" tabindex="-1" aria-hidden="true">
+                                            <option value="">Selecciona una opción</option>
+                                            <!-- Aquí se llenarán las opciones con AJAX -->
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <button type="button" id="bt_add" class="btn btn-success" style="float: right">
+                                            <b>Solicitar Cerdo</b>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 1%; margin-bottom: 2%;">
+                                    <div class="table-responsive scrollSolicitudGranja">
+                                        <table class="table align-middle" id="tablaSolicitudCerdosGranja">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Producto</th>
+                                                    <th scope="col">Cantidad</th>
+                                                    <th scope="col">Observacion</th>
+                                                    <th scope="col">Frigorífico</th>
+                                                    <th scope="col">Fecha</th>
+                                                    <th scope="col">Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="TablaSolicitudGranja"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <button id="solicitarPedido" class="btn btn-warning"
+                                    style="float: right; margin-top: 2%; margin-bottom: 7%;">
+                                    <b>Solicitar</b>
+                                </button>
+                            </div>
+                            <!-- Modal para solicitar cerdo -->
+                            <div class="modal fade" id="solicitarCerdoModal" tabindex="-1"
+                                aria-labelledby="solicitarCerdoLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="solicitarCerdoLabel">Solicitar Cerdo</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row" style="margin-top: 1.8%;">
+                                                <div class="col-sm-6">
+                                                    <input class="form-control" placeholder="Selecciona la Granja"
+                                                        list="datalistGranja" id="selectGranja">
+                                                    <datalist id="datalistGranja">
+                                                        <!-- Aquí irán las opciones de granja -->
+                                                    </datalist>
+                                                </div>
+                                            </div>
+                                            <div style="margin-top: 1%; margin-bottom: 2%;">
+                                                <div class="table-responsive scrollSolicitudGranja">
+                                                    <table class="table align-middle" id="tablaSolicitudCerdosGranja">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col">Producto</th>
+                                                                <th scope="col">Cantidad</th>
+                                                                <th scope="col">Observación</th>
+                                                                <th scope="col">Frigorífico</th>
+                                                                <th scope="col">Fecha</th>
+                                                                <th scope="col">Acción</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="TablaSolicitudGranja">
+                                                            <!-- Aquí se llenarán las filas dinámicamente con AJAX -->
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Formularios ocultos para las acciones -->
+                                        <div>
+                                            <form
+                                                action="https://intranet.cercafe.com/comercial/public/guardarPedidoDisponibilidad"
+                                                method="POST" id="formDisponibilidad">
+                                                <input type="hidden" name="_token"
+                                                    value="91PogaxPggvS12sy79eDhQn5lgWVHvq4SSWIIhrC">
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal para el rango de fecha -->
+                                <div class="modal fade" id="ModalRangoFecha" data-backdrop="static"
+                                    data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="staticBackdropLabel">Semana</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+                                            <form id="formRangoFecha" onsubmit="return validarFechas()">
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <label for="FechaIni">Fecha Inicio:</label>
+                                                            <input id="FechaIni" name="FechaIni" class="form-control"
+                                                                type="date" required="">
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <label for="FechaFin">Fecha Fin:</label>
+                                                            <input id="FechaFin" name="FechaFin" class="form-control"
+                                                                type="date" required="">
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal"><b>Cerrar</b></button>
+                                                    <button type="submit"
+                                                        class="btn btn-primary"><b>Filtrar</b></button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {% block javascript %}
+                                {% include 'adminlte/lib/_scripts.html' %}
+
+                                <!-- Importación de scripts -->
+                                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                                <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+                                <!-- Scripts personalizados -->
+                                <script>
+                                    $(document).ready(function () {
+                                        $('#formRangoFecha').on('submit', function (e) {
+                                            e.preventDefault();
+
+                                            let fechaInicio = $('#FechaInicio').val();
+                                            let fechaFin = $('#FechaFin').val();
+
+                                            if (!fechaInicio || !fechaFin) {
+                                                alert('Por favor, complete ambas fechas.');
+                                                return;
+                                            }
+
+                                            $.ajax({
+                                                url: '/disponibilidad_semanal/',
+                                                type: 'GET',
+                                                data: {
+                                                    'FechaInicio': fechaInicio,
+                                                    'FechaFin': fechaFin
+                                                },
+                                                success: function (response) {
+                                                    // Limpiar la tabla antes de agregar nuevos datos
+                                                    $('#tablaVistaSolicitud tbody').empty();
+
+                                                    // Inicializar los totales
+                                                    const totalesPorDia = {
+                                                        'Lu': 0,
+                                                        'Ma': 0,
+                                                        'Mi': 0,
+                                                        'Ju': 0,
+                                                        'Vi': 0,
+                                                        'Sa': 0,
+                                                        'Do': 0
+                                                    };
+
+                                                    // Procesar la respuesta y llenar la tabla
+                                                    response.forEach(function (item) {
+                                                        const fecha = new Date(item.fecha_disponibilidad);
+                                                        const dia = fecha.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+                                                        let diaNombre;
+
+                                                        // Asignar el nombre del día correspondiente
+                                                        switch (dia) {
+                                                            case 0: diaNombre = 'Do'; break;
+                                                            case 1: diaNombre = 'Lu'; break;
+                                                            case 2: diaNombre = 'Ma'; break;
+                                                            case 3: diaNombre = 'Mi'; break;
+                                                            case 4: diaNombre = 'Ju'; break;
+                                                            case 5: diaNombre = 'Vi'; break;
+                                                            case 6: diaNombre = 'Sa'; break;
+                                                        }
+
+                                                        // Sumar la disponibilidad cantidad a los totales
+                                                        totalesPorDia[diaNombre] += item.disponibilidad_cantidad;
+
+                                                        // Crear una nueva fila para la granja
+                                                        $('#tablaVistaSolicitud tbody').append(
+                                                            `<tr>
+                            <td>${item.nombre_granja}</td>  <!-- Usando el nombre de la granja -->
+                            <td>${diaNombre === 'Lu' ? item.disponibilidad_cantidad : 0}</td>
+                            <td>${diaNombre === 'Ma' ? item.disponibilidad_cantidad : 0}</td>
+                            <td>${diaNombre === 'Mi' ? item.disponibilidad_cantidad : 0}</td>
+                            <td>${diaNombre === 'Ju' ? item.disponibilidad_cantidad : 0}</td>
+                            <td>${diaNombre === 'Vi' ? item.disponibilidad_cantidad : 0}</td>
+                            <td>${diaNombre === 'Sa' ? item.disponibilidad_cantidad : 0}</td>
+                            <td>${diaNombre === 'Do' ? item.disponibilidad_cantidad : 0}</td>
+                            <td>${item.disponibilidadRestante}</td> <!-- Mostrar disponibilidadRestante aquí -->
+                            <td><button class="btn btn-danger">Eliminar</button></td>
+                        </tr>`
+                                                        );
+                                                    });
+
+                                                    // Actualizar la fila de totales en la tabla
+                                                    $('#total_lunes').text(totalesPorDia['Lu']);
+                                                    $('#total_martes').text(totalesPorDia['Ma']);
+                                                    $('#total_miercoles').text(totalesPorDia['Mi']);
+                                                    $('#total_jueves').text(totalesPorDia['Ju']);
+                                                    $('#total_viernes').text(totalesPorDia['Vi']);
+                                                    $('#total_sabado').text(totalesPorDia['Sa']);
+                                                    $('#total_domingo').text(totalesPorDia['Do']);
+                                                },
+                                                error: function (error) {
+                                                    console.log('Error:', error);
+                                                }
+                                            });
+                                        });
+                                    });
+
+                                </script>
+
+                                {% endblock %}
+</body>
+
+</html>

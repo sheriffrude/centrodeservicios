@@ -13,6 +13,7 @@ app.conf.task_routes = {
     'login.tasks.*': {'database': 'default'},
     'login.tasks.*': {'database': 'intranetcercafe2'},
     'login.tasks.*': {'database': 'frigotun'},
+    'login.tasks.*': {'database': 'data360'},
 }
 
 
