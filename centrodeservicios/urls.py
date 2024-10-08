@@ -138,6 +138,7 @@ urlpatterns = [
     path('guardar_disponibilidad/', views.guardar_disponibilidad, name='guardar_disponibilidad'),
     path('generar_pdf/', views.generar_pdf, name='generar_pdf'),
     path('generar_excel/', views.generar_excel, name='generar_excel'),
+    path('frigorificos/', views.frigorificos, name='frigorificos'),
 
 #-------------------------------API's ------------------------------------------
 #-----------------------------GENERADAS-----------------------------------------

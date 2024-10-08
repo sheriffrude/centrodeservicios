@@ -2176,6 +2176,13 @@ def genero(request):
     
     return JsonResponse({'genero': genero})
 
+def frigorificos(request):
+    with connections['dhc'].cursor() as cursor:
+        cursor.execute('''SELECT id, nombre FROM dhc.frigorificos''')  
+        frigorificos = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]  
+    
+    return JsonResponse({'frigorificos': frigorificos})
+
 #---------------- TABLAS DE REPORTES G COMERCIAL------------------------------------------
 #---Define La Vista Rep-gestion comercial----
 @never_cache
@@ -2494,7 +2501,8 @@ def disponiblilidad(request):
 @login_required
 def pedido_granja(request):
     return render(request, 'pedido_granja.html', {'granjas': granjas})
-    
+
+
 
 def guardar_disponibilidad(request):
     if request.method == 'POST':
