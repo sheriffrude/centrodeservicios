@@ -2467,7 +2467,7 @@ def tablarepsstseveridad(request):
 
 
 
-
+# --------VISTAS PEDIDO GRANJA ----------------------------------------
 
 
 
@@ -2507,6 +2507,7 @@ def pedido_granja(request):
 def guardar_disponibilidad(request):
     if request.method == 'POST':
         # Obtén los datos del formulario
+        consecutivocercafe = request.POST.get('id')
         granja = request.POST.get('granja')
         fecha_disponibilidad = request.POST.get('fecha_disponibilidad')
         caracteristica = request.POST.get('caracteristica')
@@ -2552,9 +2553,10 @@ def disponibilidad_semanal(request):
 
         with connections['prodsostenible'].cursor() as cursor:
             cursor.execute("""
-                SELECT g.GRANJAS, ds.fecha_disponibilidad, ds.disponibilidad_cantidad, ds.disponibilidadRestante
+                SELECT g.ID, g.GRANJAS, ds.id, ds.fecha_disponibilidad, ds.disponibilidad_cantidad, ds.disponibilidadRestante, di.id AS id_disponibilidad_individual, di.fechaDisponibilidad
                 FROM prodsostenible.disponiblidad_semanal ds
                 JOIN dhc.granjas g ON ds.granja = g.ID
+                LEFT JOIN prodsostenible.disponibilidadindividual di ON di.consecutivoDisponibilidad = ds.id
                 WHERE ds.fecha_disponibilidad BETWEEN %s AND %s
             """, [fecha_inicio, fecha_fin])
             rows = cursor.fetchall()
@@ -2563,17 +2565,45 @@ def disponibilidad_semanal(request):
             data = []
             for row in rows:
                 data.append({
-                    'nombre_granja': row[0],  # Ahora usamos el nombre de la granja desde GRANJAS
-                    'fecha_disponibilidad': row[1],  # Esta sigue siendo una cadena
-                    'disponibilidad_cantidad': row[2],
-                    'disponibilidadRestante': row[3],  # Agregar disponibilidadRestante aquí
+                    'granja_id': row[0],
+                    'nombre_granja': row[1],  
+                    'consecutivoDisponibilidad': row[2], 
+                    'fecha_disponibilidad': row[3],  
+                    'disponibilidad_cantidad': row[4],
+                    'disponibilidadRestante': row[5],
+                    'id_disponibilidad_individual': row[6],
+                    'fechaDisponibilidad': row[7], 
                 })
 
             return JsonResponse(data, safe=False)
 
     return render(request, 'pedido_granja.html')
+import json
+from django.http import JsonResponse
 
 
+@csrf_exempt
+def solicitar_pedido(request):
+    if request.method == 'POST':
+        data = json.loads(request.POST.get('productos'))
+        granja_id = request.POST.get('granja_id')
+        consecutivoDisponibilidad = request.POST.get('consecutivoDisponibilidad')
+        try:
+            with connections['prodsostenible'].cursor() as cursor:
+                for producto in data:
+                    cantidadCerdos = int(producto['cantidad'])
+                    frigorifico = producto['frigorifico']
+                    fechaDisponibilidad = producto['fecha']
+                    observacion = producto['observacion']
+
+                    cursor.execute("INSERT INTO disponibilidadindividual (consecutivoDisponibilidad,granja_id, cantidadCerdos, frigorifico, fechaDisponibilidad, observacion) VALUES (%s,%s, %s, %s, %s, %s)", [consecutivoDisponibilidad,granja_id, cantidadCerdos, frigorifico, fechaDisponibilidad, observacion])
+                    
+
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return JsonResponse({'success': False, 'error': 'Método no permitido'})
 
 
 

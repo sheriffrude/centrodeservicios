@@ -101,7 +101,7 @@ urlpatterns = [
     path('repoprove/', views.repoprove, name='repoprove'),
     path('repofina/', views.repofina, name='repofina'),
     
-    
+#  -----------------------------------VISTAS PARAMETROS--------------------------------------------------------------------------------   
     path('carexitosa/', views.carexitosa, name='carexitosa'),
     path('reproved/', views.reproved, name='reproved'), 
     path('repfinan/', views.repfinan, name='repfinan'),
@@ -119,7 +119,7 @@ urlpatterns = [
     path('cargar_excel_ingresoinc/', views.cargar_excel_ingresoinc, name='cargar_excel_ingresoinc'),
     path('cargar_excel_despachoinc/', views.cargar_excel_despachoinc, name='cargar_excel_despachoinc'),
     path('cargar_excel_beneficiorendimientoinc/', views.cargar_excel_beneficiorendimientoinc, name='cargar_excel_beneficiorendimientoinc'),
-    
+    path('solicitar_pedido/', views.solicitar_pedido, name='solicitar_pedido'),
 
 #--------------------------------- REPORTES------------------------------------------------
     

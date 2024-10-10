@@ -67,7 +67,7 @@ def main():
             item.get('Muertos Transporte', ''),
             item.get('Tiquete Muertos Transporte', ''),
             item.get('Muertos Reposo', ''),
-            item.get('Tiquete Muertos Transporte', ''),
+            item.get('Tiquete Muertos Reposo', ''),
             item.get('Lesionados', ''),
             item.get('Lesiones', ''),
             item.get('Tiquete Lesiones', ''),

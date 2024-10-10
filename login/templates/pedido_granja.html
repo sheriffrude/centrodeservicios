@@ -210,17 +210,18 @@
                             <div class="col-sm-6">
                                 <div class="row" style="margin-top: 1.8%; margin-bottom: 2%;">
                                     <div class="col-sm-6">
-                                        <select name="granja" class="form-control select2-hidden-accessible" required
-                                            id="granjas" tabindex="-1" aria-hidden="true">
+                                        <select id="granjas" class="form-control">
                                             <option value="">Selecciona una opción</option>
-                                            <!-- Aquí se llenarán las opciones con AJAX -->
+                                           
                                         </select>
+                                        
                                     </div>
                                     <div class="col-sm-4">
                                         <button type="button" id="bt_add" class="btn btn-success" style="float: right">
                                             <b>Solicitar Cerdo</b>
                                         </button>
                                     </div>
+                                    <input type="hidden" id="consecutivoDisponibilidad" name="consecutivoDisponibilidad" value="">
                                 </div>
 
                                 <div class="table-responsive scrollSolicitudGranja">
@@ -245,7 +246,7 @@
                                 </button>
                             </div>
 
-                            <!-- Formularios ocultos para las acciones -->
+                           
                             <div>
                                 <form action="https://intranet.cercafe.com/comercial/public/guardarPedidoDisponibilidad"
                                     method="POST" id="formDisponibilidad">
@@ -327,16 +328,27 @@
                                         // Obtener las granjas de la respuesta del servidor
                                         let granjas = response.map(function (item) {
                                             return item.nombre_granja;
+                                        console.log('granja:', granjas);
                                         });
 
                                         // Actualizar el selector de granjas
                                         $('#granjas').empty();
-                                        granjas.forEach(function (granja) {
-                                            $('#granjas').append(`<option value="${granja}">${granja}</option>`);
+                                        $('#granjas').append('<option value="">Selecciona una opción</option>');
+                                        response.forEach(function (item) {
+                                            console.log('item:', item);
+                                            $('#granjas').append(`<option value="${item.granja_id}" data-consecutivo="${item.consecutivoDisponibilidad}">${item.nombre_granja}</option>`);
+                                            
                                         });
+
+                                        $('#granjas').on('change', function () {
+                                            let consecutivoDisponibilidad = $(this).find(':selected').data('consecutivo');
+                                            console.log('Consecutivo Disponibilidad seleccionado:', consecutivoDisponibilidad);
+                                            $('#consecutivoDisponibilidad').val(consecutivoDisponibilidad);
+                                        });
+                                       
                                         response.forEach(function (item) {
                                             // Obtener el día de la semana de la fecha de disponibilidad
-                                            const fecha = new Date(item.fecha_disponibilidad);
+                                            const fecha = new Date(item.fechaDisponibilidad);
                                             const dia = fecha.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
                                             let diaNombre;
 
@@ -364,20 +376,20 @@
                                                     diaNombre = 'Sa';
                                                     break;
                                             }
-
+                                            let idDisponibilidadIndividual = item.id_disponibilidad_individual ? item.id_disponibilidad_individual : ''; 
                                             // Crear una nueva fila para la granja
                                             $('#tablaVistaSolicitud tbody').append(
                                                 `<tr>
                                                     <td>${item.nombre_granja}</td> 
-                                                    <td>${diaNombre === 'Lu' ? item.disponibilidad_cantidad : 0}</td>
-                                                    <td>${diaNombre === 'Ma' ? item.disponibilidad_cantidad : 0}</td>
-                                                    <td>${diaNombre === 'Mi' ? item.disponibilidad_cantidad : 0}</td>
-                                                    <td>${diaNombre === 'Ju' ? item.disponibilidad_cantidad : 0}</td>
-                                                    <td>${diaNombre === 'Vi' ? item.disponibilidad_cantidad : 0}</td>
-                                                    <td>${diaNombre === 'Sa' ? item.disponibilidad_cantidad : 0}</td>
-                                                    <td>${diaNombre === 'Do' ? item.disponibilidad_cantidad : 0}</td>
+                                                    <td>${diaNombre === 'Lu' ? item.disponibilidad_cantidad : 0}${diaNombre === 'Lu' && idDisponibilidadIndividual ? ' ' + idDisponibilidadIndividual + '' : ''}</td>
+                                                    <td>${diaNombre === 'Ma' ? item.disponibilidad_cantidad : 0}${diaNombre === 'Ma' && idDisponibilidadIndividual ? ' ' + idDisponibilidadIndividual + '' : ''}</td>
+                                                    <td>${diaNombre === 'Mi' ? item.disponibilidad_cantidad : 0}${diaNombre === 'Mi' && idDisponibilidadIndividual ? ' ' + idDisponibilidadIndividual + '' : ''}</td>
+                                                    <td>${diaNombre === 'Ju' ? item.disponibilidad_cantidad : 0}${diaNombre === 'Ju' && idDisponibilidadIndividual ? ' ' + idDisponibilidadIndividual + '' : ''}</td>
+                                                    <td>${diaNombre === 'Vi' ? item.disponibilidad_cantidad : 0}${diaNombre === 'Vi' && idDisponibilidadIndividual ? ' ' + idDisponibilidadIndividual + '' : ''}</td>
+                                                    <td>${diaNombre === 'Sa' ? item.disponibilidad_cantidad : 0}${diaNombre === 'Sa' && idDisponibilidadIndividual ? ' ' + idDisponibilidadIndividual + '' : ''}</td>
+                                                    <td>${diaNombre === 'Do' ? item.disponibilidad_cantidad : 0}${diaNombre === 'Do' && idDisponibilidadIndividual ? ' ' + idDisponibilidadIndividual + '' : ''}</td>
                                                     <td>${0}</td>
-                                                    <td>${item.disponibilidadRestante}</td> 
+                                                    <td>${item.disponibilidad_cantidad}</td> 
                                                     <td>${item.disponibilidadRestante}</td> 
                                                     <td><button class="btn btn-info">Editar</button></td>
                                                 </tr>`
@@ -399,7 +411,16 @@
                                     var frigorificos = response.frigorificos;
                                     $('#bt_add').on('click', function () {
                                         // Obtener la granja seleccionada
-                                        let granja = $('#granjas').val();
+                                        let granjas = $('#granjas').val();
+                                        console.log('granja aa:', granjas);
+                                        let consecutivoDisponibilidad = $('#consecutivoDisponibilidad').val();
+                                        console.log('consecutivoDisponibilidad:', consecutivoDisponibilidad);
+
+
+                                        if (!granjas) {
+                                            alert('Por favor, selecciona una granja.');
+                                            return;
+                                        }
 
                                         // Agregar una nueva fila a la tabla
                                         $('#TablaSolicitudGranja').append(`
@@ -440,6 +461,67 @@
                             function eliminarFila(elemento) {
                                 $(elemento).closest('tR').remove();
                             }
+                        });
+                        $(document).ready(function () {
+                            $('#solicitarPedido').on('click', function () {
+                                let granjas = $('#granjas').val();
+                                console.log('granja:', granjas);
+                                let consecutivoDisponibilidad = $('#consecutivoDisponibilidad').val();
+                                console.log('consecutivoDisponibilidad:', consecutivoDisponibilidad);
+                                let productos = [];
+                                $('#TablaSolicitudGranja tr').each(function () {
+                                    let producto = $(this).find('input[name="producto[]"]').val();
+                                    let cantidad = parseInt($(this).find('input[name="cantidad[]"]').val());
+                                    let observacion = $(this).find('input[name="observacion[]"]').val();
+                                    let frigorifico = $(this).find('select[name="frigorifico[]"]').val();
+                                    let fecha = $(this).find('input[name="fecha[]"]').val();
+
+                                    // Asegúrate de que todos los valores sean válidos antes de agregarlos
+                                    if (!isNaN(cantidad) && frigorifico && fecha) {
+                                        productos.push({ producto, cantidad, observacion, frigorifico, fecha });
+                                    }
+                                });
+
+                                if (!granjas || productos.length === 0) {
+                                    alert('Por favor, selecciona una granja');
+                                    return;
+                                }
+
+                                // Enviar datos al servidor
+                                $.ajax({
+                                    url: '/solicitar_pedido/',
+                                    type: 'POST',
+                                    data: {
+                                        'granja_id': granjas,
+                                        'consecutivoDisponibilidad': consecutivoDisponibilidad,
+                                        'productos': JSON.stringify(productos),
+                                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                                    },
+                                    success: function (response) {
+                                        if (response.success) {
+                                            alert('Pedido realizado con éxito');
+                                            location.reload();
+                                        } else {
+                                            alert('Error al realizar el pedido: ' + response.error);
+                                        }
+                                    },
+                                    error: function (error) {
+                                        console.log('Error:', error);
+                                    }
+                                });
+                            });
+                        
+
+                        function actualizarDisponibilidad(nuevaDisponibilidad) {
+                            // Actualiza la tabla de disponibilidad con los nuevos valores
+                            $('#tablaVistaSolicitud tbody').find('tr').each(function () {
+                                let granja = $(this).find('td:first').text();
+                                if (granja in nuevaDisponibilidad) {
+                                    // Actualizar las celdas correspondientes
+                                    $(this).find('td').eq(9).text(nuevaDisponibilidad[granja].disponibilidadRestante);
+                                }
+                            });
+                        }
                         });
                     </script>
 
