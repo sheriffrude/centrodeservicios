@@ -96,6 +96,10 @@ def gestionhumana(request):
 def gestiontecnica(request):
    return render(request, 'gestiontecnica.html')
 
+@never_cache
+@login_required
+def despachofrigos(request):
+   return render(request, 'despacho_frigos.html')
 #---Define La Vistas del modulo Gestion ALIMENTO BALANCEADO-----
 
 @never_cache
@@ -2607,10 +2611,78 @@ def solicitar_pedido(request):
 
 
 
+@never_cache
+@login_required
+def repdespacho(request):
+    despachos = tabladespachos(request)
+   
+    return render(request, 'despacho_frigos.html', {'despachos':despachos})
+
+def tabladespachos(request):
+    try:
+        with connections['prodsostenible'].cursor() as cursor:
+            cursor.execute('''
+                SELECT 
+                    di.id, 
+                    g.granjas AS granja_nombre, 
+                    di.cantidadCerdos, 
+                    f.nombre AS frigorifico_nombre, 
+                    di.fechaDisponibilidad, 
+                    di.observacion 
+                FROM 
+                    prodsostenible.disponibilidadindividual di
+                LEFT JOIN 
+                    dhc.granjas g ON di.Granja_id = g.id
+                LEFT JOIN 
+                    dhc.frigorificos f ON di.frigorifico = f.id
+                ORDER BY 
+                    di.id DESC
+            ''')
+            despachos = cursor.fetchall()
+          
+        return despachos
+    except Exception as e:
+        print(f"Error en la consulta: {e}")
+        return []
 
 
+@login_required
+def registrar_despacho(request):
+    if request.method == 'POST':
+        # Capturar los datos enviados desde el formulario
+        consecutivo_despacho = request.POST.get('consecutivoDespacho')
+        lote = request.POST.get('lote')
+        cerdos_despachados = request.POST.get('cerdosDespachados')
+        frigorifico = request.POST.get('frigorifico')
+        fecha_entrega = request.POST.get('fechaEntrega')
+        peso_total = request.POST.get('pesoTotal')
+        placa = request.POST.get('placa')
+      
+        regic = request.POST.get('regic', '')
+        regica = request.POST.get('regica', '')
+        retiro_alimento = request.POST.get('retiroalimento', '')
+        conductor = request.POST.get('conductor', '')
+        edad_prom = request.POST.get('edadprom', '')
+        
+        # Insertar los datos en la tabla despachoLotesGranjas
+        try:
+            with connections['prodsostenible'].cursor() as cursor:
+                cursor.execute('''
+                    INSERT INTO despachoLotesGranjas 
+                    (ConsecutivoDespacho, idSolicitud, granja, lote, cerdosDespachados, frigorifico, fechaEntrega, 
+                    pesoTotal, placa, regic, regica, retiroalimento, conductor, edadprom, created_at, updated_at) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+                ''', [
+                    consecutivo_despacho, None, None, lote, cerdos_despachados, frigorifico, fecha_entrega, 
+                    peso_total, placa, regic, regica, retiro_alimento, conductor, edad_prom
+                ])
+            return redirect('nombre_vista_exito')  # Redirige a una vista de éxito
+        except Exception as e:
+            print(f"Error al insertar en la base de datos: {e}")
+            return HttpResponse("Error al insertar en la base de datos")
 
-
+    # Si no es POST, simplemente mostrar el formulario nuevamente (aunque esta parte es redundante si solo usas el modal)
+    return render(request, 'nombre_plantilla.html')
 
 
 

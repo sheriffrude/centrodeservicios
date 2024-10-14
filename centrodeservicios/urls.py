@@ -60,7 +60,7 @@ urlpatterns = [
     path('cargar_excel_pesofinconver/', views.cargar_excel_pesofinconver, name='cargar_excel_pesofinconver'),
     path('cargar_excel_proyhem/', views.cargar_excel_proyhem, name='cargar_excel_proyhem'),
     path('cargar_excel_tecnicacia/', views.cargar_excel_tecnicacia, name='cargar_excel_tecnicacia'),
-    
+    path('despachofrigos/', views.despachofrigos, name='despachofrigos'),
     #------------------------gestion Alimento Balanceado ------------------------------------------------
     path('gestionalbal/', views.gestionalbal, name='gestionalbal'),
     
@@ -123,7 +123,7 @@ urlpatterns = [
 
 #--------------------------------- REPORTES------------------------------------------------
     
-    
+    path('repdespacho/', views.repdespacho, name='repdespacho'),
     path('repgcomercial/', views.repgcomercial, name='repgcomercial'),
     path('repgtecnica/', views.repgtecnica, name='repgtecnica'),
     path('repcadabastecimiento/', views.repcadabastecimiento, name='repcadabastecimiento'),
@@ -139,6 +139,9 @@ urlpatterns = [
     path('generar_pdf/', views.generar_pdf, name='generar_pdf'),
     path('generar_excel/', views.generar_excel, name='generar_excel'),
     path('frigorificos/', views.frigorificos, name='frigorificos'),
+    path('registrar-despacho/', views.registrar_despacho, name='registrar_despacho'),
+
+
 
 #-------------------------------API's ------------------------------------------
 #-----------------------------GENERADAS-----------------------------------------

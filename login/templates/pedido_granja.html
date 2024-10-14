@@ -377,7 +377,7 @@
                                                     break;
                                             }
                                             let idDisponibilidadIndividual = item.id_disponibilidad_individual ? item.id_disponibilidad_individual : ''; 
-                                            // Crear una nueva fila para la granja
+                                          
                                             $('#tablaVistaSolicitud tbody').append(
                                                 `<tr>
                                                     <td>${item.nombre_granja}</td> 
@@ -407,7 +407,7 @@
                                 url: '/frigorificos/',
                                 type: 'GET',
                                 success: function (response) {
-                                    // Almacenar los datos en una variable
+                                   
                                     var frigorificos = response.frigorificos;
                                     $('#bt_add').on('click', function () {
                                         // Obtener la granja seleccionada

@@ -1,0 +1,300 @@
+{% load adminlte_helpers i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Despacho </title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+    {% block meta %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% endblock %}
+
+    {% block stylesheets %}
+    {% include 'adminlte/lib/_styles.html' %}
+    <style type="text/css">
+        .btn-circle.btn-xl {
+            width: 130px;
+            height: 130px;
+            padding: 13px 18px;
+            border-radius: 100px;
+            font-size: 15px;
+            text-align: center;
+            margin-left: 50px;
+        }
+
+        .btn-repor {
+            background-color: #651410;
+            color: aliceblue;
+        }
+    </style>
+    {% endblock %}
+
+    {% block extra_head %}{% endblock %}
+</head>
+</head>
+
+<body class="hold-transition sidebar-mini {% block body_class %}{% block bodyclass %}{% endblock %}{% endblock %}">
+    <div class="wrapper">
+        {% block nav_header %}
+        {% include '_main_header.html' %}
+        {% endblock %}
+
+        {% block nav_sidebar %}
+        {% include '_main_sidebar.html' %}
+        {% endblock %}
+
+        {% block content_wrapper %}
+        <div class="content-wrapper">
+            {% block content_header %}
+            <section class="content-header">
+                {% block no_heading %}
+                <h1>
+                    {% block page_name %}{% endblock %}
+                    <div class="header-actions">
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                    {% block no_description %}
+                    <small>{% block page_description %}{% endblock %}</small>
+                    {% endblock %}
+                </h1>
+                {% block breadcrumbs %}
+                {# Breadcrumb implementation left to developers #}
+                {% endblock %}
+                {% endblock no_heading %}
+                <h1>Despacho a Frigorificos</h1>
+            </section>
+            {% endblock %}{% endblock %}
+           
+
+           
+            <div class="contener">
+                <!-- Sección de tabla -->
+                <section class="content">
+                    <div class="card" id="repdespacho_table" style="display:block;">
+                        <div class="card-header">
+                            <h3 class="card-title">Pedidos a Despachar</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_repdespacho" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>Consecutivo</th>
+                                        <th>Granja</th>
+                                        <th>Cantidad Cerdos Solicitados</th>
+                                        <th>Frigorifico</th>
+                                        <th>Fecha De Pedido </th>
+                                        <th>Observacion</th>
+                                        <th>Cerdos Sin Despachar </th>
+                                        <th>Despachar cerdos </th>
+                                        <th>Finalizar Registros </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for despacho in despachos %}
+                                    <tr>
+                                        <td>{{ despacho.0 }}</td>
+                                        <td>{{ despacho.1 }}</td>
+                                        <td>{{ despacho.2 }}</td>
+                                        <td>{{ despacho.3 }}</td>
+                                        <td>{{ despacho.4 }}</td>
+                                        <td>{{ despacho.5 }}</td>
+                                        <td></td>
+                                        <td>
+                                            <button class="btn btn-repor" data-toggle="modal" data-target="#modalSalidasDespacho">
+                                                <i class="fa-solid fa-truck"></i>
+                                            </button>
+                                        </td>
+                                        
+                                        <td></td>       
+                                    </tr>
+                                    <!-- Modal con formulario para registrar despacho -->
+                                    <div class="modal fade" id="modalSalidasDespacho" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="modalLabel">Registrar Despacho</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <!-- Formulario para capturar los datos -->
+                                                    <form id="formDespacho" method="POST" action="{% url 'registrar_despacho' %}">
+                                                        {% csrf_token %}
+                                                        
+                                                        <!-- Consecutivo Despacho -->
+                                                        <div class="form-group">
+                                                            <label for="consecutivoDespacho">Consecutivo Despacho:</label>
+                                                            <input type="text" class="form-control" id="consecutivoDespacho" name="consecutivoDespacho" required>
+                                                        </div>
+                                                        
+                                                        <!-- Lote -->
+                                                        <div class="form-group">
+                                                            <label for="lote">Lote:</label>
+                                                            <input type="text" class="form-control" id="lote" name="lote" required>
+                                                        </div>
+
+                                                        <!-- Cerdos Despachados -->
+                                                        <div class="form-group">
+                                                            <label for="cerdosDespachados">Cerdos Despachados:</label>
+                                                            <input type="number" step="any" class="form-control" id="cerdosDespachados" name="cerdosDespachados" required>
+                                                        </div>
+
+                                                        <!-- Frigorífico -->
+                                                        <div class="form-group">
+                                                            <label for="frigorifico">Frigorífico:</label>
+                                                            <input type="text" class="form-control" id="frigorifico" name="frigorifico" required>
+                                                        </div>
+
+                                                        <!-- Fecha Entrega -->
+                                                        <div class="form-group">
+                                                            <label for="fechaEntrega">Fecha de Entrega:</label>
+                                                            <input type="date" class="form-control" id="fechaEntrega" name="fechaEntrega" required>
+                                                        </div>
+
+                                                        <!-- Peso Total -->
+                                                        <div class="form-group">
+                                                            <label for="pesoTotal">Peso Total:</label>
+                                                            <input type="number" step="any" class="form-control" id="pesoTotal" name="pesoTotal" required>
+                                                        </div>
+
+                                                        <!-- Placa -->
+                                                        <div class="form-group">
+                                                            <label for="placa">Placa:</label>
+                                                            <input type="text" class="form-control" id="placa" name="placa" required>
+                                                        </div>
+
+                                                        <!-- Reg IC -->
+                                                        <div class="form-group">
+                                                            <label for="regic">Registro IC:</label>
+                                                            <input type="text" class="form-control" id="regic" name="regic">
+                                                        </div>
+
+                                                        <!-- Reg ICA -->
+                                                        <div class="form-group">
+                                                            <label for="regica">Registro ICA:</label>
+                                                            <input type="text" class="form-control" id="regica" name="regica">
+                                                        </div>
+
+                                                        <!-- Retiro Alimentación -->
+                                                        <div class="form-group">
+                                                            <label for="retiroalimento">Retiro Alimentación:</label>
+                                                            <input type="datetime-local" class="form-control" id="retiroalimento" name="retiroalimento">
+                                                        </div>
+
+                                                        <!-- Conductor -->
+                                                        <div class="form-group">
+                                                            <label for="conductor">Conductor:</label>
+                                                            <input type="text" class="form-control" id="conductor" name="conductor">
+                                                        </div>
+
+                                                        <!-- Edad Promedio -->
+                                                        <div class="form-group">
+                                                            <label for="edadprom">Edad Promedio:</label>
+                                                            <input type="text" class="form-control" id="edadprom" name="edadprom">
+                                                        </div>
+
+                                                        <!-- Botón para guardar -->
+                                                        <button type="submit" class="btn btn-primary">Guardar</button>
+                                                    </form>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+<!-- 
+                <div class="modal fade" id="modalSalidasDespacho" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                          <div class="modal-content">
+                            <div class="modal-header" id="titulo">
+                            </div>
+                            <div class="modal-body">
+                                
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover text-center" cellspacing="0" width="100%" id="tablaHembrasRegistradas">
+                                       <thead>
+                                           <tr style="color: white;">
+                                               <th>Lote</th>
+                                               <th>Cerdos Despachados</th>
+                                               <th>Peso Total</th>
+                                               <th>Conductor</th>
+                                               <th>placa</th>
+                                               <th>reg IC</th>
+                                               <th>reg ICA</th>
+                                               <th>Retiro Alimentacion</th>
+                                               <th>Edad Promedio</th>
+                                               <th>Editar</th>
+                                           </tr>
+                                       </thead>
+                                       <tbody id="cuerpooSalidasInfo">
+                
+                                       </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                            </div>
+                          </div>
+                    </div>
+                </div>
+        
+                <-- /.content -->
+            </div>
+
+            <!-- /.content -->
+
+            <!-- /.content-wrapper -->
+
+
+            {% block javascript %}
+            {% include 'adminlte/lib/_scripts.html' %}
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+            <script>
+                 $(document).ready(function(){
+        // Detectar clic en cualquier botón con la clase 'btn-repor'
+                    $('.btn-repor').on('click', function() {
+                        var lote = $(this).data('lote');
+                        var cerdos = $(this).data('cerdos');
+                        
+                        // Asignar los datos al modal
+                        $('#modalLote').text("Lote: " + lote);
+                        $('#modalCerdos').text("Cerdos Despachados: " + cerdos);
+                    });
+                });
+
+                 $(document).ready(function () {
+                    $("#tabla_repdespacho").DataTable({
+                        "order": [[0, "desc"]]  
+                    });
+                });
+            </script>
+            <!-- script para llamar los html en el contenido -->
+            <script src="{% static 'custom.js' %}"></script>
+            {% endblock %}
+
+</body>
+
+</html>
