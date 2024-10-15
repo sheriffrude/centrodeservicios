@@ -140,6 +140,7 @@ urlpatterns = [
     path('generar_excel/', views.generar_excel, name='generar_excel'),
     path('frigorificos/', views.frigorificos, name='frigorificos'),
     path('registrar-despacho/', views.registrar_despacho, name='registrar_despacho'),
+    path('finalizar-registro/', views.finalizar_registro, name='finalizar_registro'),
 
 
 

@@ -2618,23 +2618,38 @@ def repdespacho(request):
    
     return render(request, 'despacho_frigos.html', {'despachos':despachos})
 
+@never_cache
+@login_required
+def repdespacho(request):
+    despachos = tabladespachos(request)
+   
+    return render(request, 'despacho_frigos.html', {'despachos': despachos})
+
 def tabladespachos(request):
     try:
         with connections['prodsostenible'].cursor() as cursor:
             cursor.execute('''
                 SELECT 
                     di.id, 
+                    g.id AS granja_id, 
                     g.granjas AS granja_nombre, 
                     di.cantidadCerdos, 
                     f.nombre AS frigorifico_nombre, 
-                    di.fechaDisponibilidad, 
-                    di.observacion 
+                    DATE_FORMAT(di.fechaDisponibilidad, '%d/%m/%Y') AS fechaDisponibilidad, 
+                    di.observacion,
+                    GREATEST(0, CAST((di.cantidadCerdos - IFNULL(SUM(dlg.cerdosDespachados), 0)) AS SIGNED)) AS cerdos_sin_despachar -- Evitar números negativos
                 FROM 
                     prodsostenible.disponibilidadindividual di
                 LEFT JOIN 
                     dhc.granjas g ON di.Granja_id = g.id
                 LEFT JOIN 
                     dhc.frigorificos f ON di.frigorifico = f.id
+                LEFT JOIN 
+                    despachoLotesGranjas dlg ON dlg.idSolicitud = di.id
+                WHERE 
+                    di.fechaDisponibilidad >= CURDATE() - INTERVAL 15 DAY
+                GROUP BY 
+                    di.id, g.id, g.granjas, di.cantidadCerdos, f.nombre, di.fechaDisponibilidad, di.observacion
                 ORDER BY 
                     di.id DESC
             ''')
@@ -2646,50 +2661,75 @@ def tabladespachos(request):
         return []
 
 
+
+
+
 @login_required
 def registrar_despacho(request):
     if request.method == 'POST':
-        # Capturar los datos enviados desde el formulario
-        consecutivo_despacho = request.POST.get('consecutivoDespacho')
-        lote = request.POST.get('lote')
-        cerdos_despachados = request.POST.get('cerdosDespachados')
-        frigorifico = request.POST.get('frigorifico')
-        fecha_entrega = request.POST.get('fechaEntrega')
-        peso_total = request.POST.get('pesoTotal')
-        placa = request.POST.get('placa')
-      
-        regic = request.POST.get('regic', '')
-        regica = request.POST.get('regica', '')
-        retiro_alimento = request.POST.get('retiroalimento', '')
-        conductor = request.POST.get('conductor', '')
-        edad_prom = request.POST.get('edadprom', '')
-        
-        # Insertar los datos en la tabla despachoLotesGranjas
         try:
+            id = request.POST.get('consecutivoDespacho')
+            granja_id = request.POST.get('granja_id')
+            lote = request.POST.get('lote')
+            cerdos_despachados = request.POST.get('cerdosDespachados')
+            frigorifico = request.POST.get('frigorifico')
+            fecha_entrega = request.POST.get('fechaEntrega')
+            peso_total = request.POST.get('pesoTotal')
+            placa = request.POST.get('placa')
+            regic = request.POST.get('regic', '')
+            regica = request.POST.get('regica', '')
+            retiro_alimento = request.POST.get('retiroalimento', '')
+            conductor = request.POST.get('conductor', '')
+            edad_prom = request.POST.get('edadprom', '')
+
+            # Inserta el despacho en la base de datos
             with connections['prodsostenible'].cursor() as cursor:
                 cursor.execute('''
                     INSERT INTO despachoLotesGranjas 
-                    (ConsecutivoDespacho, idSolicitud, granja, lote, cerdosDespachados, frigorifico, fechaEntrega, 
-                    pesoTotal, placa, regic, regica, retiroalimento, conductor, edadprom, created_at, updated_at) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+                    (idSolicitud, granja, lote, cerdosDespachados, frigorifico, fechaEntrega, pesoTotal, placa, regic, regica, retiroalimento, conductor, edadprom, created_at, updated_at) 
+                    VALUES (%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
                 ''', [
-                    consecutivo_despacho, None, None, lote, cerdos_despachados, frigorifico, fecha_entrega, 
-                    peso_total, placa, regic, regica, retiro_alimento, conductor, edad_prom
+                    id,granja_id, lote, cerdos_despachados, frigorifico, fecha_entrega, peso_total, placa, regic, regica, retiro_alimento, conductor, edad_prom
                 ])
-            return redirect('nombre_vista_exito')  # Redirige a una vista de éxito
+
+            messages.success(request, 'Despacho registrado correctamente.')
+            return JsonResponse({'success': True})
+
         except Exception as e:
-            print(f"Error al insertar en la base de datos: {e}")
-            return HttpResponse("Error al insertar en la base de datos")
-
-    # Si no es POST, simplemente mostrar el formulario nuevamente (aunque esta parte es redundante si solo usas el modal)
-    return render(request, 'nombre_plantilla.html')
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return render(request, 'despacho_frigos.html')
 
 
 
 
+@csrf_exempt
+def finalizar_registro(request):
+    if request.method == 'POST':
+        consecutivo_disponibilidad = request.POST.get('id')  # Recibir el consecutivo
+        print(f"Recibido consecutivoDisponibilidad: {consecutivo_disponibilidad}")  # Verificar si el consecutivo está llegando correctamente
 
+        if not consecutivo_disponibilidad:
+            print("Error: consecutivoDisponibilidad no recibido.")
+            return JsonResponse({'success': False, 'error': 'No se recibió el consecutivoDisponibilidad'})
 
+        try:
+            # Actualizar el estado en la tabla prodsostenible.disponibilidadindividual
+            with connections['prodsostenible'].cursor() as cursor:
+                cursor.execute('''
+                    UPDATE prodsostenible.disponibilidadindividual
+                    SET estado = 1
+                    WHERE consecutivoDisponibilidad = %s
+                ''', [consecutivo_disponibilidad])
 
+            print(f"Registro actualizado con éxito para consecutivoDisponibilidad: {consecutivo_disponibilidad}")
+            return JsonResponse({'success': True})
+
+        except Exception as e:
+            print(f"Error al actualizar la base de datos: {str(e)}")
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return JsonResponse({'success': False, 'error': 'Método no permitido'})
 
 
 
@@ -2702,22 +2742,22 @@ def registrar_despacho(request):
 
 #----- generar tabla de remisiones solo visualizacion de  informacion
 def tablaremisionnew(consecutivo_cercafe):
-    intranetcercafe2_connection = connections['intranetcercafe2']
+    intranetcercafe2_connection = connections['prodsostenible']
     with intranetcercafe2_connection.cursor() as cursor:
         if consecutivo_cercafe:
-            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from intranetcercafe2.despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
+            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from prodsostenible.despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
         else:
-            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from intranetcercafe2.despachoLotesGranjas")
+            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from prodsostenible.despachoLotesGranjas")
         remisionnew = cursor.fetchall()
     return remisionnew
 
 #--- filtar por fechas para descargar el excel
 def filtered_data(start_date, end_date):
-    with connections['intranetcercafe2'].cursor() as cursor:
+    with connections['prodsostenible'].cursor() as cursor:
         cursor.execute('''
             SELECT ConsecutivoDespacho, idSolicitud, granja, lote, cerdosDespachados, frigorifico, 
             fechaEntrega, pesoTotal, conductor, placa, regic, regica, retiroalimento, edadprom 
-            FROM intranetcercafe2.despachoLotesGranjas
+            FROM prodsostenible.despachoLotesGranjas
             WHERE fechaentrega BETWEEN %s AND %s
         ''', [start_date, end_date])
         fechas = cursor.fetchall()
@@ -2807,7 +2847,7 @@ def generate_qr_code(input_data):
     
 def generar_pdf(request):
     # conexiones de  bases  de datos 
-    intranetcercafe2_connection = connections['intranetcercafe2']
+    intranetcercafe2_connection = connections['prodsostenible']
     dhc_connection = connections['dhc'] 
     consecutivo_cercafe = request.GET.get('consecutivoCercafe', None)
     

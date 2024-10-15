@@ -1,15 +1,14 @@
 {% load adminlte_helpers i18n %}
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Despacho </title>
+    <title>Despacho</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 
     {% block meta %}
     <meta charset="utf-8">
@@ -39,7 +38,6 @@
 
     {% block extra_head %}{% endblock %}
 </head>
-</head>
 
 <body class="hold-transition sidebar-mini {% block body_class %}{% block bodyclass %}{% endblock %}{% endblock %}">
     <div class="wrapper">
@@ -57,26 +55,19 @@
             <section class="content-header">
                 {% block no_heading %}
                 <h1>
-                    {% block page_name %}{% endblock %}
+                    Despacho a Frigorificos
                     <div class="header-actions">
                         {% block page_actions %}{% endblock %}
                     </div>
-                    {% block no_description %}
                     <small>{% block page_description %}{% endblock %}</small>
-                    {% endblock %}
                 </h1>
-                {% block breadcrumbs %}
-                {# Breadcrumb implementation left to developers #}
-                {% endblock %}
+                {% block breadcrumbs %}{% endblock %}
                 {% endblock no_heading %}
-                <h1>Despacho a Frigorificos</h1>
             </section>
             {% endblock %}{% endblock %}
-           
 
-           
-            <div class="contener">
-                <!-- Sección de tabla -->
+            <!-- Contenido principal -->
+            <div class="container">
                 <section class="content">
                     <div class="card" id="repdespacho_table" style="display:block;">
                         <div class="card-header">
@@ -85,216 +76,249 @@
                         <div class="card-body">
                             <table id="tabla_repdespacho" class="table table-bordered table-hover ">
                                 <thead>
-
                                     <tr>
                                         <th>Consecutivo</th>
                                         <th>Granja</th>
                                         <th>Cantidad Cerdos Solicitados</th>
                                         <th>Frigorifico</th>
-                                        <th>Fecha De Pedido </th>
+                                        <th>Fecha De Pedido</th>
                                         <th>Observacion</th>
-                                        <th>Cerdos Sin Despachar </th>
-                                        <th>Despachar cerdos </th>
-                                        <th>Finalizar Registros </th>
+                                        <th>Cerdos Sin Despachar</th> <!-- Nueva columna -->
+                                        <th>Despachar cerdos</th>
+                                        <th>Finalizar Registros</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-
                                     {% for despacho in despachos %}
                                     <tr>
-                                        <td>{{ despacho.0 }}</td>
-                                        <td>{{ despacho.1 }}</td>
-                                        <td>{{ despacho.2 }}</td>
-                                        <td>{{ despacho.3 }}</td>
-                                        <td>{{ despacho.4 }}</td>
-                                        <td>{{ despacho.5 }}</td>
-                                        <td></td>
+                                        <td>{{ despacho.0 }}</td> <!-- ID del Despacho -->
+                                        <td>{{ despacho.2 }}</td> <!-- Nombre de la Granja -->
+                                        <td>{{ despacho.3 }}</td> <!-- Cantidad de Cerdos -->
+                                        <td>{{ despacho.4 }}</td> <!-- Nombre del Frigorífico -->
+                                        <td>{{ despacho.5 }}</td> <!-- Fecha de Pedido -->
+                                        <td>{{ despacho.6 }}</td> <!-- Observación -->
+                                        <td>{{ despacho.7 }}</td> <!-- Cerdos Sin Despachar -->
+
+                                        <!-- Despachar cerdos -->
                                         <td>
-                                            <button class="btn btn-repor" data-toggle="modal" data-target="#modalSalidasDespacho">
+                                            <button class="btn btn-repor" data-toggle="modal"
+                                                data-target="#modalSalidasDespacho" data-id="{{ despacho.0 }}"
+                                                data-granja-id="{{ despacho.1 }}">
                                                 <i class="fa-solid fa-truck"></i>
                                             </button>
                                         </td>
-                                        
-                                        <td></td>       
+                                        <!-- Finalizar Registros -->
+                                        <td>
+                                            {% if despacho.7 == 0 %}
+                                            <button class="btn btn-success" data-toggle="modal"
+                                                data-target="#finalizarModal" data-consecutivo="{{ despacho.0 }}">
+                                                Finalizar Registros
+                                            </button>
+                                            {% endif %}
+                                        </td>
                                     </tr>
-                                    <!-- Modal con formulario para registrar despacho -->
-                                    <div class="modal fade" id="modalSalidasDespacho" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="modalLabel">Registrar Despacho</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <!-- Formulario para capturar los datos -->
-                                                    <form id="formDespacho" method="POST" action="{% url 'registrar_despacho' %}">
-                                                        {% csrf_token %}
-                                                        
-                                                        <!-- Consecutivo Despacho -->
-                                                        <div class="form-group">
-                                                            <label for="consecutivoDespacho">Consecutivo Despacho:</label>
-                                                            <input type="text" class="form-control" id="consecutivoDespacho" name="consecutivoDespacho" required>
-                                                        </div>
-                                                        
-                                                        <!-- Lote -->
-                                                        <div class="form-group">
-                                                            <label for="lote">Lote:</label>
-                                                            <input type="text" class="form-control" id="lote" name="lote" required>
-                                                        </div>
-
-                                                        <!-- Cerdos Despachados -->
-                                                        <div class="form-group">
-                                                            <label for="cerdosDespachados">Cerdos Despachados:</label>
-                                                            <input type="number" step="any" class="form-control" id="cerdosDespachados" name="cerdosDespachados" required>
-                                                        </div>
-
-                                                        <!-- Frigorífico -->
-                                                        <div class="form-group">
-                                                            <label for="frigorifico">Frigorífico:</label>
-                                                            <input type="text" class="form-control" id="frigorifico" name="frigorifico" required>
-                                                        </div>
-
-                                                        <!-- Fecha Entrega -->
-                                                        <div class="form-group">
-                                                            <label for="fechaEntrega">Fecha de Entrega:</label>
-                                                            <input type="date" class="form-control" id="fechaEntrega" name="fechaEntrega" required>
-                                                        </div>
-
-                                                        <!-- Peso Total -->
-                                                        <div class="form-group">
-                                                            <label for="pesoTotal">Peso Total:</label>
-                                                            <input type="number" step="any" class="form-control" id="pesoTotal" name="pesoTotal" required>
-                                                        </div>
-
-                                                        <!-- Placa -->
-                                                        <div class="form-group">
-                                                            <label for="placa">Placa:</label>
-                                                            <input type="text" class="form-control" id="placa" name="placa" required>
-                                                        </div>
-
-                                                        <!-- Reg IC -->
-                                                        <div class="form-group">
-                                                            <label for="regic">Registro IC:</label>
-                                                            <input type="text" class="form-control" id="regic" name="regic">
-                                                        </div>
-
-                                                        <!-- Reg ICA -->
-                                                        <div class="form-group">
-                                                            <label for="regica">Registro ICA:</label>
-                                                            <input type="text" class="form-control" id="regica" name="regica">
-                                                        </div>
-
-                                                        <!-- Retiro Alimentación -->
-                                                        <div class="form-group">
-                                                            <label for="retiroalimento">Retiro Alimentación:</label>
-                                                            <input type="datetime-local" class="form-control" id="retiroalimento" name="retiroalimento">
-                                                        </div>
-
-                                                        <!-- Conductor -->
-                                                        <div class="form-group">
-                                                            <label for="conductor">Conductor:</label>
-                                                            <input type="text" class="form-control" id="conductor" name="conductor">
-                                                        </div>
-
-                                                        <!-- Edad Promedio -->
-                                                        <div class="form-group">
-                                                            <label for="edadprom">Edad Promedio:</label>
-                                                            <input type="text" class="form-control" id="edadprom" name="edadprom">
-                                                        </div>
-
-                                                        <!-- Botón para guardar -->
-                                                        <button type="submit" class="btn btn-primary">Guardar</button>
-                                                    </form>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     {% endfor %}
-
-
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                </section>
-<!-- 
-                <div class="modal fade" id="modalSalidasDespacho" role="dialog">
-                    <div class="modal-dialog modal-lg">
-                          <div class="modal-content">
-                            <div class="modal-header" id="titulo">
-                            </div>
-                            <div class="modal-body">
-                                
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover text-center" cellspacing="0" width="100%" id="tablaHembrasRegistradas">
-                                       <thead>
-                                           <tr style="color: white;">
-                                               <th>Lote</th>
-                                               <th>Cerdos Despachados</th>
-                                               <th>Peso Total</th>
-                                               <th>Conductor</th>
-                                               <th>placa</th>
-                                               <th>reg IC</th>
-                                               <th>reg ICA</th>
-                                               <th>Retiro Alimentacion</th>
-                                               <th>Edad Promedio</th>
-                                               <th>Editar</th>
-                                           </tr>
-                                       </thead>
-                                       <tbody id="cuerpooSalidasInfo">
-                
-                                       </tbody>
-                                    </table>
+
+                    <!-- Modal con formulario para registrar despacho -->
+                    <div class="modal fade" id="modalSalidasDespacho" tabindex="-1" role="dialog"
+                        aria-labelledby="modalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalLabel">Registrar Despacho</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="formDespacho" method="POST" action="{% url 'registrar_despacho' %}">
+                                        {% csrf_token %}
+                                        <!-- Consecutivo Despacho -->
+                                        <div class="form-group">
+                                            <label for="consecutivoDespacho">Consecutivo Despacho:</label>
+                                            <input type="text" class="form-control" id="consecutivoDespacho"
+                                                name="consecutivoDespacho" required readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="granja_id">Granja:</label>
+                                            <input type="text" class="form-control" id="granja_id" name="granja_id"
+                                                required readonly>
+                                        </div>
+                                        <!-- Lote -->
+                                        <div class="form-group">
+                                            <label for="lote">Lote:</label>
+                                            <input type="text" class="form-control" id="lote" name="lote" required>
+                                        </div>
+
+                                        <!-- Cerdos Despachados -->
+                                        <div class="form-group">
+                                            <label for="cerdosDespachados">Cerdos Despachados:</label>
+                                            <input type="number" step="any" class="form-control" id="cerdosDespachados"
+                                                name="cerdosDespachados" required>
+                                        </div>
+
+                                        <!-- Frigorífico -->
+                                        <div class="form-group">
+                                            <label for="frigorifico">Frigorífico:</label>
+                                            <input type="text" class="form-control" id="frigorifico" name="frigorifico"
+                                                required>
+                                        </div>
+
+                                        <!-- Fecha Entrega -->
+                                        <div class="form-group">
+                                            <label for="fechaEntrega">Fecha de Entrega:</label>
+                                            <input type="date" class="form-control" id="fechaEntrega"
+                                                name="fechaEntrega" required>
+                                        </div>
+
+                                        <!-- Peso Total -->
+                                        <div class="form-group">
+                                            <label for="pesoTotal">Peso Total:</label>
+                                            <input type="number" step="any" class="form-control" id="pesoTotal"
+                                                name="pesoTotal" required>
+                                        </div>
+
+                                        <!-- Placa -->
+                                        <div class="form-group">
+                                            <label for="placa">Placa:</label>
+                                            <input type="text" class="form-control" id="placa" name="placa" required>
+                                        </div>
+
+                                        <!-- Reg IC -->
+                                        <div class="form-group">
+                                            <label for="regic">Registro IC:</label>
+                                            <input type="text" class="form-control" id="regic" name="regic">
+                                        </div>
+
+                                        <!-- Reg ICA -->
+                                        <div class="form-group">
+                                            <label for="regica">Registro ICA:</label>
+                                            <input type="text" class="form-control" id="regica" name="regica">
+                                        </div>
+
+                                        <!-- Retiro Alimentación -->
+                                        <div class="form-group">
+                                            <label for="retiroalimento">Retiro Alimentación:</label>
+                                            <input type="datetime-local" class="form-control" id="retiroalimento"
+                                                name="retiroalimento">
+                                        </div>
+
+                                        <!-- Conductor -->
+                                        <div class="form-group">
+                                            <label for="conductor">Conductor:</label>
+                                            <input type="text" class="form-control" id="conductor" name="conductor">
+                                        </div>
+
+                                        <!-- Edad Promedio -->
+                                        <div class="form-group">
+                                            <label for="edadprom">Edad Promedio:</label>
+                                            <input type="text" class="form-control" id="edadprom" name="edadprom">
+                                        </div>
+
+                                        <!-- Botón para guardar -->
+                                        <button type="submit" class="btn btn-primary">Guardar</button>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                            </div>
-                          </div>
+                        </div>
                     </div>
-                </div>
-        
-                <-- /.content -->
+                    <!-- Modal para finalizar registros -->
+                    <div class="modal fade" id="finalizarModal" tabindex="-1" role="dialog"
+                        aria-labelledby="finalizarModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="finalizarModalLabel">Finalizar Registros</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>¿Desea terminar los registros?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-primary"
+                                        id="confirmarFinalizar">Aceptar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
+        </div>
 
-            <!-- /.content -->
+        {% block javascript %}
+        {% include 'adminlte/lib/_scripts.html' %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                // Detectar clic en los botones y pasar el id al modal
+                $('.btn-repor').on('click', function () {
+                    var id = $(this).data('id');
+                    var granjaId = $(this).data('granja-id'); // Capturar el ID de la Granja
+                    $('#consecutivoDespacho').val(id);       // Asignar el id al campo hidden
+                    $('#granja_id').val(granjaId);           // Asignar el id de la granja al campo hidden
+                });
+            });
 
-            <!-- /.content-wrapper -->
+            $(document).ready(function () {
+                $("#tabla_repdespacho").DataTable({
+                    "order": [[0, "desc"]]
+                });
+            });
+            $(document).ready(function () {
+                var consecutivoDisponibilidad = null;  // Almacenar el consecutivo
 
-
-            {% block javascript %}
-            {% include 'adminlte/lib/_scripts.html' %}
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-            <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-            <script>
-                 $(document).ready(function(){
-        // Detectar clic en cualquier botón con la clase 'btn-repor'
-                    $('.btn-repor').on('click', function() {
-                        var lote = $(this).data('lote');
-                        var cerdos = $(this).data('cerdos');
-                        
-                        // Asignar los datos al modal
-                        $('#modalLote').text("Lote: " + lote);
-                        $('#modalCerdos').text("Cerdos Despachados: " + cerdos);
-                    });
+                // Abrir modal de confirmación al hacer clic en "Finalizar Registros"
+                $('#finalizarModal').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget); // Botón que disparó el modal
+                    consecutivoDisponibilidad = button.data('consecutivo'); // Extraer el consecutivo
+                    console.log("Consecutivo para finalizar:", consecutivoDisponibilidad);  // Verificar el consecutivo extraído
                 });
 
-                 $(document).ready(function () {
-                    $("#tabla_repdespacho").DataTable({
-                        "order": [[0, "desc"]]  
+                // Confirmar finalización de registros
+                $('#confirmarFinalizar').on('click', function () {
+                    console.log("Enviando solicitud AJAX para finalizar el registro con consecutivo:", consecutivoDisponibilidad);  // Verificar envío
+
+                    $.ajax({
+                        url: "{% url 'finalizar_registro' %}",  // URL de la vista que manejará la actualización
+                        method: "POST",
+                        data: {
+                            'consecutivoDisponibilidad': consecutivoDisponibilidad,  // Enviar el consecutivo
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'  // Incluir el token CSRF aquí
+                        },
+                        success: function (response) {
+                            console.log("Respuesta del servidor:", response);  // Verificar la respuesta
+                            if (response.success) {
+                                $('#finalizarModal').modal('hide');
+                                location.reload();  // Recargar la página para ver los cambios
+                            } else {
+                                alert('Error al finalizar los registros: ' + response.error);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error en la solicitud AJAX:", error);  // Verificar el error
+                            alert('Ocurrió un error al finalizar los registros.');
+                        }
                     });
                 });
-            </script>
-            <!-- script para llamar los html en el contenido -->
-            <script src="{% static 'custom.js' %}"></script>
-            {% endblock %}
+            });
 
+
+        </script>
+        <script src="{% static 'custom.js' %}"></script>
+        {% endblock %}
+    </div>
 </body>
 
 </html>
