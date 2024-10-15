@@ -94,22 +94,23 @@
                                         <td>{{ despacho.0 }}</td> <!-- ID del Despacho -->
                                         <td>{{ despacho.2 }}</td> <!-- Nombre de la Granja -->
                                         <td>{{ despacho.3 }}</td> <!-- Cantidad de Cerdos -->
-                                        <td>{{ despacho.4 }}</td> <!-- Nombre del Frigorífico -->
-                                        <td>{{ despacho.5 }}</td> <!-- Fecha de Pedido -->
-                                        <td>{{ despacho.6 }}</td> <!-- Observación -->
-                                        <td>{{ despacho.7 }}</td> <!-- Cerdos Sin Despachar -->
+                                        <td>{{ despacho.5 }}</td> <!-- Nombre del Frigorífico -->
+                                        <td>{{ despacho.6 }}</td> <!-- Fecha de Pedido -->
+                                        <td>{{ despacho.7 }}</td> <!-- Observación -->
+                                        <td>{{ despacho.8 }}</td> <!-- Cerdos Sin Despachar -->
 
                                         <!-- Despachar cerdos -->
                                         <td>
                                             <button class="btn btn-repor" data-toggle="modal"
                                                 data-target="#modalSalidasDespacho" data-id="{{ despacho.0 }}"
-                                                data-granja-id="{{ despacho.1 }}">
+                                                data-granja-id="{{ despacho.1 }}" data-frigorifico-id="{{ despacho.4 }}"
+                                                {% if despacho.8 == 0 %} disabled {% endif %}>
                                                 <i class="fa-solid fa-truck"></i>
                                             </button>
                                         </td>
                                         <!-- Finalizar Registros -->
                                         <td>
-                                            {% if despacho.7 == 0 %}
+                                            {% if despacho.8 == 0 %}
                                             <button class="btn btn-success" data-toggle="modal"
                                                 data-target="#finalizarModal" data-consecutivo="{{ despacho.0 }}">
                                                 Finalizar Registros
@@ -163,9 +164,9 @@
 
                                         <!-- Frigorífico -->
                                         <div class="form-group">
-                                            <label for="frigorifico">Frigorífico:</label>
-                                            <input type="text" class="form-control" id="frigorifico" name="frigorifico"
-                                                required>
+                                            <label for="frigorifico_id">Granja:</label>
+                                            <input type="text" class="form-control" id="frigorifico_id" name="frigorifico_id"
+                                                required readonly>
                                         </div>
 
                                         <!-- Fecha Entrega -->
@@ -265,9 +266,11 @@
                 // Detectar clic en los botones y pasar el id al modal
                 $('.btn-repor').on('click', function () {
                     var id = $(this).data('id');
-                    var granjaId = $(this).data('granja-id'); // Capturar el ID de la Granja
-                    $('#consecutivoDespacho').val(id);       // Asignar el id al campo hidden
-                    $('#granja_id').val(granjaId);           // Asignar el id de la granja al campo hidden
+                    var granjaId = $(this).data('granja-id');
+                    var frigorificoId = $(this).data('frigorifico-id'); 
+                    $('#consecutivoDespacho').val(id);       
+                    $('#granja_id').val(granjaId); 
+                    $('#frigorifico_id').val(frigorificoId);          
                 });
             });
 
@@ -313,8 +316,12 @@
                     });
                 });
             });
-
-
+            document.getElementById('retiroalimento').addEventListener('change', function (e) {
+                var input = e.target.value;
+                // Reemplazar la 'T' con un espacio y agregar ':00' para los segundos
+                var formattedValue = input.replace('T', ' ') + ':00';
+                e.target.value = formattedValue;
+            });
         </script>
         <script src="{% static 'custom.js' %}"></script>
         {% endblock %}

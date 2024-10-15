@@ -207,6 +207,39 @@
                                     </table>
                                 </div>
                             </div>
+                            <!-- Modal para Editar Pedidos -->
+                    <div class="modal fade" id="editPedidosModal" tabindex="-1" role="dialog" aria-labelledby="editPedidosModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editPedidosModalLabel">Editar Pedidos</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="editPedidosForm">
+                                        <input type="hidden" id="consecutivoDisponibilidad" name="consecutivoDisponibilidad">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Cantidad</th>
+                                                    <th>Frigorífico</th>
+                                                    <th>Fecha</th>
+                                                    <th>Observación</th>
+                                                    <th>Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="pedidosBody">
+                                                <!-- Las filas se llenarán dinámicamente -->
+                                            </tbody>
+                                        </table>
+                                        <button type="button" class="btn btn-primary" onclick="guardarPedidosEditados()">Guardar Cambios</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                             <div class="col-sm-6">
                                 <div class="row" style="margin-top: 1.8%; margin-bottom: 2%;">
                                     <div class="col-sm-6">
@@ -255,7 +288,7 @@
                             </div>
                         </div>
                     </div>
-
+                    
                     <!-- Modal para el rango de fecha -->
                     <div class="modal fade" id="ModalRangoFecha" data-backdrop="static" data-keyboard="false"
                         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -293,6 +326,7 @@
                             </div>
                         </div>
                     </div>
+                    
 
                     {% block javascript %}
                     {% include 'adminlte/lib/_scripts.html' %}
@@ -391,7 +425,11 @@
                                                     <td>${0}</td>
                                                     <td>${item.disponibilidad_cantidad}</td> 
                                                     <td>${item.disponibilidadRestante}</td> 
-                                                    <td><button class="btn btn-info">Editar</button></td>
+                                                    <td>
+                                                        <button class="btn btn-info" onclick="editarPedido({{ item.id_disponibilidad_individual }})">Editar</button>
+                                                    </td>
+
+
                                                 </tr>`
                                             );
                                         });
@@ -402,6 +440,80 @@
                                 });
                             });
                         });
+                        function editarPedido(consecutivoDisponibilidad) {
+                            $.ajax({
+                                url: '/get_pedido/', 
+                                type: 'GET', 
+                                data: { 'consecutivoDisponibilidad': consecutivoDisponibilidad }, 
+                                success: function(response) {
+                                    if (response.pedidos.length > 0) {
+                                        $('#pedidosBody').empty(); // Limpiar el cuerpo de la tabla
+
+                                        // Llenar el modal con los registros
+                                        response.pedidos.forEach(function(item) {
+                                            $('#pedidosBody').append(`
+                                                <tr>
+                                                    <td><input type="number" class="form-control" value="${item.cantidadCerdos}" data-id="${item.id}" name="cantidad[]"></td>
+                                                    <td><input type="text" class="form-control" value="${item.frigorifico}" name="frigorifico[]"></td>
+                                                    <td><input type="date" class="form-control" value="${new Date(item.fechaDisponibilidad).toISOString().split('T')[0]}" name="fecha[]"></td>
+                                                    <td><input type="text" class="form-control" value="${item.observacion}" name="observacion[]"></td>
+                                                    <td><button type="button" class="btn btn-danger" onclick="eliminarFila(this)">Eliminar</button></td>
+                                                </tr>
+                                            `);
+                                        });
+
+                                        $('#consecutivoDisponibilidad').val(consecutivoDisponibilidad);
+                                        $('#editPedidosModal').modal('show'); // Mostrar el modal
+                                    } else {
+                                        alert('No se encontraron pedidos para editar');
+                                    }
+                                },
+                                error: function(error) {
+                                    console.error('Error al obtener los pedidos:', error);
+                                }
+                            });
+                        }
+                        function guardarPedidosEditados() {
+                            let pedidos = [];
+                            $('#pedidosBody tr').each(function() {
+                                let id = $(this).find('input[data-id]').data('id');
+                                let cantidad = $(this).find('input[name="cantidad[]"]').val();
+                                let frigorifico = $(this).find('input[name="frigorifico[]"]').val();
+                                let fecha = $(this).find('input[name="fecha[]"]').val();
+                                let observacion = $(this).find('input[name="observacion[]"]').val();
+
+                                pedidos.push({ id, cantidad, frigorifico, fecha, observacion });
+                            });
+
+                            // Enviar los pedidos editados al servidor
+                            $.ajax({
+                                url: '/update_pedidos/', // Crea esta URL en tu backend
+                                type: 'POST',
+                                data: {
+                                    'pedidos': JSON.stringify(pedidos),
+                                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                                },
+                                success: function(response) {
+                                    if (response.success) {
+                                        alert('Pedidos actualizados correctamente');
+                                        $('#editPedidosModal').modal('hide');
+                                        location.reload(); // Recargar la página para ver los cambios
+                                    } else {
+                                        alert('Error al actualizar los pedidos: ' + response.error);
+                                    }
+                                },
+                                error: function(error) {
+                                    console.error('Error al actualizar los pedidos:', error);
+                                }
+                            });
+                        }
+
+                        function eliminarFila(elemento) {
+                            $(elemento).closest('tr').remove();
+                        }
+
+
+                       
                         $(document).ready(function () {
                             $.ajax({
                                 url: '/frigorificos/',
@@ -526,6 +638,5 @@
                     </script>
 
                     {% endblock %}
-</body>
-
+  </body>
 </html>

@@ -46,7 +46,7 @@
         <td style="width: 23.5295%; height: 14px;"><strong>Planta De Sacrificio:</strong></td>
         {% if remisionnew %}
         {% with last_remision=remisionnew|last %}
-        <td style="width: 14.2857%; height: 18px;">{{ last_remision.5}}</td>
+        <td style="width: 14.2857%; height: 18px;">{{ nombre_frigorifico }}</td>
         {% endwith %}
         {% endif %}
         <td style="width: 3.5014%; height: 14px;">&nbsp;</td>
@@ -58,7 +58,7 @@
         <td style="width: 23.5295%; height: 18px;"><strong>Granja:</strong></td>
         {% if resultados_dhc %}
         {% with last_resultados_dhc=resultados_dhc|last %}
-        <td style="width: 14.7058%; height: 18px;">{{last_resultados_dhc.2}}</td>
+        <td style="width: 14.7058%; height: 18px;"><strong>{{last_resultados_dhc.2}}</strong></td>
         {% endwith %}
         {% endif %}
         <td style="width: 3.5014%; height: 18px;">&nbsp;</td>
@@ -104,7 +104,7 @@
         <td style="width: 23.5295%; height: 18px;"><strong>Despachado a:</strong></td>
         {% if remisionnew %}
         {% with last_remision=remisionnew|last %}
-        <td style="width: 14.2857%; height: 18px;">{{ last_remision.5}}</td>
+        <td style="width: 14.2857%; height: 18px;">{{ nombre_frigorifico }}</td>
         {% endwith %}
         {% endif %}
         <td style="width: 3.5014%; height: 18px;">&nbsp;</td>
@@ -112,7 +112,7 @@
         <td style="width: 34.1737%; height: 18px;"><strong>Retiro de Alimento:</strong></td>
         {% if remisionnew %}
         {% with last_remision=remisionnew|last %}
-        <td style="width: 14.2857%; height: 18px;">{{last_remision.12 | date:"d/m/Y H:i:s"}}</td>
+        <td style="width: 14.2857%; height: 18px;">{{retiro_alimento}}</td>
         {% endwith %}
         {% endif %}
         </tr>

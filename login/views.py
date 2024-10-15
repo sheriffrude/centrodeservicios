@@ -2633,7 +2633,8 @@ def tabladespachos(request):
                     di.id, 
                     g.id AS granja_id, 
                     g.granjas AS granja_nombre, 
-                    di.cantidadCerdos, 
+                    di.cantidadCerdos,
+                    f.id AS frigorifico_id, 
                     f.nombre AS frigorifico_nombre, 
                     DATE_FORMAT(di.fechaDisponibilidad, '%d/%m/%Y') AS fechaDisponibilidad, 
                     di.observacion,
@@ -2668,11 +2669,12 @@ def tabladespachos(request):
 def registrar_despacho(request):
     if request.method == 'POST':
         try:
+            consecutivo = request.POST.get('consecutivoDisponibilidad')
             id = request.POST.get('consecutivoDespacho')
             granja_id = request.POST.get('granja_id')
             lote = request.POST.get('lote')
             cerdos_despachados = request.POST.get('cerdosDespachados')
-            frigorifico = request.POST.get('frigorifico')
+            frigorifico = request.POST.get('frigorifico_id')
             fecha_entrega = request.POST.get('fechaEntrega')
             peso_total = request.POST.get('pesoTotal')
             placa = request.POST.get('placa')
@@ -2682,14 +2684,15 @@ def registrar_despacho(request):
             conductor = request.POST.get('conductor', '')
             edad_prom = request.POST.get('edadprom', '')
 
+            
             # Inserta el despacho en la base de datos
             with connections['prodsostenible'].cursor() as cursor:
                 cursor.execute('''
                     INSERT INTO despachoLotesGranjas 
-                    (idSolicitud, granja, lote, cerdosDespachados, frigorifico, fechaEntrega, pesoTotal, placa, regic, regica, retiroalimento, conductor, edadprom, created_at, updated_at) 
-                    VALUES (%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+                    (ConsecutivoDespacho,idSolicitud, granja, lote, cerdosDespachados, frigorifico, fechaEntrega, pesoTotal, placa, regic, regica, retiroalimento, conductor, edadprom, created_at, updated_at) 
+                    VALUES (%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
                 ''', [
-                    id,granja_id, lote, cerdos_despachados, frigorifico, fecha_entrega, peso_total, placa, regic, regica, retiro_alimento, conductor, edad_prom
+                    consecutivo,id,granja_id, lote, cerdos_despachados, frigorifico, fecha_entrega, peso_total, placa, regic, regica, retiro_alimento, conductor, edad_prom
                 ])
 
             messages.success(request, 'Despacho registrado correctamente.')
@@ -2697,9 +2700,6 @@ def registrar_despacho(request):
 
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
-    
-    return render(request, 'despacho_frigos.html')
-
 
 
 
@@ -2730,6 +2730,61 @@ def finalizar_registro(request):
             return JsonResponse({'success': False, 'error': str(e)})
 
     return JsonResponse({'success': False, 'error': 'Método no permitido'})
+
+
+@login_required
+def get_pedido(request):
+    consecutivo_id = request.GET.get('consecutivoDisponibilidad')
+    try:
+        with connections['prodsostenible'].cursor() as cursor:
+            cursor.execute('''
+                SELECT id, cantidadCerdos, frigorifico, fechaDisponibilidad, observacion 
+                FROM disponibilidadindividual
+                WHERE consecutivoDisponibilidad = %s
+            ''', [consecutivo_id])
+            rows = cursor.fetchall()
+
+            # Estructura los datos para enviar en la respuesta
+            data = []
+            for row in rows:
+                data.append({
+                    'id': row[0],
+                    'cantidadCerdos': row[1],
+                    'frigorifico': row[2],
+                    'fechaDisponibilidad': row[3],
+                    'observacion': row[4]
+                })
+
+            return JsonResponse({'pedidos': data}) # Devuelve la respuesta en formato JSON
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500) # Maneja correctamente los errores
+
+
+
+
+
+
+
+@csrf_exempt
+@login_required
+def update_pedido(request):
+    if request.method == 'POST':
+        pedidos = json.loads(request.POST.get('pedidos'))  # Asegúrate de que esta línea esté correcta
+
+        try:
+            with connections['prodsostenible'].cursor() as cursor:
+                for pedido in pedidos:
+                    cursor.execute('''
+                        UPDATE disponibilidadindividual
+                        SET cantidadCerdos = %s, frigorifico = %s, fechaDisponibilidad = %s, observacion = %s
+                        WHERE id = %s
+                    ''', [pedido['cantidad'], pedido['frigorifico'], pedido['fecha'], pedido['observacion'], pedido['id']])
+
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 
 
@@ -2846,7 +2901,7 @@ def generate_qr_code(input_data):
     
     
 def generar_pdf(request):
-    # conexiones de  bases  de datos 
+    # Conexiones de bases de datos
     intranetcercafe2_connection = connections['prodsostenible']
     dhc_connection = connections['dhc'] 
     consecutivo_cercafe = request.GET.get('consecutivoCercafe', None)
@@ -2858,47 +2913,62 @@ def generar_pdf(request):
         
         # Consultar los datos de la tabla despachoLotesGranjas de intranetcercafe2
         with intranetcercafe2_connection.cursor() as cursor:
-            if consecutivo_cercafe:
-                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom FROM despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
-            else:
-                cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom FROM despachoLotesGranjas")
+            cursor.execute("SELECT ConsecutivoDespacho, idSolicitud, granja, lote, cerdosDespachados, frigorifico, fechaEntrega, pesoTotal, conductor, placa, regic, regica, retiroalimento, edadprom FROM despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
             remisionnew = cursor.fetchall()
-            
+        
         granja_primera_consulta = remisionnew[0][2] if remisionnew else None
         
-        print(granja_primera_consulta)
         if granja_primera_consulta:
             with dhc_connection.cursor() as cursor:
                 cursor.execute("""
                     SELECT
-                        B.ID AS ID,
-                        B.id_frigotun AS ID_INTRANET,
+                        C.ID AS ID,
+                        C.ID AS ID_INTRANET,
                         UPPER(C.GRANJAS) AS Granja,
                         D.CODIGO AS Nit_asociado,
                         UPPER(E.razon_social) AS Asociado
                     FROM
-                        dhc.homologacion_granjas B
-                    JOIN dhc.granjas C ON B.ID = C.ID
+                        dhc.granjas C
                     JOIN dhc.nombre_comercial D ON C.NOMBRE_COMERCIAL = D.ID
-                    JOIN dhc.razon_social E ON C.razon_social = E.ID
-                    WHERE UPPER(ID_INTRANET) = %s;
+                    JOIN dhc.razon_social E ON C.RAZON_SOCIAL = E.ID
+                    WHERE UPPER(C.ID) = %s;
                 """, [granja_primera_consulta])
                 resultados_dhc = cursor.fetchall()
-        print( "estos son los", resultados_dhc)
-
-        # Combinar los resultados de ambas consulta
         
+        # Obtener el ID del frigorífico
+        frigorifico_id = remisionnew[0][5] if remisionnew else None
+        nombre_frigorifico = None
+        
+        if frigorifico_id:
+            with dhc_connection.cursor() as cursor:
+                cursor.execute("SELECT nombre FROM frigorificos WHERE ID = %s", [frigorifico_id])
+                nombre_frigorifico_result = cursor.fetchone()
+                if nombre_frigorifico_result:
+                    nombre_frigorifico = nombre_frigorifico_result[0]
+        
+        # Combinar los resultados de ambas consultas
         total_cantidad = sum(remisionne[7] for remisionne in remisionnew)
-        
         total_cantidad1 = str(sum(remisionne[7] for remisionne in remisionnew))
         totalcerdos = sum(remisionne[4] for remisionne in remisionnew)
         totalcerdos1 = str(sum(remisionne[4] for remisionne in remisionnew))
-        promedio = total_cantidad/totalcerdos
+        promedio = total_cantidad / totalcerdos if totalcerdos > 0 else 0
         promedio_formateado = f'{promedio:.2f}'
-        input_data = (resultados_dhc[0][0], resultados_dhc[0][2],consecutivo_cercafe, totalcerdos1, total_cantidad1,remisionnew[0][9],remisionnew[0][11],resultados_dhc[0][3])
+        input_data = (resultados_dhc[0][0], resultados_dhc[0][2], consecutivo_cercafe, totalcerdos1, total_cantidad1, remisionnew[0][9], remisionnew[0][11], resultados_dhc[0][3])
+
         generate_qr_code(input_data)
+        
         # Renderizar el HTML con los datos de la remisión filtrados
-        html = render_to_string('remision_pdf.html', {'remisiones': remisiones,'promedio_formateado':promedio_formateado ,'remisionnew':remisionnew, 'resultados_dhc':resultados_dhc,'consecutivo_cercafe':consecutivo_cercafe,'total_cantidad':total_cantidad,'totalcerdos':totalcerdos})
+        html = render_to_string('remision_pdf.html', {
+            'remisiones': remisiones,
+            'promedio_formateado': promedio_formateado,
+            'remisionnew': remisionnew,
+            'resultados_dhc': resultados_dhc,
+            'consecutivo_cercafe': consecutivo_cercafe,
+            'total_cantidad': total_cantidad,
+            'totalcerdos': totalcerdos,
+            'nombre_frigorifico': nombre_frigorifico,  # Agregar el nombre del frigorífico aquí
+            'retiro_alimento': remisionnew[0][12] if remisionnew else None,
+        })
         
         # Convertir el HTML en PDF utilizando wkhtmltopdf
         pdf = pdfkit.from_string(html, False, configuration=pdfkit.configuration(wkhtmltopdf='C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'))
@@ -2910,6 +2980,7 @@ def generar_pdf(request):
     else:
         # Si no se proporciona un consecutivo, devolver un mensaje de error
         return HttpResponse("No se proporcionó un consecutivo válido.")
+
 
 
 

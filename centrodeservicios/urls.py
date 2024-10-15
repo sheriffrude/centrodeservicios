@@ -141,7 +141,8 @@ urlpatterns = [
     path('frigorificos/', views.frigorificos, name='frigorificos'),
     path('registrar-despacho/', views.registrar_despacho, name='registrar_despacho'),
     path('finalizar-registro/', views.finalizar_registro, name='finalizar_registro'),
-
+    path('get_pedido/', views.get_pedido, name='get_pedido'),
+    path('update_pedido/', views.update_pedido, name='update_pedido'),
 
 
 #-------------------------------API's ------------------------------------------
