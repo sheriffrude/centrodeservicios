@@ -142,14 +142,14 @@
                         <div class="row">
                             <div class="col-sm-12" style="border-right: 1px solid #ddd;">
                                 <div class="row" style="margin-top: 1.8%;">
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-5">
                                         <button type="button" class="btn btn-block btn-outline-dark btn-lg" style="width: 50%;"
                                             data-toggle="modal" data-target="#ModalRangoFecha">
                                             <b>Semana</b>
                                         </button>
                                         <br>
-                                        <p class="text-info">
-                                            Fecha filtrada desde: <span id="fechaInicioTexto">N/A</span> Hasta: <span id="fechaFinTexto">N/A</span>
+                                        <p class="text-info"><strong>
+                                            Fecha filtrada desde: <span id="fechaInicioTexto"class="text-dark"><strong>N/A</strong></span> Hasta: <span id="fechaFinTexto"class="text-dark">N/A</span></strong>
                                         </p>
                                         
                                     </div>
@@ -360,8 +360,14 @@
                                     alert('Por favor, complete ambas fechas.');
                                     return;
                                 }
-                                $('#fechaInicioTexto').text(fechaInicio);
-                                $('#fechaFinTexto').text(fechaFin);
+                                let dateInicio = new Date(fechaInicio);
+                                let dateFin = new Date(fechaFin);
+
+                                // Calcular el número de semana
+                                let semanaInicio = getWeekNumber(dateInicio);
+                                let semanaFin = getWeekNumber(dateFin);
+                                $('#fechaInicioTexto').text(fechaInicio + " (Semana " + semanaInicio + ")");
+                                $('#fechaFinTexto').text(fechaFin + " (Semana " + semanaFin + ")");
                                 $.ajax({
                                     url: '/disponibilidad_semanal/',
                                     type: 'GET',
@@ -497,6 +503,11 @@
                                 });
                             });
                         });
+                        function getWeekNumber(date) {
+                            const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+                            const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+                            return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+                        }
                         function editarPedido(consecutivoDisponibilidad) {
                             $.ajax({
                                 url: '/get_pedido/',
