@@ -130,7 +130,7 @@
                 {% block breadcrumbs %}
                 {% endblock %}
                 {% endblock no_heading %}
-                <h1>Disponibilidad</h1>
+                <h1>Pedidos a Granja</h1>
             </section>
 
             {% endblock %}{% endblock %}
@@ -140,14 +140,20 @@
 
                     <div class="container-fluid">
                         <div class="row">
-                            <div class="col-sm-6" style="border-right: 1px solid #ddd;">
+                            <div class="col-sm-12" style="border-right: 1px solid #ddd;">
                                 <div class="row" style="margin-top: 1.8%;">
                                     <div class="col-sm-3">
-                                        <button type="button" class="btn btn-success" style="width: 100%;"
+                                        <button type="button" class="btn btn-block btn-outline-dark btn-lg" style="width: 50%;"
                                             data-toggle="modal" data-target="#ModalRangoFecha">
                                             <b>Semana</b>
                                         </button>
+                                        <br>
+                                        <p class="text-info">
+                                            Fecha filtrada desde: <span id="fechaInicioTexto">N/A</span> Hasta: <span id="fechaFinTexto">N/A</span>
+                                        </p>
+                                        
                                     </div>
+                                    
                                     <div class="col-sm-9">
                                         <form class="form-inline">
                                             <input id="FechaInicio" name="FechaInicio" class="form-control"
@@ -208,87 +214,52 @@
                                 </div>
                             </div>
                             <!-- Modal para Editar Pedidos -->
-                    <div class="modal fade" id="editPedidosModal" tabindex="-1" role="dialog" aria-labelledby="editPedidosModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="editPedidosModalLabel">Editar Pedidos</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="editPedidosForm">
-                                        <input type="hidden" id="consecutivoDisponibilidad" name="consecutivoDisponibilidad">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Cantidad</th>
-                                                    <th>Frigorífico</th>
-                                                    <th>Fecha</th>
-                                                    <th>Observación</th>
-                                                    <th>Acción</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="pedidosBody">
-                                                <!-- Las filas se llenarán dinámicamente -->
-                                            </tbody>
-                                        </table>
-                                        <button type="button" class="btn btn-primary" onclick="guardarPedidosEditados()">Guardar Cambios</button>
-                                    </form>
+                            <div class="modal fade" id="editPedidosModal" tabindex="-1" role="dialog"
+                                aria-labelledby="editPedidosModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editPedidosModalLabel">Editar Pedidos</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="editPedidosForm">
+                                                <input type="hidden" id="consecutivoDisponibilidad"
+                                                    name="consecutivoDisponibilidad">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Cantidad</th>
+                                                            <th>Frigorífico</th>
+                                                            <th>Fecha</th>
+                                                            <th>Observación</th>
+                                                            <th>Acción</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="pedidosBody">
+                                                        <!-- Las filas se llenarán dinámicamente -->
+                                                    </tbody>
+                                                </table>
+                                                <button type="button" class="btn btn-primary"
+                                                    onclick="guardarPedidosEditados()">Guardar Cambios</button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                            <div class="col-sm-6">
-                                <div class="row" style="margin-top: 1.8%; margin-bottom: 2%;">
-                                    <div class="col-sm-6">
-                                        <select id="granjas" class="form-control">
-                                            <option value="">Selecciona una opción</option>
-                                           
-                                        </select>
-                                        
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <button type="button" id="bt_add" class="btn btn-success" style="float: right">
-                                            <b>Solicitar Cerdo</b>
-                                        </button>
-                                    </div>
-                                    <input type="hidden" id="consecutivoDisponibilidad" name="consecutivoDisponibilidad" value="">
-                                </div>
-
-                                <div class="table-responsive scrollSolicitudGranja">
-                                    <table class="table table-striped table-bordered table-hover"
-                                        id="tablaSolicitudCerdosGranja">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Producto</th>
-                                                <th scope="col">Cantidad</th>
-                                                <th scope="col">Observación</th>
-                                                <th scope="col">Frigorífico</th>
-                                                <th scope="col">Fecha</th>
-                                                <th scope="col">Acción</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="TablaSolicitudGranja"></tbody>
-                                    </table>
-                                </div>
-                                <button id="solicitarPedido" class="btn btn-warning"
-                                    style="float: right; margin-top: 2%; margin-bottom: 7%;">
-                                    <b>Solicitar</b>
-                                </button>
-                            </div>
+                            
 
                            
-                            <div>
-                                <form action="https://intranet.cercafe.com/comercial/public/guardarPedidoDisponibilidad"
-                                    method="POST" id="formDisponibilidad">
-                                    <input type="hidden" name="_token" value="91PogaxPggvS12sy79eDhQn5lgWVHvq4SSWIIhrC">
-                                </form>
-                            </div>
                         </div>
                     </div>
+                    <div id="loadingLottie1" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
+                        <!-- Lottie Animation in an iframe -->
+                    <iframe src="https://lottie.host/embed/ff5b9cc8-2cb0-4f82-92b9-c87520a7ed60/fbHdBVDFFC.json" style="border:none; width: 450px; height: 450px;"></iframe>
                     
+                    </div>
+                   
                     <!-- Modal para el rango de fecha -->
                     <div class="modal fade" id="ModalRangoFecha" data-backdrop="static" data-keyboard="false"
                         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -326,7 +297,48 @@
                             </div>
                         </div>
                     </div>
-                    
+                    <br />
+                    <div class="col-sm-9">
+                        <div class="row" style="margin-top: 1.8%; margin-bottom: 2%;">
+                            <div class="col-sm-4">
+                                <select id="granjas" class="form-control">
+                                    <option value="">Selecciona una opción</option>
+
+                                </select>
+
+                            </div>
+                            <div class="col-sm-6">
+                                <a id="bt_add"  class="btn btn-app bg-secondary" style=" margin-top: -2.2%; margin-bottom: 0%; float: left">
+                                    <i class="fas fa-piggy-bank"></i>solicitar cerdos
+                                </a>
+                                
+                            </div>
+                            <input type="hidden" id="consecutivoDisponibilidad" name="consecutivoDisponibilidad"
+                                value="">
+                        </div>
+
+                        <div class="table-responsive scrollSolicitudGranja">
+                            <table class="table table-striped table-bordered table-hover"
+                                id="tablaSolicitudCerdosGranja">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Producto</th>
+                                        <th scope="col">Cantidad</th>
+                                        <th scope="col">Observación</th>
+                                        <th scope="col">Frigorífico</th>
+                                        <th scope="col">Fecha</th>
+                                        <th scope="col">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="TablaSolicitudGranja"></tbody>
+                            </table>
+                        </div>
+                        <button id="solicitarPedido" class="btn  btn-outline-info btn-lg"
+                            style="float: right; margin-top: 2%; margin-bottom: 7%;">
+                            <b>Solicitar</b>
+                        </button>
+                    </div>
+
 
                     {% block javascript %}
                     {% include 'adminlte/lib/_scripts.html' %}
@@ -348,7 +360,8 @@
                                     alert('Por favor, complete ambas fechas.');
                                     return;
                                 }
-
+                                $('#fechaInicioTexto').text(fechaInicio);
+                                $('#fechaFinTexto').text(fechaFin);
                                 $.ajax({
                                     url: '/disponibilidad_semanal/',
                                     type: 'GET',
@@ -357,21 +370,17 @@
                                         'FechaFin': fechaFin
                                     },
                                     success: function (response) {
-                                        // Limpiar la tabla antes de agregar nuevos datos
-                                        $('#tablaVistaSolicitud tbody').empty();
-                                        // Obtener las granjas de la respuesta del servidor
-                                        let granjas = response.map(function (item) {
-                                            return item.nombre_granja;
-                                        console.log('granja:', granjas);
-                                        });
-
-                                        // Actualizar el selector de granjas
+                                        const groupedData = {};
+                                        const uniqueGranjas = new Set();
+                                        
                                         $('#granjas').empty();
                                         $('#granjas').append('<option value="">Selecciona una opción</option>');
                                         response.forEach(function (item) {
-                                            console.log('item:', item);
-                                            $('#granjas').append(`<option value="${item.granja_id}" data-consecutivo="${item.consecutivoDisponibilidad}">${item.nombre_granja}</option>`);
-                                            
+                                            if (!uniqueGranjas.has(item.consecutivoDisponibilidad)) {
+                                                console.log('item:', item);
+                                                $('#granjas').append(`<option value="${item.granja_id}" data-consecutivo="${item.consecutivoDisponibilidad}">${item.nombre_granja}</option>`);
+                                                uniqueGranjas.add(item.consecutivoDisponibilidad);  // Add to Set to avoid duplicates
+                                            }
                                         });
 
                                         $('#granjas').on('change', function () {
@@ -379,60 +388,108 @@
                                             console.log('Consecutivo Disponibilidad seleccionado:', consecutivoDisponibilidad);
                                             $('#consecutivoDisponibilidad').val(consecutivoDisponibilidad);
                                         });
-                                       
+                                        // Agrupar datos por consecutivoDisponibilidad
                                         response.forEach(function (item) {
-                                            // Obtener el día de la semana de la fecha de disponibilidad
+                                            const consecutivo = item.consecutivoDisponibilidad;
                                             const fecha = new Date(item.fechaDisponibilidad);
-                                            const dia = fecha.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
-                                            let diaNombre;
+                                            const diaSemana = fecha.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
 
-                                            // Asignar el nombre del día correspondiente
-                                            switch (dia) {
-                                                case 0:
-                                                    diaNombre = 'Do';
+                                            if (!groupedData[consecutivo]) {
+                                                groupedData[consecutivo] = {
+                                                    nombre_granja: item.nombre_granja,
+                                                    lunes: 0,
+                                                    martes: 0,
+                                                    miercoles: 0,
+                                                    jueves: 0,
+                                                    viernes: 0,
+                                                    sabado: 0,
+                                                    domingo: 0,
+                                                    disponibleRestante: item.disponibilidadRestante,
+                                                    id: item.id_disponibilidad_individual
+                                                };
+                                            }
+
+                                            // Asignar el valor a la columna correcta según el día de la semana
+                                            switch (diaSemana) {
+                                                case 0: // Domingo
+                                                    groupedData[consecutivo].domingo = `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
                                                     break;
-                                                case 1:
-                                                    diaNombre = 'Lu';
+                                                case 1: // Lunes
+                                                    groupedData[consecutivo].lunes = `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
                                                     break;
-                                                case 2:
-                                                    diaNombre = 'Ma';
+                                                case 2: // Martes
+                                                    groupedData[consecutivo].martes = `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
                                                     break;
-                                                case 3:
-                                                    diaNombre = 'Mi';
+                                                case 3: // Miércoles
+                                                    groupedData[consecutivo].miercoles = `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
                                                     break;
-                                                case 4:
-                                                    diaNombre = 'Ju';
+                                                case 4: // Jueves
+                                                    groupedData[consecutivo].jueves = `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
                                                     break;
-                                                case 5:
-                                                    diaNombre = 'Vi';
+                                                case 5: // Viernes
+                                                    groupedData[consecutivo].viernes = `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
                                                     break;
-                                                case 6:
-                                                    diaNombre = 'Sa';
+                                                case 6: // Sábado
+                                                    groupedData[consecutivo].sabado = `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
                                                     break;
                                             }
-                                            let idDisponibilidadIndividual = item.id_disponibilidad_individual ? item.id_disponibilidad_individual : ''; 
-                                          
+                                        });
+
+                                        // Limpiar la tabla antes de agregar nuevos datos
+                                        $('#tablaVistaSolicitud tbody').empty();
+
+                                        // Iterar sobre los datos agrupados y renderizarlos en la tabla
+                                        for (const key in groupedData) {
+                                            const row = groupedData[key];
+
+                                            // Sumar la cantidad de cerdos solicitados en todos los días de la semana (lunes a domingo)
+                                            let ubicado = 0;
+                                            if (row.lunes) {
+                                                ubicado += parseInt(row.lunes.split(' ')[0]);
+                                            }
+                                            if (row.martes) {
+                                                ubicado += parseInt(row.martes.split(' ')[0]);
+                                            }
+                                            if (row.miercoles) {
+                                                ubicado += parseInt(row.miercoles.split(' ')[0]);
+                                            }
+                                            if (row.jueves) {
+                                                ubicado += parseInt(row.jueves.split(' ')[0]);
+                                            }
+                                            if (row.viernes) {
+                                                ubicado += parseInt(row.viernes.split(' ')[0]);
+                                            }
+                                            if (row.sabado) {
+                                                ubicado += parseInt(row.sabado.split(' ')[0]);
+                                            }
+                                            if (row.domingo) {
+                                                ubicado += parseInt(row.domingo.split(' ')[0]);
+                                            }
+
+                                            // Calcular el valor de "Por ubicar"
+                                            let porUbicar = row.disponibleRestante - ubicado;
+
+                                            // Asegúrate de que los valores de "Ubicado" y "Por ubicar" sean válidos
+                                            if (isNaN(ubicado)) ubicado = 0;
+                                            if (isNaN(porUbicar)) porUbicar = 0;
+
                                             $('#tablaVistaSolicitud tbody').append(
                                                 `<tr>
-                                                    <td>${item.nombre_granja}</td> 
-                                                    <td>${diaNombre === 'Lu' ? item.disponibilidad_cantidad : 0}${diaNombre === 'Lu' && idDisponibilidadIndividual ? ' ' + idDisponibilidadIndividual + '' : ''}</td>
-                                                    <td>${diaNombre === 'Ma' ? item.disponibilidad_cantidad : 0}${diaNombre === 'Ma' && idDisponibilidadIndividual ? ' ' + idDisponibilidadIndividual + '' : ''}</td>
-                                                    <td>${diaNombre === 'Mi' ? item.disponibilidad_cantidad : 0}${diaNombre === 'Mi' && idDisponibilidadIndividual ? ' ' + idDisponibilidadIndividual + '' : ''}</td>
-                                                    <td>${diaNombre === 'Ju' ? item.disponibilidad_cantidad : 0}${diaNombre === 'Ju' && idDisponibilidadIndividual ? ' ' + idDisponibilidadIndividual + '' : ''}</td>
-                                                    <td>${diaNombre === 'Vi' ? item.disponibilidad_cantidad : 0}${diaNombre === 'Vi' && idDisponibilidadIndividual ? ' ' + idDisponibilidadIndividual + '' : ''}</td>
-                                                    <td>${diaNombre === 'Sa' ? item.disponibilidad_cantidad : 0}${diaNombre === 'Sa' && idDisponibilidadIndividual ? ' ' + idDisponibilidadIndividual + '' : ''}</td>
-                                                    <td>${diaNombre === 'Do' ? item.disponibilidad_cantidad : 0}${diaNombre === 'Do' && idDisponibilidadIndividual ? ' ' + idDisponibilidadIndividual + '' : ''}</td>
-                                                    <td>${0}</td>
-                                                    <td>${item.disponibilidad_cantidad}</td> 
-                                                    <td>${item.disponibilidadRestante}</td> 
-                                                    <td>
-                                                        <button class="btn btn-info" onclick="editarPedido({{ item.id_disponibilidad_individual }})">Editar</button>
-                                                    </td>
-
-
+                                                    <td>${row.nombre_granja}</td>
+                                                    <td>${row.lunes || '0'}</td>
+                                                    <td>${row.martes || '0'}</td>
+                                                    <td>${row.miercoles || '0'}</td>
+                                                    <td>${row.jueves || '0'}</td>
+                                                    <td>${row.viernes || '0'}</td>
+                                                    <td>${row.sabado || '0'}</td>
+                                                    <td>${row.domingo || '0'}</td>
+                                                    <td>${ubicado}</td><!-- Ubicado: suma de cantidad de cerdos de todos los días -->
+                                                    <td>${row.disponibleRestante}</td><!-- disponible -->
+                                                    <td>${porUbicar}</td> <!-- Por ubicar: disponibleRestante - ubicado -->
+                                                    <td><button class="btn btn-info" onclick="editarPedido(${key})">Editar</button></td>
                                                 </tr>`
                                             );
-                                        });
+                                        }
                                     },
                                     error: function (error) {
                                         console.log('Error:', error);
@@ -442,15 +499,15 @@
                         });
                         function editarPedido(consecutivoDisponibilidad) {
                             $.ajax({
-                                url: '/get_pedido/', 
-                                type: 'GET', 
-                                data: { 'consecutivoDisponibilidad': consecutivoDisponibilidad }, 
-                                success: function(response) {
+                                url: '/get_pedido/',
+                                type: 'GET',
+                                data: { 'consecutivoDisponibilidad': consecutivoDisponibilidad },
+                                success: function (response) {
                                     if (response.pedidos.length > 0) {
                                         $('#pedidosBody').empty(); // Limpiar el cuerpo de la tabla
 
                                         // Llenar el modal con los registros
-                                        response.pedidos.forEach(function(item) {
+                                        response.pedidos.forEach(function (item) {
                                             $('#pedidosBody').append(`
                                                 <tr>
                                                     <td><input type="number" class="form-control" value="${item.cantidadCerdos}" data-id="${item.id}" name="cantidad[]"></td>
@@ -468,14 +525,14 @@
                                         alert('No se encontraron pedidos para editar');
                                     }
                                 },
-                                error: function(error) {
+                                error: function (error) {
                                     console.error('Error al obtener los pedidos:', error);
                                 }
                             });
                         }
                         function guardarPedidosEditados() {
                             let pedidos = [];
-                            $('#pedidosBody tr').each(function() {
+                            $('#pedidosBody tr').each(function () {
                                 let id = $(this).find('input[data-id]').data('id');
                                 let cantidad = $(this).find('input[name="cantidad[]"]').val();
                                 let frigorifico = $(this).find('input[name="frigorifico[]"]').val();
@@ -493,7 +550,7 @@
                                     'pedidos': JSON.stringify(pedidos),
                                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                                 },
-                                success: function(response) {
+                                success: function (response) {
                                     if (response.success) {
                                         alert('Pedidos actualizados correctamente');
                                         $('#editPedidosModal').modal('hide');
@@ -502,7 +559,7 @@
                                         alert('Error al actualizar los pedidos: ' + response.error);
                                     }
                                 },
-                                error: function(error) {
+                                error: function (error) {
                                     console.error('Error al actualizar los pedidos:', error);
                                 }
                             });
@@ -511,15 +568,25 @@
                         function eliminarFila(elemento) {
                             $(elemento).closest('tr').remove();
                         }
+                        
 
 
-                       
+                        function actualizarDisponibilidad(nuevaDisponibilidad) {
+                            // Actualiza la tabla de disponibilidad con los nuevos valores
+                            $('#tablaVistaSolicitud tbody').find('tr').each(function () {
+                                let granja = $(this).find('td:first').text();
+                                if (granja in nuevaDisponibilidad) {
+                                    // Actualizar las celdas correspondientes
+                                    $(this).find('td').eq(9).text(nuevaDisponibilidad[granja].disponibilidadRestante);
+                                }
+                            });
+                        }
                         $(document).ready(function () {
                             $.ajax({
                                 url: '/frigorificos/',
                                 type: 'GET',
                                 success: function (response) {
-                                   
+
                                     var frigorificos = response.frigorificos;
                                     $('#bt_add').on('click', function () {
                                         // Obtener la granja seleccionada
@@ -538,10 +605,10 @@
                                         $('#TablaSolicitudGranja').append(`
                                     <tr>
                                         <td>
-                                            <input type="text" name="producto[]" value="CERDO" placeholder="Producto" class="form-control">
+                                            <input type="text" name="producto[]" value="CERDO" placeholder="Producto" class="form-control "disabled>
                                         </td>
                                         <td>
-                                            <input type="number" name="cantidad[]" value="" placeholder="Cantidad" class="form-control">
+                                            <input type="number" name="cantidad[]" value="" placeholder="Cantidad" class="form-control is-warning">
                                         </td>
                                         <td>
                                             <input type="text" name="observacion[]" value="" placeholder="Observación" class="form-control">
@@ -574,10 +641,11 @@
                                 $(elemento).closest('tR').remove();
                             }
                         });
+
                         $(document).ready(function () {
                             $('#solicitarPedido').on('click', function () {
                                 let granjas = $('#granjas').val();
-                                console.log('granja:', granjas);
+                                console.log('granjassssss:', granjas);
                                 let consecutivoDisponibilidad = $('#consecutivoDisponibilidad').val();
                                 console.log('consecutivoDisponibilidad:', consecutivoDisponibilidad);
                                 let productos = [];
@@ -598,7 +666,7 @@
                                     alert('Por favor, selecciona una granja');
                                     return;
                                 }
-
+                                $('#loadingLottie1').show();
                                 // Enviar datos al servidor
                                 $.ajax({
                                     url: '/solicitar_pedido/',
@@ -612,6 +680,7 @@
                                     success: function (response) {
                                         if (response.success) {
                                             alert('Pedido realizado con éxito');
+                                            $('#loadingLottie1').hide();
                                             location.reload();
                                         } else {
                                             alert('Error al realizar el pedido: ' + response.error);
@@ -622,21 +691,11 @@
                                     }
                                 });
                             });
-                        
-
-                        function actualizarDisponibilidad(nuevaDisponibilidad) {
-                            // Actualiza la tabla de disponibilidad con los nuevos valores
-                            $('#tablaVistaSolicitud tbody').find('tr').each(function () {
-                                let granja = $(this).find('td:first').text();
-                                if (granja in nuevaDisponibilidad) {
-                                    // Actualizar las celdas correspondientes
-                                    $(this).find('td').eq(9).text(nuevaDisponibilidad[granja].disponibilidadRestante);
-                                }
-                            });
-                        }
                         });
+                     
                     </script>
 
                     {% endblock %}
-  </body>
+</body>
+
 </html>

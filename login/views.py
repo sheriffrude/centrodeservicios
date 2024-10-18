@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import redirect, render
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
@@ -2545,7 +2546,6 @@ def guardar_disponibilidad(request):
 
 
 
-
 def disponibilidad_semanal(request):
     if request.method == "GET" and "FechaInicio" in request.GET and "FechaFin" in request.GET:
         fecha_inicio = request.GET.get('FechaInicio')
@@ -2557,11 +2557,19 @@ def disponibilidad_semanal(request):
 
         with connections['prodsostenible'].cursor() as cursor:
             cursor.execute("""
-                SELECT g.ID, g.GRANJAS, ds.id, ds.fecha_disponibilidad, ds.disponibilidad_cantidad, ds.disponibilidadRestante, di.id AS id_disponibilidad_individual, di.fechaDisponibilidad
-                FROM prodsostenible.disponiblidad_semanal ds
-                JOIN dhc.granjas g ON ds.granja = g.ID
-                LEFT JOIN prodsostenible.disponibilidadindividual di ON di.consecutivoDisponibilidad = ds.id
-                WHERE ds.fecha_disponibilidad BETWEEN %s AND %s
+                SELECT 
+                    g.ID, g.GRANJAS, ds.id, ds.fecha_disponibilidad, ds.disponibilidadRestante, 
+                    di.id AS id_disponibilidad_individual, di.fechaDisponibilidad, di.cantidadCerdos
+                FROM 
+                    prodsostenible.disponiblidad_semanal ds
+                JOIN 
+                    dhc.granjas g ON ds.granja = g.ID
+                LEFT JOIN 
+                    prodsostenible.disponibilidadindividual di 
+                ON 
+                    di.consecutivoDisponibilidad = ds.id
+                WHERE 
+                    ds.fecha_disponibilidad BETWEEN %s AND %s
             """, [fecha_inicio, fecha_fin])
             rows = cursor.fetchall()
 
@@ -2573,17 +2581,16 @@ def disponibilidad_semanal(request):
                     'nombre_granja': row[1],  
                     'consecutivoDisponibilidad': row[2], 
                     'fecha_disponibilidad': row[3],  
-                    'disponibilidad_cantidad': row[4],
-                    'disponibilidadRestante': row[5],
-                    'id_disponibilidad_individual': row[6],
-                    'fechaDisponibilidad': row[7], 
+                    'disponibilidadRestante': row[4],
+                    'id_disponibilidad_individual': row[5],
+                    'fechaDisponibilidad': row[6],
+                    'cantidadCerdos': row[7],  # cantidad de cerdos pedidos
                 })
 
             return JsonResponse(data, safe=False)
 
     return render(request, 'pedido_granja.html')
-import json
-from django.http import JsonResponse
+
 
 
 @csrf_exempt
@@ -2666,14 +2673,15 @@ def tabladespachos(request):
 
 
 @login_required
+@csrf_exempt  # Asegúrate de manejar el CSRF si la solicitud viene de un formulario AJAX
 def registrar_despacho(request):
     if request.method == 'POST':
         try:
-            consecutivo = request.POST.get('consecutivoDisponibilidad')
+            consecutivo = request.POST.get('consecutivoDespacho')
             id = request.POST.get('consecutivoDespacho')
             granja_id = request.POST.get('granja_id')
             lote = request.POST.get('lote')
-            cerdos_despachados = request.POST.get('cerdosDespachados')
+            cerdos_despachados = int(request.POST.get('cerdosDespachados'))
             frigorifico = request.POST.get('frigorifico_id')
             fecha_entrega = request.POST.get('fechaEntrega')
             peso_total = request.POST.get('pesoTotal')
@@ -2684,22 +2692,37 @@ def registrar_despacho(request):
             conductor = request.POST.get('conductor', '')
             edad_prom = request.POST.get('edadprom', '')
 
-            
-            # Inserta el despacho en la base de datos
+            # Verificar cuántos cerdos quedan por despachar para este pedido
+            with connections['prodsostenible'].cursor() as cursor:
+                cursor.execute('''
+                    SELECT GREATEST(0, CAST((di.cantidadCerdos - IFNULL(SUM(dlg.cerdosDespachados), 0)) AS SIGNED)) AS cerdos_sin_despachar
+                    FROM prodsostenible.disponibilidadindividual di
+                    LEFT JOIN despachoLotesGranjas dlg ON dlg.idSolicitud = di.id
+                    WHERE di.id = %s
+                    GROUP BY di.id
+                ''', [consecutivo])
+                cerdos_sin_despachar = cursor.fetchone()[0]
+
+            # Validar que la cantidad a despachar no exceda los cerdos sin despachar
+            if cerdos_despachados > cerdos_sin_despachar:
+                return JsonResponse({'success': False, 'error': 'No puedes despachar más cerdos de los que están disponibles.'})
+
+            # Si todo está bien, continuar con la inserción
             with connections['prodsostenible'].cursor() as cursor:
                 cursor.execute('''
                     INSERT INTO despachoLotesGranjas 
-                    (ConsecutivoDespacho,idSolicitud, granja, lote, cerdosDespachados, frigorifico, fechaEntrega, pesoTotal, placa, regic, regica, retiroalimento, conductor, edadprom, created_at, updated_at) 
-                    VALUES (%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+                    (ConsecutivoDespacho, idSolicitud, granja, lote, cerdosDespachados, frigorifico, fechaEntrega, pesoTotal, placa, regic, regica, retiroalimento, conductor, edadprom, created_at, updated_at) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
                 ''', [
-                    consecutivo,id,granja_id, lote, cerdos_despachados, frigorifico, fecha_entrega, peso_total, placa, regic, regica, retiro_alimento, conductor, edad_prom
+                    consecutivo, id, granja_id, lote, cerdos_despachados, frigorifico, fecha_entrega, peso_total, placa, regic, regica, retiro_alimento, conductor, edad_prom
                 ])
 
-            messages.success(request, 'Despacho registrado correctamente.')
-            return JsonResponse({'success': True})
+            return JsonResponse({'success': True, 'message': 'Despacho registrado correctamente.'})
 
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
+
+    return JsonResponse({'success': False, 'error': 'Método no permitido.'})
 
 
 
