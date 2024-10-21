@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    <link rel="stylesheet" href="https://lottie.host/763cf412-414d-4482-b45f-0aeb759d43b1/azaQx9j1O1.json">
+
 
     {% block meta %}
     <meta charset="utf-8">
@@ -392,29 +392,32 @@
                     e.preventDefault();  // Evitar que el formulario haga una recarga de página
 
                     var formData = $(this).serialize();  // Obtener los datos del formulario
-                    $('#loadingLottie').show();
+                    $('#loadingLottie').show(); // Mostrar el loading GIF
+
                     $.ajax({
                         url: $(this).attr('action'),  // Form action URL
                         method: 'POST',
                         data: formData,
                         success: function (response) {
                             if (response.success) {
-                                // Keep the loading GIF visible for 3 seconds, then reload the page
+                                // Muestra un mensaje de éxito
+                                alert(response.message);
+                                // Mantener el loading GIF visible por 3 segundos y luego recargar la página
                                 setTimeout(function () {
-                                    $('#loadingLottie').hide();  // Hide the GIF
-                                    location.reload();  // Reload the page after 3 seconds
-                                }, 3000);  // 3-second delay
-
-                                alert(response.message);  // Display success message
-                                $('#modalSalidasDespacho').modal('hide');  // Close the modal
+                                    location.reload();  // Recargar la página después de 3 segundos
+                                });  // 3-second delay
+                                $('#modalSalidasDespacho').modal('hide');  // Cerrar el modal
                             } else {
-                                
-                                alert(response.error);  // Display error message
+                                // Muestra un mensaje de error
+                                alert(response.error);
                             }
                         },
                         error: function (xhr, status, error) {
-                         
+                            // Muestra un mensaje de error en caso de fallo en la solicitud
                             alert('Ocurrió un error al registrar el despacho: ' + error);
+                        },
+                        complete: function() { // Esta función se ejecuta cuando se completa la solicitud
+                            $('#loadingLottie').hide(); // Ocultar el loading GIF
                         }
                     });
                 });

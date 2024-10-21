@@ -2710,7 +2710,7 @@ def tabladespachos(request):
 
 
 
-@login_required
+
 @csrf_exempt
 def registrar_despacho(request):
     if request.method == 'POST':
@@ -2733,6 +2733,25 @@ def registrar_despacho(request):
         
             # Obtener el usuario autenticado
             usuario = request.user.username
+            fecha_actual = datetime.date.today()
+            # Validar que la fecha de entrega no sea mayor a la fecha actual
+            try:
+                fecha_entrega_dt = datetime.datetime.strptime(fecha_entrega, '%Y-%m-%d').date()
+                if fecha_entrega_dt > fecha_actual:
+                    return JsonResponse({'success': False, 'error': 'La fecha de entrega no puede ser mayor a la fecha actual.'})
+            except ValueError:
+                return JsonResponse({'success': False, 'error': 'Formato de fecha de entrega inválido.'})
+
+            # Validar que la fecha de retiro de alimento no sea mayor a la fecha actual
+            if retiro_alimento:
+                try:
+                    retiro_alimento_dt = datetime.datetime.strptime(retiro_alimento, '%Y-%m-%dT%H:%M').date()
+                    if retiro_alimento_dt > fecha_actual:
+                        return JsonResponse({'success': False, 'error': 'La fecha de retiro de alimento no puede ser mayor a la fecha actual.'})
+                except ValueError:
+                    return JsonResponse({'success': False, 'error': 'Formato de fecha de retiro de alimento inválido.'})
+
+
 
             # Verificar cuántos cerdos quedan por despachar para este pedido
             with connections['prodsostenible'].cursor() as cursor:
