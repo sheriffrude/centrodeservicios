@@ -2645,7 +2645,7 @@ def tabladespachos(request):
                     f.nombre AS frigorifico_nombre, 
                     DATE_FORMAT(di.fechaDisponibilidad, '%d/%m/%Y') AS fechaDisponibilidad, 
                     di.observacion,
-                    GREATEST(0, CAST((di.cantidadCerdos - IFNULL(SUM(dlg.cerdosDespachados), 0)) AS SIGNED)) AS cerdos_sin_despachar -- Evitar números negativos
+                    CAST((di.cantidadCerdos - IFNULL(SUM(dlg.cerdosDespachados), 0)) AS SIGNED) AS cerdos_sin_despachar
                 FROM 
                     prodsostenible.disponibilidadindividual di
                 LEFT JOIN 
@@ -2673,7 +2673,7 @@ def tabladespachos(request):
 
 
 @login_required
-@csrf_exempt  # Asegúrate de manejar el CSRF si la solicitud viene de un formulario AJAX
+@csrf_exempt
 def registrar_despacho(request):
     if request.method == 'POST':
         try:
@@ -2695,7 +2695,7 @@ def registrar_despacho(request):
             # Verificar cuántos cerdos quedan por despachar para este pedido
             with connections['prodsostenible'].cursor() as cursor:
                 cursor.execute('''
-                    SELECT GREATEST(0, CAST((di.cantidadCerdos - IFNULL(SUM(dlg.cerdosDespachados), 0)) AS SIGNED)) AS cerdos_sin_despachar
+                    SELECT CAST((di.cantidadCerdos - IFNULL(SUM(dlg.cerdosDespachados), 0)) AS SIGNED) AS cerdos_sin_despachar
                     FROM prodsostenible.disponibilidadindividual di
                     LEFT JOIN despachoLotesGranjas dlg ON dlg.idSolicitud = di.id
                     WHERE di.id = %s
@@ -2703,11 +2703,6 @@ def registrar_despacho(request):
                 ''', [consecutivo])
                 cerdos_sin_despachar = cursor.fetchone()[0]
 
-            # Validar que la cantidad a despachar no exceda los cerdos sin despachar
-            if cerdos_despachados > cerdos_sin_despachar:
-                return JsonResponse({'success': False, 'error': 'No puedes despachar más cerdos de los que están disponibles.'})
-
-            # Si todo está bien, continuar con la inserción
             with connections['prodsostenible'].cursor() as cursor:
                 cursor.execute('''
                     INSERT INTO despachoLotesGranjas 
@@ -2722,8 +2717,22 @@ def registrar_despacho(request):
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
 
-    return JsonResponse({'success': False, 'error': 'Método no permitido.'})
+   
 
+
+
+@csrf_exempt
+def obtener_placas(request):
+    if request.method == 'GET':
+        with connections['prodsostenible'].cursor() as cursor:
+            cursor.execute('SELECT id, placa FROM dhc.placas')
+            placas = cursor.fetchall()  # Traer todas las placas de la base de datos
+        
+        # Crear una lista con las placas
+        placas_list = [{'id': placa[0], 'placa': placa[1]} for placa in placas]
+
+        # Devolver la lista de placas en formato JSON
+        return JsonResponse({'placas': placas_list}, safe=False)
 
 
 @csrf_exempt
@@ -2787,28 +2796,35 @@ def get_pedido(request):
 
 
 
-
 @csrf_exempt
 @login_required
 def update_pedido(request):
     if request.method == 'POST':
-        pedidos = json.loads(request.POST.get('pedidos'))  # Asegúrate de que esta línea esté correcta
+        pedidos = json.loads(request.POST.get('pedidos'))  # Recibe los datos de los pedidos
 
         try:
             with connections['prodsostenible'].cursor() as cursor:
                 for pedido in pedidos:
+                   
+                    frigorifico_id = int(pedido['frigorifico'])
+                    
                     cursor.execute('''
                         UPDATE disponibilidadindividual
                         SET cantidadCerdos = %s, frigorifico = %s, fechaDisponibilidad = %s, observacion = %s
                         WHERE id = %s
-                    ''', [pedido['cantidad'], pedido['frigorifico'], pedido['fecha'], pedido['observacion'], pedido['id']])
+                    ''', [
+                        pedido['cantidad'],  # Cantidad de cerdos
+                        frigorifico_id,      # ID del frigorífico
+                        pedido['fecha'],     # Fecha de disponibilidad
+                        pedido['observacion'],  # Observaciones
+                        pedido['id']         # ID del pedido
+                    ])
 
             return JsonResponse({'success': True})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
-
 
 
 

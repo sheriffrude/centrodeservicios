@@ -143,6 +143,7 @@ urlpatterns = [
     path('finalizar-registro/', views.finalizar_registro, name='finalizar_registro'),
     path('get_pedido/', views.get_pedido, name='get_pedido'),
     path('update_pedido/', views.update_pedido, name='update_pedido'),
+    path('obtener_placas/', views.obtener_placas, name='obtener_placas'),
 
 
 #-------------------------------API's ------------------------------------------

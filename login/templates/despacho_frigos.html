@@ -79,7 +79,7 @@
                             <table id="tabla_repdespacho" class="table table-bordered table-hover ">
                                 <thead>
                                     <tr>
-                                        <th>Consecutivo</th>
+                                        <th>Consecutivo Cercafe</th>
                                         <th>Granja</th>
                                         <th>Cantidad Cerdos Solicitados</th>
                                         <th>Frigorifico</th>
@@ -106,13 +106,13 @@
                                             <button class="btn btn-repor" data-toggle="modal"
                                                 data-target="#modalSalidasDespacho" data-id="{{ despacho.0 }}"
                                                 data-granja-id="{{ despacho.1 }}" data-frigorifico-id="{{ despacho.4 }}"
-                                                {% if despacho.8 == 0 %} disabled {% endif %}>
+                                                {% if despacho.8 <= 0 %} disabled {% endif %}>
                                                 <i class="fa-solid fa-truck"></i>
                                             </button>
                                         </td>
                                         <!-- Finalizar Registros -->
                                         <td>
-                                            {% if despacho.8 == 0 %}
+                                            {% if despacho.8 <= 0 %}
                                             <button class="btn btn-success" data-toggle="modal"
                                                 data-target="#finalizarModal" data-consecutivo="{{ despacho.0 }}">
                                                 Finalizar Registros
@@ -142,7 +142,7 @@
                                         {% csrf_token %}
                                         <!-- Consecutivo Despacho -->
                                         <div class="form-group">
-                                            <label for="consecutivoDespacho">Consecutivo Despacho:</label>
+                                            <label for="consecutivoDespacho">Consecutivo Cercafe:</label>
                                             <input type="text" class="form-control" id="consecutivoDespacho"
                                                 name="consecutivoDespacho" required readonly>
                                         </div>
@@ -188,38 +188,41 @@
                                         <!-- Placa -->
                                         <div class="form-group">
                                             <label for="placa">Placa:</label>
-                                            <input type="text" class="form-control" id="placa" name="placa" required>
+                                            <select class="form-control" id="placa" name="placa" required>
+                                                <option value="">Seleccionar Placa</option>
+                                                <!-- Opciones se llenarán dinámicamente -->
+                                            </select>
                                         </div>
 
                                         <!-- Reg IC -->
                                         <div class="form-group">
                                             <label for="regic">Registro IC:</label>
-                                            <input type="text" class="form-control" id="regic" name="regic">
+                                            <input type="text" class="form-control" id="regic" name="regic"required>
                                         </div>
 
                                         <!-- Reg ICA -->
                                         <div class="form-group">
                                             <label for="regica">Registro ICA:</label>
-                                            <input type="text" class="form-control" id="regica" name="regica">
+                                            <input type="text" class="form-control" id="regica" name="regica"required>
                                         </div>
 
                                         <!-- Retiro Alimentación -->
                                         <div class="form-group">
                                             <label for="retiroalimento">Retiro Alimentación:</label>
                                             <input type="datetime-local" class="form-control" id="retiroalimento"
-                                                name="retiroalimento">
+                                                name="retiroalimento"required>
                                         </div>
 
                                         <!-- Conductor -->
                                         <div class="form-group">
                                             <label for="conductor">Conductor:</label>
-                                            <input type="text" class="form-control" id="conductor" name="conductor">
+                                            <input type="text" class="form-control" id="conductor" name="conductor"required>
                                         </div>
 
                                         <!-- Edad Promedio -->
                                         <div class="form-group">
                                             <label for="edadprom">Edad Promedio:</label>
-                                            <input type="text" class="form-control" id="edadprom" name="edadprom">
+                                            <input type="text" class="form-control" id="edadprom" name="edadprom"required>
                                         </div>
 
                                         <!-- Botón para guardar -->
@@ -288,26 +291,59 @@
                     $('#granja_id').val(granjaId);
                     $('#frigorifico_id').val(frigorificoId);
                 });
-
+        
                 // Inicializar DataTable
                 $("#tabla_repdespacho").DataTable({
                     "order": [[0, "desc"]]
                 });
-
+        
+                // Cargar placas en el modal cuando se abre
+                $('#modalSalidasDespacho').on('show.bs.modal', function (event) {
+                    var modal = $(this);
+                    var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');  // Obtener el token CSRF
+        
+                    // Hacer la solicitud AJAX para obtener las placas
+                    $.ajax({
+                        url: "{% url 'obtener_placas' %}",  // Asegúrate de que esta URL corresponde a la vista correcta
+                        method: "GET",
+                        headers: {
+                            'X-CSRFToken': csrfToken,  // Incluir el token CSRF aquí
+                            'Content-Type': 'application/json'
+                        },
+                        success: function (response) {
+                            console.log(response); // Verificar la respuesta
+                            var placas = response.placas;
+                            var placaSelect = modal.find('#placa');
+                            
+                            // Limpiar el select antes de llenarlo
+                            placaSelect.empty();
+                            placaSelect.append('<option value="">Seleccionar Placa</option>');
+                            
+                            // Rellenar el select con las placas
+                            placas.forEach(function (placa) {
+                                placaSelect.append('<option value="' + placa.placa + '">' + placa.placa + '</option>');
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error al obtener las placas: " + error);
+                        }
+                    });
+                });
+        
                 // Manejar la finalización de registros
                 var consecutivoDisponibilidad = null;  // Almacenar el consecutivo
-
+        
                 // Abrir modal de confirmación al hacer clic en "Finalizar Registros"
                 $('#finalizarModal').on('show.bs.modal', function (event) {
                     var button = $(event.relatedTarget); // Botón que disparó el modal
                     consecutivoDisponibilidad = button.data('consecutivo'); // Extraer el consecutivo
                     console.log("Consecutivo para finalizar:", consecutivoDisponibilidad);  // Verificar el consecutivo extraído
                 });
-
+        
                 // Confirmar finalización de registros con AJAX
                 $('#confirmarFinalizar').on('click', function () {
                     console.log("Enviando solicitud AJAX para finalizar el registro con consecutivo:", consecutivoDisponibilidad);
-
+        
                     $.ajax({
                         url: "{% url 'finalizar_registro' %}",  // URL de la vista que manejará la actualización
                         method: "POST",
@@ -331,7 +367,7 @@
                         }
                     });
                 });
-
+        
                 // Evento de cambio en el campo retiroalimento para formatear la fecha correctamente
                 document.getElementById('retiroalimento').addEventListener('change', function (e) {
                     var input = e.target.value;
@@ -339,11 +375,11 @@
                     var formattedValue = input.replace('T', ' ') + ':00';
                     e.target.value = formattedValue;
                 });
-
+        
                 // Manejar el envío del formulario de despacho
                 $('#formDespacho').on('submit', function (e) {
                     e.preventDefault();  // Evitar que el formulario haga una recarga de página
-
+        
                     var formData = $(this).serialize();  // Obtener los datos del formulario
                     $('#loadingLottie').show();
                     $.ajax({
@@ -357,7 +393,7 @@
                                     $('#loadingLottie').hide();  // Hide the GIF
                                     location.reload();  // Reload the page after 3 seconds
                                 }, 3000);  // 3-second delay
-
+        
                                 alert(response.message);  // Display success message
                                 $('#modalSalidasDespacho').modal('hide');  // Close the modal
                             } else {
@@ -372,10 +408,9 @@
                     });
                 });
             });
-
-        
-
         </script>
+        
+        
         <script src="{% static 'custom.js' %}"></script>
         {% endblock %}
     </div>

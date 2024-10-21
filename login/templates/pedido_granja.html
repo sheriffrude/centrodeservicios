@@ -213,42 +213,6 @@
                                     </table>
                                 </div>
                             </div>
-                            <!-- Modal para Editar Pedidos -->
-                            <div class="modal fade" id="editPedidosModal" tabindex="-1" role="dialog"
-                                aria-labelledby="editPedidosModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="editPedidosModalLabel">Editar Pedidos</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form id="editPedidosForm">
-                                                <input type="hidden" id="consecutivoDisponibilidad"
-                                                    name="consecutivoDisponibilidad">
-                                                <table class="table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Cantidad</th>
-                                                            <th>Frigorífico</th>
-                                                            <th>Fecha</th>
-                                                            <th>Observación</th>
-                                                            <th>Acción</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="pedidosBody">
-                                                        <!-- Las filas se llenarán dinámicamente -->
-                                                    </tbody>
-                                                </table>
-                                                <button type="button" class="btn btn-primary"
-                                                    onclick="guardarPedidosEditados()">Guardar Cambios</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                             
 
                            
@@ -259,7 +223,38 @@
                     <iframe src="https://lottie.host/embed/ff5b9cc8-2cb0-4f82-92b9-c87520a7ed60/fbHdBVDFFC.json" style="border:none; width: 450px; height: 450px;"></iframe>
                     
                     </div>
-                   
+                    <div class="modal fade" id="editPedidosModal" tabindex="-1" role="dialog" aria-labelledby="editPedidosModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editPedidosModalLabel">Editar Pedidos</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="editPedidosForm">
+                                        <input type="hidden" id="consecutivoDisponibilidad" name="consecutivoDisponibilidad">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Cantidad</th>
+                                                    <th>Frigorífico</th>
+                                                    <th>Fecha</th>
+                                                    <th>Observación</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="pedidosBody">
+                                                <!-- Las filas se llenarán dinámicamente -->
+                                            </tbody>
+                                        </table>
+                                        <button type="button" class="btn btn-primary" onclick="guardarPedidosEditados()">Guardar Cambios</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Modal para el rango de fecha -->
                     <div class="modal fade" id="ModalRangoFecha" data-backdrop="static" data-keyboard="false"
                         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -346,7 +341,7 @@
                     <!-- Importación de scripts -->
                     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-
+                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
                     <!-- Scripts personalizados -->
                     <script>
                         $(document).ready(function () {
@@ -509,29 +504,62 @@
                             return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
                         }
                         function editarPedido(consecutivoDisponibilidad) {
+                            // Hacer una solicitud AJAX para obtener los detalles del pedido por su consecutivoDisponibilidad
                             $.ajax({
                                 url: '/get_pedido/',
                                 type: 'GET',
                                 data: { 'consecutivoDisponibilidad': consecutivoDisponibilidad },
                                 success: function (response) {
                                     if (response.pedidos.length > 0) {
-                                        $('#pedidosBody').empty(); // Limpiar el cuerpo de la tabla
+                                        // Limpiar el cuerpo de la tabla en el modal antes de cargar los datos
+                                        $('#pedidosBody').empty();
 
-                                        // Llenar el modal con los registros
-                                        response.pedidos.forEach(function (item) {
-                                            $('#pedidosBody').append(`
-                                                <tr>
-                                                    <td><input type="number" class="form-control" value="${item.cantidadCerdos}" data-id="${item.id}" name="cantidad[]"></td>
-                                                    <td><input type="text" class="form-control" value="${item.frigorifico}" name="frigorifico[]"></td>
-                                                    <td><input type="date" class="form-control" value="${new Date(item.fechaDisponibilidad).toISOString().split('T')[0]}" name="fecha[]"></td>
-                                                    <td><input type="text" class="form-control" value="${item.observacion}" name="observacion[]"></td>
-                                                    <td><button type="button" class="btn btn-danger" onclick="eliminarFila(this)">Eliminar</button></td>
-                                                </tr>
-                                            `);
+                                        // Obtener la lista de frigoríficos (supongo que tienes una ruta /frigorificos que devuelve una lista de frigoríficos)
+                                        $.ajax({
+                                            url: '/frigorificos/',
+                                            type: 'GET',
+                                            success: function (frigorificosResponse) {
+                                                let frigorificos = frigorificosResponse.frigorificos;
+
+                                                // Llenar el modal con los registros obtenidos
+                                                response.pedidos.forEach(function (item) {
+                                                    // Generar el dropdown de frigoríficos con el frigorífico actual seleccionado
+                                                    let frigorificoOptions = frigorificos.map(function (frigorifico) {
+                                                        return `<option value="${frigorifico.id}" ${frigorifico.id == item.frigorifico ? 'selected' : ''}>${frigorifico.nombre}</option>`;
+                                                    }).join('');
+
+                                                    // Insertar la fila del pedido en el modal
+                                                    $('#pedidosBody').append(`
+                                                        <tr>
+                                                            <td>
+                                                                <input type="number" class="form-control" value="${item.cantidadCerdos}" data-id="${item.id}" name="cantidad[]"disabled>
+                                                            </td>
+                                                            <td>
+                                                                <select class="form-control" name="frigorifico[]">
+                                                                    ${frigorificoOptions}  <!-- Lista de frigoríficos -->
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <input type="date" class="form-control" value="${new Date(item.fechaDisponibilidad).toISOString().split('T')[0]}" name="fecha[]">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" value="${item.observacion}" name="observacion[]"disabled>
+                                                            </td>
+                                                            
+                                                        </tr>
+                                                    `);
+                                                });
+
+                                                // Establecer el valor de consecutivoDisponibilidad en un campo oculto para uso posterior
+                                                $('#consecutivoDisponibilidad').val(consecutivoDisponibilidad);
+
+                                                // Mostrar el modal de edición
+                                                $('#editPedidosModal').modal('show');
+                                            },
+                                            error: function (error) {
+                                                console.error('Error al obtener los frigoríficos:', error);
+                                            }
                                         });
-
-                                        $('#consecutivoDisponibilidad').val(consecutivoDisponibilidad);
-                                        $('#editPedidosModal').modal('show'); // Mostrar el modal
                                     } else {
                                         alert('No se encontraron pedidos para editar');
                                     }
@@ -541,40 +569,45 @@
                                 }
                             });
                         }
+
                         function guardarPedidosEditados() {
-                            let pedidos = [];
-                            $('#pedidosBody tr').each(function () {
-                                let id = $(this).find('input[data-id]').data('id');
-                                let cantidad = $(this).find('input[name="cantidad[]"]').val();
-                                let frigorifico = $(this).find('input[name="frigorifico[]"]').val();
-                                let fecha = $(this).find('input[name="fecha[]"]').val();
-                                let observacion = $(this).find('input[name="observacion[]"]').val();
+                        let pedidos = [];
+                        
+                        // Recorre todas las filas del modal y recopila los datos editados
+                        $('#pedidosBody tr').each(function () {
+                            let id = $(this).find('input[data-id]').data('id');
+                            let cantidad = $(this).find('input[name="cantidad[]"]').val();
+                            let frigorifico = $(this).find('select[name="frigorifico[]"]').val();
+                            let fecha = $(this).find('input[name="fecha[]"]').val();
+                            let observacion = $(this).find('input[name="observacion[]"]').val();
 
-                                pedidos.push({ id, cantidad, frigorifico, fecha, observacion });
-                            });
+                            // Agrega los datos del pedido al array
+                            pedidos.push({ id, cantidad, frigorifico, fecha, observacion });
+                        });
 
-                            // Enviar los pedidos editados al servidor
-                            $.ajax({
-                                url: '/update_pedidos/', // Crea esta URL en tu backend
-                                type: 'POST',
-                                data: {
-                                    'pedidos': JSON.stringify(pedidos),
-                                    'csrfmiddlewaretoken': '{{ csrf_token }}'
-                                },
-                                success: function (response) {
-                                    if (response.success) {
-                                        alert('Pedidos actualizados correctamente');
-                                        $('#editPedidosModal').modal('hide');
-                                        location.reload(); // Recargar la página para ver los cambios
-                                    } else {
-                                        alert('Error al actualizar los pedidos: ' + response.error);
-                                    }
-                                },
-                                error: function (error) {
-                                    console.error('Error al actualizar los pedidos:', error);
+                        // Enviar los pedidos editados al servidor mediante AJAX
+                        $.ajax({
+                            url: '/update_pedido/',  // Asegúrate de que la URL sea correcta
+                            type: 'POST',
+                            data: {
+                                'pedidos': JSON.stringify(pedidos),  // Serializamos el array de pedidos
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'  // Asegúrate de incluir el token CSRF
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    alert('Pedidos actualizados correctamente');
+                                    $('#editPedidosModal').modal('hide');  // Cerrar el modal
+                                    location.reload();  // Recargar la página para ver los cambios
+                                } else {
+                                    alert('Error al actualizar los pedidos: ' + response.error);
                                 }
-                            });
-                        }
+                            },
+                            error: function (error) {
+                                console.error('Error al actualizar los pedidos:', error);
+                            }
+                        });
+                    }
+
 
                         function eliminarFila(elemento) {
                             $(elemento).closest('tr').remove();
