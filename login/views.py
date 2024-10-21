@@ -2669,7 +2669,8 @@ def repdespacho(request):
         'conductores': conductores
     })
 
-
+@login_required
+@csrf_exempt
 def tabladespachos(request):
     try:
         with connections['prodsostenible'].cursor() as cursor:
@@ -2710,7 +2711,7 @@ def tabladespachos(request):
 
 
 
-
+@login_required
 @csrf_exempt
 def registrar_despacho(request):
     if request.method == 'POST':
@@ -2784,7 +2785,7 @@ def registrar_despacho(request):
 
 
 
-
+@login_required
 @csrf_exempt
 def finalizar_registro(request):
     if request.method == 'POST':
@@ -2945,9 +2946,11 @@ def generar_excel(request):
     # Escribir los datos
     for row, compromiso in enumerate(compromisos, start=1):
         for col, value in enumerate(compromiso):
-            # Formatear la fecha como un string
+            # Formatear la fecha como un string solo si es un objeto datetime
             if fecha_entrega_index is not None and col == fecha_entrega_index:
-                value = value.strftime('%Y-%m-%d')
+                if isinstance(value, datetime.datetime):
+                    value = value.strftime('%Y-%m-%d')
+                # Si value es un str, no se modifica
             worksheet.write(row, col, value)
 
     # Cerrar el archivo Excel
