@@ -1,4 +1,5 @@
 import json
+import uuid
 from django.shortcuts import redirect, render
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
@@ -2188,6 +2189,21 @@ def frigorificos(request):
     
     return JsonResponse({'frigorificos': frigorificos})
 
+def placas(request):
+    with connections['dhc'].cursor() as cursor:
+        cursor.execute('''SELECT id, placa FROM dhc.placas''')  
+        placas = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]  
+    
+    return JsonResponse({'placas': placas})
+
+def conductores(request):
+    with connections['dhc'].cursor() as cursor:
+        cursor.execute('''SELECT id, conductor FROM dhc.Conductores''')  
+        conductor = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]  
+    
+    return JsonResponse({'conductor': conductor})
+
+
 #---------------- TABLAS DE REPORTES G COMERCIAL------------------------------------------
 #---Define La Vista Rep-gestion comercial----
 @never_cache
@@ -2509,19 +2525,25 @@ def pedido_granja(request):
 
 
 
+@never_cache
+@login_required
 def guardar_disponibilidad(request):
     if request.method == 'POST':
         # Obtén los datos del formulario
         consecutivocercafe = request.POST.get('id')
-        granja = request.POST.get('granja')
-        fecha_disponibilidad = request.POST.get('fecha_disponibilidad')
-        caracteristica = request.POST.get('caracteristica')
-        genero = request.POST.get('genero')
-        disponibilidad_cantidad = request.POST.get('disponibilidad_cantidad')
-        disponibilidad_restante = disponibilidad_cantidad
-        peso_promedio_limite_inferior = request.POST.get('peso_promedio_limite_inferior')
-        peso_promedio_limite_superior = request.POST.get('peso_promedio_limite_superior')
-        observaciones = request.POST.get('observaciones', '')
+        granja = request.POST.get('granja').upper()
+        fecha_disponibilidad = request.POST.get('fecha_disponibilidad').upper()
+        caracteristica = request.POST.get('caracteristica').upper()
+        genero = request.POST.get('genero').upper()
+        disponibilidad_cantidad = request.POST.get('disponibilidad_cantidad').upper()
+        disponibilidad_restante = disponibilidad_cantidad.upper()
+        peso_promedio_limite_inferior = request.POST.get('peso_promedio_limite_inferior').upper()
+        peso_promedio_limite_superior = request.POST.get('peso_promedio_limite_superior').upper()
+        observaciones = request.POST.get('observaciones', '').upper()
+        guid = str(uuid.uuid4())
+        
+        # Obtener el usuario autenticado
+        usuario = request.user.username
 
         # Abre una conexión a la base de datos
         with connections['prodsostenible'].cursor() as cursor:
@@ -2529,10 +2551,10 @@ def guardar_disponibilidad(request):
             cursor.execute("""
                 INSERT INTO disponiblidad_semanal 
                 (granja, fecha_disponibilidad, caracteristica, genero, disponibilidad_cantidad,disponibilidadRestante, 
-                peso_promedio_limite_inferior, peso_promedio_limite_superior, observaciones) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                peso_promedio_limite_inferior, peso_promedio_limite_superior, observaciones,GUID, USUARIO) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, [granja, fecha_disponibilidad, caracteristica, genero, disponibilidad_cantidad,disponibilidad_restante, 
-                    peso_promedio_limite_inferior, peso_promedio_limite_superior, observaciones])
+                    peso_promedio_limite_inferior, peso_promedio_limite_superior, observaciones, guid, usuario])
 
     
         messages.success(request, 'Disponibilidad subida Exitosamente')
@@ -2546,6 +2568,8 @@ def guardar_disponibilidad(request):
 
 
 
+@never_cache
+@login_required
 def disponibilidad_semanal(request):
     if request.method == "GET" and "FechaInicio" in request.GET and "FechaFin" in request.GET:
         fecha_inicio = request.GET.get('FechaInicio')
@@ -2593,21 +2617,28 @@ def disponibilidad_semanal(request):
 
 
 
+@login_required
 @csrf_exempt
 def solicitar_pedido(request):
     if request.method == 'POST':
         data = json.loads(request.POST.get('productos'))
-        granja_id = request.POST.get('granja_id')
-        consecutivoDisponibilidad = request.POST.get('consecutivoDisponibilidad')
+        granja_id = request.POST.get('granja_id').upper()
+        consecutivoDisponibilidad = request.POST.get('consecutivoDisponibilidad').upper()
+
+        guid = str(uuid.uuid4())
+        
+        # Obtener el usuario autenticado
+        usuario = request.user.username
+
         try:
             with connections['prodsostenible'].cursor() as cursor:
                 for producto in data:
                     cantidadCerdos = int(producto['cantidad'])
-                    frigorifico = producto['frigorifico']
-                    fechaDisponibilidad = producto['fecha']
-                    observacion = producto['observacion']
+                    frigorifico = producto['frigorifico'].upper()
+                    fechaDisponibilidad = producto['fecha'].upper()
+                    observacion = producto['observacion'].upper()
 
-                    cursor.execute("INSERT INTO disponibilidadindividual (consecutivoDisponibilidad,granja_id, cantidadCerdos, frigorifico, fechaDisponibilidad, observacion) VALUES (%s,%s, %s, %s, %s, %s)", [consecutivoDisponibilidad,granja_id, cantidadCerdos, frigorifico, fechaDisponibilidad, observacion])
+                    cursor.execute("INSERT INTO disponibilidadindividual (consecutivoDisponibilidad,granja_id, cantidadCerdos, frigorifico, fechaDisponibilidad, observacion, GUID, USUARIO) VALUES (%s,%s, %s, %s, %s, %s, %s, %s)", [consecutivoDisponibilidad,granja_id, cantidadCerdos, frigorifico, fechaDisponibilidad, observacion, guid, usuario])
                     
 
             return JsonResponse({'success': True})
@@ -2618,19 +2649,26 @@ def solicitar_pedido(request):
 
 
 
-@never_cache
-@login_required
-def repdespacho(request):
-    despachos = tabladespachos(request)
-   
-    return render(request, 'despacho_frigos.html', {'despachos':despachos})
 
-@never_cache
-@login_required
+
+
 def repdespacho(request):
     despachos = tabladespachos(request)
-   
-    return render(request, 'despacho_frigos.html', {'despachos': despachos})
+    # Obtener placas
+    with connections['dhc'].cursor() as cursor:
+        cursor.execute('SELECT id, placa FROM dhc.placas')
+        placas = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]
+    
+    with connections['dhc'].cursor() as cursor:
+        cursor.execute('SELECT id, conductor FROM dhc.Conductores')
+        conductores = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]
+    
+    return render(request, 'despacho_frigos.html', {
+        'despachos': despachos,
+        'placas': placas,
+        'conductores': conductores
+    })
+
 
 def tabladespachos(request):
     try:
@@ -2653,7 +2691,7 @@ def tabladespachos(request):
                 LEFT JOIN 
                     dhc.frigorificos f ON di.frigorifico = f.id
                 LEFT JOIN 
-                    despachoLotesGranjas dlg ON dlg.idSolicitud = di.id
+                    despachoLotesGranjas dlg ON dlg.consecutivo_cercafe = di.id
                 WHERE 
                     di.fechaDisponibilidad >= CURDATE() - INTERVAL 15 DAY
                 GROUP BY 
@@ -2680,24 +2718,28 @@ def registrar_despacho(request):
             consecutivo = request.POST.get('consecutivoDespacho')
             id = request.POST.get('consecutivoDespacho')
             granja_id = request.POST.get('granja_id')
-            lote = request.POST.get('lote')
+            lote = request.POST.get('lote').upper()
             cerdos_despachados = int(request.POST.get('cerdosDespachados'))
-            frigorifico = request.POST.get('frigorifico_id')
-            fecha_entrega = request.POST.get('fechaEntrega')
+            frigorifico = request.POST.get('frigorifico_id').upper()
+            fecha_entrega = request.POST.get('fechaEntrega').upper()
             peso_total = request.POST.get('pesoTotal')
-            placa = request.POST.get('placa')
+            placa = request.POST.get('placa').upper()
             regic = request.POST.get('regic', '')
             regica = request.POST.get('regica', '')
-            retiro_alimento = request.POST.get('retiroalimento', '')
-            conductor = request.POST.get('conductor', '')
+            retiro_alimento = request.POST.get('retiroalimento', '').upper()
+            conductor = request.POST.get('conductor', '').upper()
             edad_prom = request.POST.get('edadprom', '')
+            guid = str(uuid.uuid4())
+        
+            # Obtener el usuario autenticado
+            usuario = request.user.username
 
             # Verificar cuántos cerdos quedan por despachar para este pedido
             with connections['prodsostenible'].cursor() as cursor:
                 cursor.execute('''
                     SELECT CAST((di.cantidadCerdos - IFNULL(SUM(dlg.cerdosDespachados), 0)) AS SIGNED) AS cerdos_sin_despachar
                     FROM prodsostenible.disponibilidadindividual di
-                    LEFT JOIN despachoLotesGranjas dlg ON dlg.idSolicitud = di.id
+                    LEFT JOIN despachoLotesGranjas dlg ON dlg.consecutivo_cercafe = di.id
                     WHERE di.id = %s
                     GROUP BY di.id
                 ''', [consecutivo])
@@ -2706,10 +2748,10 @@ def registrar_despacho(request):
             with connections['prodsostenible'].cursor() as cursor:
                 cursor.execute('''
                     INSERT INTO despachoLotesGranjas 
-                    (ConsecutivoDespacho, idSolicitud, granja, lote, cerdosDespachados, frigorifico, fechaEntrega, pesoTotal, placa, regic, regica, retiroalimento, conductor, edadprom, created_at, updated_at) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+                    (ConsecutivoDespacho, consecutivo_cercafe, granja, lote, cerdosDespachados, frigorifico, fechaEntrega, pesoTotal, placa, regic, regica, retiroalimento, conductor, edadprom,GUID, USUARIO) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s)
                 ''', [
-                    consecutivo, id, granja_id, lote, cerdos_despachados, frigorifico, fecha_entrega, peso_total, placa, regic, regica, retiro_alimento, conductor, edad_prom
+                    consecutivo, id, granja_id, lote, cerdos_despachados, frigorifico, fecha_entrega, peso_total, placa, regic, regica, retiro_alimento, conductor, edad_prom,guid,usuario
                 ])
 
             return JsonResponse({'success': True, 'message': 'Despacho registrado correctamente.'})
@@ -2721,20 +2763,10 @@ def registrar_despacho(request):
 
 
 
-@csrf_exempt
-def obtener_placas(request):
-    if request.method == 'GET':
-        with connections['prodsostenible'].cursor() as cursor:
-            cursor.execute('SELECT id, placa FROM dhc.placas')
-            placas = cursor.fetchall()  # Traer todas las placas de la base de datos
-        
-        # Crear una lista con las placas
-        placas_list = [{'id': placa[0], 'placa': placa[1]} for placa in placas]
-
-        # Devolver la lista de placas en formato JSON
-        return JsonResponse({'placas': placas_list}, safe=False)
 
 
+@never_cache
+@login_required
 @csrf_exempt
 def finalizar_registro(request):
     if request.method == 'POST':
@@ -2764,6 +2796,8 @@ def finalizar_registro(request):
     return JsonResponse({'success': False, 'error': 'Método no permitido'})
 
 
+@never_cache
+@login_required
 @login_required
 def get_pedido(request):
     consecutivo_id = request.GET.get('consecutivoDisponibilidad')
@@ -2839,9 +2873,9 @@ def tablaremisionnew(consecutivo_cercafe):
     intranetcercafe2_connection = connections['prodsostenible']
     with intranetcercafe2_connection.cursor() as cursor:
         if consecutivo_cercafe:
-            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from prodsostenible.despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
+            cursor.execute("SELECT ConsecutivoDespacho,consecutivo_cercafe,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from prodsostenible.despachoLotesGranjas WHERE consecutivo_cercafe = %s", [consecutivo_cercafe])
         else:
-            cursor.execute("SELECT ConsecutivoDespacho,idSolicitud,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from prodsostenible.despachoLotesGranjas")
+            cursor.execute("SELECT ConsecutivoDespacho,consecutivo_cercafe,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from prodsostenible.despachoLotesGranjas")
         remisionnew = cursor.fetchall()
     return remisionnew
 
@@ -2849,7 +2883,7 @@ def tablaremisionnew(consecutivo_cercafe):
 def filtered_data(start_date, end_date):
     with connections['prodsostenible'].cursor() as cursor:
         cursor.execute('''
-            SELECT ConsecutivoDespacho, idSolicitud, granja, lote, cerdosDespachados, frigorifico, 
+            SELECT ConsecutivoDespacho, consecutivo_cercafe, granja, lote, cerdosDespachados, frigorifico, 
             fechaEntrega, pesoTotal, conductor, placa, regic, regica, retiroalimento, edadprom 
             FROM prodsostenible.despachoLotesGranjas
             WHERE fechaentrega BETWEEN %s AND %s
@@ -2883,7 +2917,7 @@ def generar_excel(request):
     worksheet = workbook.add_worksheet()
 
     # Escribir los encabezados
-    headers = ['ConsecutivoDespacho', 'idSolicitud', 'granja', 'lote', 'cerdosDespachados', 'frigorifico', 
+    headers = ['ConsecutivoDespacho', 'consecutivo_cercafe', 'granja', 'lote', 'cerdosDespachados', 'frigorifico', 
                'fechaEntrega', 'pesoTotal', 'conductor', 'placa', 'regic', 'regica', 'retiroalimento', 'edadprom']
     for i, header in enumerate(headers):
         worksheet.write(0, i, header)
@@ -2952,7 +2986,31 @@ def generar_pdf(request):
         
         # Consultar los datos de la tabla despachoLotesGranjas de intranetcercafe2
         with intranetcercafe2_connection.cursor() as cursor:
-            cursor.execute("SELECT ConsecutivoDespacho, idSolicitud, granja, lote, cerdosDespachados, frigorifico, fechaEntrega, pesoTotal, conductor, placa, regic, regica, retiroalimento, edadprom FROM despachoLotesGranjas WHERE idSolicitud = %s", [consecutivo_cercafe])
+            cursor.execute("""
+                SELECT 
+                    d.ConsecutivoDespacho, 
+                    d.consecutivo_cercafe, 
+                    d.granja, 
+                    d.lote, 
+                    d.cerdosDespachados, 
+                    d.frigorifico, 
+                    d.fechaEntrega, 
+                    d.pesoTotal, 
+                    c.Conductor AS ConductorID, 
+                    p.placa AS PlacaID, 
+                    d.regic, 
+                    d.regica, 
+                    d.retiroalimento, 
+                    d.edadprom 
+                FROM 
+                    despachoLotesGranjas d
+                LEFT JOIN 
+                    dhc.Conductores c ON d.conductor = c.id
+                LEFT JOIN 
+                    dhc.placas p ON d.placa = p.ID
+                WHERE 
+                    d.consecutivo_cercafe = %s
+            """, [consecutivo_cercafe])
             remisionnew = cursor.fetchall()
         
         granja_primera_consulta = remisionnew[0][2] if remisionnew else None
@@ -2968,9 +3026,12 @@ def generar_pdf(request):
                         UPPER(E.razon_social) AS Asociado
                     FROM
                         dhc.granjas C
-                    JOIN dhc.nombre_comercial D ON C.NOMBRE_COMERCIAL = D.ID
-                    JOIN dhc.razon_social E ON C.RAZON_SOCIAL = E.ID
-                    WHERE UPPER(C.ID) = %s;
+                    JOIN 
+                        dhc.nombre_comercial D ON C.NOMBRE_COMERCIAL = D.ID
+                    JOIN 
+                        dhc.razon_social E ON C.RAZON_SOCIAL = E.ID
+                    WHERE 
+                        UPPER(C.ID) = %s;
                 """, [granja_primera_consulta])
                 resultados_dhc = cursor.fetchall()
         
@@ -2987,12 +3048,17 @@ def generar_pdf(request):
         
         # Combinar los resultados de ambas consultas
         total_cantidad = sum(remisionne[7] for remisionne in remisionnew)
-        total_cantidad1 = str(sum(remisionne[7] for remisionne in remisionnew))
+        total_cantidad1 = str(total_cantidad)
         totalcerdos = sum(remisionne[4] for remisionne in remisionnew)
-        totalcerdos1 = str(sum(remisionne[4] for remisionne in remisionnew))
+        totalcerdos1 = str(totalcerdos)
         promedio = total_cantidad / totalcerdos if totalcerdos > 0 else 0
         promedio_formateado = f'{promedio:.2f}'
-        input_data = (resultados_dhc[0][0], resultados_dhc[0][2], consecutivo_cercafe, totalcerdos1, total_cantidad1, remisionnew[0][9], remisionnew[0][11], resultados_dhc[0][3])
+        
+        # Extraer los nombres del conductor y la placa de los resultados
+        conductor_nombre = remisionnew[0][8] if remisionnew else None  # Conductor nombre
+        placa_nombre = remisionnew[0][9] if remisionnew else None  # Placa nombre
+
+        input_data = (resultados_dhc[0][0], resultados_dhc[0][2], consecutivo_cercafe, totalcerdos1, total_cantidad1, placa_nombre, conductor_nombre, resultados_dhc[0][3])
 
         generate_qr_code(input_data)
         
@@ -3007,6 +3073,8 @@ def generar_pdf(request):
             'totalcerdos': totalcerdos,
             'nombre_frigorifico': nombre_frigorifico,  # Agregar el nombre del frigorífico aquí
             'retiro_alimento': remisionnew[0][12] if remisionnew else None,
+            'conductor_nombre': conductor_nombre,  # Agregar nombre del conductor
+            'placa_nombre': placa_nombre,  # Agregar nombre de la placa
         })
         
         # Convertir el HTML en PDF utilizando wkhtmltopdf

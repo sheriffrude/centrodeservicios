@@ -9,7 +9,7 @@
     <title>Despacho</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+
     <link rel="stylesheet" href="https://lottie.host/763cf412-414d-4482-b45f-0aeb759d43b1/azaQx9j1O1.json">
 
     {% block meta %}
@@ -112,12 +112,11 @@
                                         </td>
                                         <!-- Finalizar Registros -->
                                         <td>
-                                            {% if despacho.8 <= 0 %}
-                                            <button class="btn btn-success" data-toggle="modal"
+                                            {% if despacho.8 <= 0 %} <button class="btn btn-success" data-toggle="modal"
                                                 data-target="#finalizarModal" data-consecutivo="{{ despacho.0 }}">
                                                 Finalizar Registros
-                                            </button>
-                                            {% endif %}
+                                                </button>
+                                                {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -167,8 +166,8 @@
                                         <!-- Frigorífico -->
                                         <div class="form-group">
                                             <label for="frigorifico_id">Granja:</label>
-                                            <input type="text" class="form-control" id="frigorifico_id" name="frigorifico_id"
-                                                required readonly>
+                                            <input type="text" class="form-control" id="frigorifico_id"
+                                                name="frigorifico_id" required readonly>
                                         </div>
 
                                         <!-- Fecha Entrega -->
@@ -188,41 +187,48 @@
                                         <!-- Placa -->
                                         <div class="form-group">
                                             <label for="placa">Placa:</label>
-                                            <select class="form-control" id="placa" name="placa" required>
-                                                <option value="">Seleccionar Placa</option>
-                                                <!-- Opciones se llenarán dinámicamente -->
-                                            </select>
+                                                <select class="form-control" id="placa" name="placa" required>
+                                                    <option value="">Seleccionar Placa</option>
+                                                    {% for placa in placas %}
+                                                    <option value="{{ placa.id }}">{{ placa.nombre }}</option>
+                                                {% endfor %}
+                                                </select>
                                         </div>
-
                                         <!-- Reg IC -->
                                         <div class="form-group">
                                             <label for="regic">Registro IC:</label>
-                                            <input type="text" class="form-control" id="regic" name="regic"required>
+                                            <input type="text" class="form-control" id="regic" name="regic" required>
                                         </div>
 
                                         <!-- Reg ICA -->
                                         <div class="form-group">
                                             <label for="regica">Registro ICA:</label>
-                                            <input type="text" class="form-control" id="regica" name="regica"required>
+                                            <input type="text" class="form-control" id="regica" name="regica" required>
                                         </div>
 
                                         <!-- Retiro Alimentación -->
                                         <div class="form-group">
                                             <label for="retiroalimento">Retiro Alimentación:</label>
                                             <input type="datetime-local" class="form-control" id="retiroalimento"
-                                                name="retiroalimento"required>
+                                                name="retiroalimento" required>
                                         </div>
 
                                         <!-- Conductor -->
                                         <div class="form-group">
                                             <label for="conductor">Conductor:</label>
-                                            <input type="text" class="form-control" id="conductor" name="conductor"required>
+                                            <select class="form-control" id="conductor" name="conductor" required>
+                                                <option value="">Seleccionar Conductor</option>
+                                                {% for conductor in conductores %}
+                                                    <option value="{{ conductor.id }}">{{ conductor.nombre }}</option>
+                                                {% endfor %}
+                                            </select>
                                         </div>
 
                                         <!-- Edad Promedio -->
                                         <div class="form-group">
                                             <label for="edadprom">Edad Promedio:</label>
-                                            <input type="text" class="form-control" id="edadprom" name="edadprom"required>
+                                            <input type="text" class="form-control" id="edadprom" name="edadprom"
+                                                required>
                                         </div>
 
                                         <!-- Botón para guardar -->
@@ -236,18 +242,22 @@
                         </div>
                     </div>
                     <!-- GIF Loader -->
-                    <div id="loadingGif" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
-                        <img src="{% static 'images/despacho.gif' %}" alt="Processing..." style="width: 250px; height: 250px;">  <!-- Adjust size here -->
+                    <div id="loadingGif"
+                        style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
+                        <img src="{% static 'images/despacho.gif' %}" alt="Processing..."
+                            style="width: 250px; height: 250px;"> <!-- Adjust size here -->
                     </div>
                     <!-- Lottie Loader -->
-                    <div id="loadingLottie" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
+                    <div id="loadingLottie"
+                        style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
                         <!-- Lottie Animation in an iframe -->
-                    <iframe src="https://lottie.host/embed/0253666a-e63d-4e63-817c-6bc0bd1186ef/eWKMqDv3fh.json" style="border:none; width: 450px; height: 450px;"></iframe>
-                    
+                        <iframe src="https://lottie.host/embed/0253666a-e63d-4e63-817c-6bc0bd1186ef/eWKMqDv3fh.json"
+                            style="border:none; width: 450px; height: 450px;"></iframe>
+
 
                     </div>
 
-                    
+
                     <!-- Modal para finalizar registros -->
                     <div class="modal fade" id="finalizarModal" tabindex="-1" role="dialog"
                         aria-labelledby="finalizarModalLabel" aria-hidden="true">
@@ -279,7 +289,8 @@
         {% include 'adminlte/lib/_scripts.html' %}
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-        <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+        <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs"
+            type="module"></script>
         <script>
             $(document).ready(function () {
                 // Detectar clic en los botones y pasar el id al modal
@@ -291,59 +302,57 @@
                     $('#granja_id').val(granjaId);
                     $('#frigorifico_id').val(frigorificoId);
                 });
-        
+
                 // Inicializar DataTable
                 $("#tabla_repdespacho").DataTable({
                     "order": [[0, "desc"]]
                 });
-        
-                // Cargar placas en el modal cuando se abre
-                $('#modalSalidasDespacho').on('show.bs.modal', function (event) {
-                    var modal = $(this);
-                    var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');  // Obtener el token CSRF
-        
-                    // Hacer la solicitud AJAX para obtener las placas
+                $('#modalSalidasDespacho').on('show.bs.modal', function(event) {
+                    console.log("Modal abierto"); // Verificar si el modal se abre
+                    var button = $(event.relatedTarget); // Botón que abrió el modal
+                    var id = button.data('id'); // Obtener ID del despacho
+
+                    // Llamada AJAX para obtener las placas
                     $.ajax({
-                        url: "{% url 'obtener_placas' %}",  // Asegúrate de que esta URL corresponde a la vista correcta
-                        method: "GET",
-                        headers: {
-                            'X-CSRFToken': csrfToken,  // Incluir el token CSRF aquí
-                            'Content-Type': 'application/json'
-                        },
-                        success: function (response) {
+                        url: '/placas/', // Asegúrate de que esta URL sea correcta
+                        type: 'GET',
+                        success: function(response) {
                             console.log(response); // Verificar la respuesta
                             var placas = response.placas;
-                            var placaSelect = modal.find('#placa');
-                            
-                            // Limpiar el select antes de llenarlo
-                            placaSelect.empty();
+                            var placaSelect = $('#placa'); // Asegúrate de que este sea el ID correcto
+
+                            placaSelect.empty(); // Limpiar las opciones anteriores
                             placaSelect.append('<option value="">Seleccionar Placa</option>');
-                            
-                            // Rellenar el select con las placas
-                            placas.forEach(function (placa) {
-                                placaSelect.append('<option value="' + placa.placa + '">' + placa.placa + '</option>');
-                            });
+
+                            if (placas && placas.length > 0) {
+                                placas.forEach(function(placa) {
+                                    placaSelect.append('<option value="' + placa.id + '">' + placa.nombre + '</option>');
+                                });
+                            } else {
+                                placaSelect.append('<option value="">No hay placas disponibles</option>');
+                            }
                         },
-                        error: function (xhr, status, error) {
-                            console.error("Error al obtener las placas: " + error);
+                        error: function(error) {
+                            console.error('Error al cargar placas:', error);
+                            alert('Error al cargar placas: ' + error.responseText);
                         }
                     });
                 });
-        
+
                 // Manejar la finalización de registros
                 var consecutivoDisponibilidad = null;  // Almacenar el consecutivo
-        
+
                 // Abrir modal de confirmación al hacer clic en "Finalizar Registros"
                 $('#finalizarModal').on('show.bs.modal', function (event) {
                     var button = $(event.relatedTarget); // Botón que disparó el modal
                     consecutivoDisponibilidad = button.data('consecutivo'); // Extraer el consecutivo
                     console.log("Consecutivo para finalizar:", consecutivoDisponibilidad);  // Verificar el consecutivo extraído
                 });
-        
+
                 // Confirmar finalización de registros con AJAX
                 $('#confirmarFinalizar').on('click', function () {
                     console.log("Enviando solicitud AJAX para finalizar el registro con consecutivo:", consecutivoDisponibilidad);
-        
+
                     $.ajax({
                         url: "{% url 'finalizar_registro' %}",  // URL de la vista que manejará la actualización
                         method: "POST",
@@ -367,7 +376,7 @@
                         }
                     });
                 });
-        
+
                 // Evento de cambio en el campo retiroalimento para formatear la fecha correctamente
                 document.getElementById('retiroalimento').addEventListener('change', function (e) {
                     var input = e.target.value;
@@ -375,11 +384,14 @@
                     var formattedValue = input.replace('T', ' ') + ':00';
                     e.target.value = formattedValue;
                 });
-        
+
+                
+
+
                 // Manejar el envío del formulario de despacho
                 $('#formDespacho').on('submit', function (e) {
                     e.preventDefault();  // Evitar que el formulario haga una recarga de página
-        
+
                     var formData = $(this).serialize();  // Obtener los datos del formulario
                     $('#loadingLottie').show();
                     $.ajax({
@@ -393,24 +405,24 @@
                                     $('#loadingLottie').hide();  // Hide the GIF
                                     location.reload();  // Reload the page after 3 seconds
                                 }, 3000);  // 3-second delay
-        
+
                                 alert(response.message);  // Display success message
                                 $('#modalSalidasDespacho').modal('hide');  // Close the modal
                             } else {
-                                $('#loadingLottie').hide();  // Hide the GIF on error
+                                
                                 alert(response.error);  // Display error message
                             }
                         },
                         error: function (xhr, status, error) {
-                            $('#loadingLottie').hide();  // Hide the GIF on AJAX error
+                         
                             alert('Ocurrió un error al registrar el despacho: ' + error);
                         }
                     });
                 });
             });
         </script>
-        
-        
+
+
         <script src="{% static 'custom.js' %}"></script>
         {% endblock %}
     </div>
