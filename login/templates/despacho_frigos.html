@@ -354,7 +354,7 @@
                     console.log("Enviando solicitud AJAX para finalizar el registro con consecutivo:", consecutivoDisponibilidad);
 
                     $.ajax({
-                        url: "{% url 'finalizar_registro' %}",  // URL de la vista que manejará la actualización
+                        url: "/finalizar_registro/",  // URL de la vista que manejará la actualización
                         method: "POST",
                         data: {
                             'consecutivoDisponibilidad': consecutivoDisponibilidad,  // Enviar el consecutivo
@@ -376,7 +376,6 @@
                         }
                     });
                 });
-
                 // Evento de cambio en el campo retiroalimento para formatear la fecha correctamente
                 document.getElementById('retiroalimento').addEventListener('change', function (e) {
                     var input = e.target.value;

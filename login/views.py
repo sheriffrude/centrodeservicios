@@ -2765,8 +2765,7 @@ def registrar_despacho(request):
 
 
 
-@never_cache
-@login_required
+
 @csrf_exempt
 def finalizar_registro(request):
     if request.method == 'POST':
@@ -2796,8 +2795,7 @@ def finalizar_registro(request):
     return JsonResponse({'success': False, 'error': 'Método no permitido'})
 
 
-@never_cache
-@login_required
+
 @login_required
 def get_pedido(request):
     consecutivo_id = request.GET.get('consecutivoDisponibilidad')
