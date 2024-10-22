@@ -2524,7 +2524,7 @@ def pedido_granja(request):
     return render(request, 'pedido_granja.html', {'granjas': granjas})
 
 
-
+@never_cache
 @never_cache
 @login_required
 def guardar_disponibilidad(request):
@@ -2567,7 +2567,7 @@ def guardar_disponibilidad(request):
 
 
 
-
+@never_cache
 @never_cache
 @login_required
 def disponibilidad_semanal(request):
@@ -2616,7 +2616,7 @@ def disponibilidad_semanal(request):
     return render(request, 'pedido_granja.html')
 
 
-
+@never_cache
 @login_required
 @csrf_exempt
 def solicitar_pedido(request):
@@ -2650,8 +2650,8 @@ def solicitar_pedido(request):
 
 
 
-
-
+@login_required
+@never_cache
 def repdespacho(request):
     despachos = tabladespachos(request)
     # Obtener placas
@@ -2669,8 +2669,9 @@ def repdespacho(request):
         'conductores': conductores
     })
 
-@login_required
+
 @csrf_exempt
+@login_required
 def tabladespachos(request):
     try:
         with connections['prodsostenible'].cursor() as cursor:
@@ -2710,7 +2711,7 @@ def tabladespachos(request):
 
 
 
-
+@never_cache
 @login_required
 @csrf_exempt
 def registrar_despacho(request):
@@ -2784,7 +2785,7 @@ def registrar_despacho(request):
 
 
 
-
+@never_cache
 @login_required
 @csrf_exempt
 def finalizar_registro(request):
@@ -2815,7 +2816,7 @@ def finalizar_registro(request):
     return JsonResponse({'success': False, 'error': 'Método no permitido'})
 
 
-
+@never_cache
 @login_required
 def get_pedido(request):
     consecutivo_id = request.GET.get('consecutivoDisponibilidad')
@@ -2847,7 +2848,7 @@ def get_pedido(request):
 
 
 
-
+@never_cache
 @csrf_exempt
 @login_required
 def update_pedido(request):

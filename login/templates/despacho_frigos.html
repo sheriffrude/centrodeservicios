@@ -405,7 +405,7 @@
                                 // Mantener el loading GIF visible por 3 segundos y luego recargar la página
                                 setTimeout(function () {
                                     location.reload();  // Recargar la página después de 3 segundos
-                                });  // 3-second delay
+                                }, 1000);  // 3-second delay
                                 $('#modalSalidasDespacho').modal('hide');  // Cerrar el modal
                             } else {
                                 // Muestra un mensaje de error

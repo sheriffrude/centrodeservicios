@@ -398,13 +398,13 @@
                                             if (!groupedData[consecutivo]) {
                                                 groupedData[consecutivo] = {
                                                     nombre_granja: item.nombre_granja,
-                                                    lunes: 0,
-                                                    martes: 0,
-                                                    miercoles: 0,
-                                                    jueves: 0,
-                                                    viernes: 0,
-                                                    sabado: 0,
-                                                    domingo: 0,
+                                                    lunes: '',
+                                                    martes: '',
+                                                    miercoles: '',
+                                                    jueves: '',
+                                                    viernes: '',
+                                                    sabado: '',
+                                                    domingo: '',
                                                     disponibleRestante: item.disponibilidadRestante,
                                                     id: item.id_disponibilidad_individual
                                                 };
@@ -413,25 +413,25 @@
                                             // Asignar el valor a la columna correcta según el día de la semana
                                             switch (diaSemana) {
                                                 case 0: // Domingo
-                                                    groupedData[consecutivo].domingo = `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
+                                                    groupedData[consecutivo].domingo += (groupedData[consecutivo].domingo ? `, ` : '') + `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
                                                     break;
                                                 case 1: // Lunes
-                                                    groupedData[consecutivo].lunes = `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
+                                                    groupedData[consecutivo].lunes += (groupedData[consecutivo].lunes ? `, ` : '') + `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
                                                     break;
                                                 case 2: // Martes
-                                                    groupedData[consecutivo].martes = `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
+                                                    groupedData[consecutivo].martes += (groupedData[consecutivo].martes ? `, ` : '') + `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
                                                     break;
                                                 case 3: // Miércoles
-                                                    groupedData[consecutivo].miercoles = `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
+                                                    groupedData[consecutivo].miercoles += (groupedData[consecutivo].miercoles ? `, ` : '') + `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
                                                     break;
                                                 case 4: // Jueves
-                                                    groupedData[consecutivo].jueves = `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
+                                                    groupedData[consecutivo].jueves += (groupedData[consecutivo].jueves ? `, ` : '') + `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
                                                     break;
                                                 case 5: // Viernes
-                                                    groupedData[consecutivo].viernes = `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
+                                                    groupedData[consecutivo].viernes += (groupedData[consecutivo].viernes ? `, ` : '') + `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
                                                     break;
                                                 case 6: // Sábado
-                                                    groupedData[consecutivo].sabado = `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
+                                                    groupedData[consecutivo].sabado += (groupedData[consecutivo].sabado ? `, ` : '') + `${item.cantidadCerdos} (${item.id_disponibilidad_individual})`;
                                                     break;
                                             }
                                         });
@@ -445,27 +445,23 @@
 
                                             // Sumar la cantidad de cerdos solicitados en todos los días de la semana (lunes a domingo)
                                             let ubicado = 0;
-                                            if (row.lunes) {
-                                                ubicado += parseInt(row.lunes.split(' ')[0]);
-                                            }
-                                            if (row.martes) {
-                                                ubicado += parseInt(row.martes.split(' ')[0]);
-                                            }
-                                            if (row.miercoles) {
-                                                ubicado += parseInt(row.miercoles.split(' ')[0]);
-                                            }
-                                            if (row.jueves) {
-                                                ubicado += parseInt(row.jueves.split(' ')[0]);
-                                            }
-                                            if (row.viernes) {
-                                                ubicado += parseInt(row.viernes.split(' ')[0]);
-                                            }
-                                            if (row.sabado) {
-                                                ubicado += parseInt(row.sabado.split(' ')[0]);
-                                            }
-                                            if (row.domingo) {
-                                                ubicado += parseInt(row.domingo.split(' ')[0]);
-                                            }
+
+                                            // Función para sumar correctamente la cantidad de cerdos, manejando múltiples pedidos
+                                            const sumarCerdos = (dia) => {
+                                                if (!dia) return 0;
+                                                return dia.split(',').reduce((total, item) => {
+                                                    const cantidad = parseInt(item.trim().split(' ')[0]);
+                                                    return total + (isNaN(cantidad) ? 0 : cantidad);
+                                                }, 0);
+                                            };
+
+                                            ubicado += sumarCerdos(row.lunes);
+                                            ubicado += sumarCerdos(row.martes);
+                                            ubicado += sumarCerdos(row.miercoles);
+                                            ubicado += sumarCerdos(row.jueves);
+                                            ubicado += sumarCerdos(row.viernes);
+                                            ubicado += sumarCerdos(row.sabado);
+                                            ubicado += sumarCerdos(row.domingo);
 
                                             // Calcular el valor de "Por ubicar"
                                             let porUbicar = row.disponibleRestante - ubicado;
@@ -484,8 +480,8 @@
                                                     <td>${row.viernes || '0'}</td>
                                                     <td>${row.sabado || '0'}</td>
                                                     <td>${row.domingo || '0'}</td>
-                                                    <td>${ubicado}</td><!-- Ubicado: suma de cantidad de cerdos de todos los días -->
-                                                    <td>${row.disponibleRestante}</td><!-- disponible -->
+                                                    <td>${ubicado}</td> <!-- Ubicado: suma de cantidad de cerdos de todos los días -->
+                                                    <td>${row.disponibleRestante}</td> <!-- disponible -->
                                                     <td>${porUbicar}</td> <!-- Por ubicar: disponibleRestante - ubicado -->
                                                     <td><button class="btn btn-info" onclick="editarPedido(${key})">Editar</button></td>
                                                 </tr>`
