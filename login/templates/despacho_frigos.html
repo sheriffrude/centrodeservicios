@@ -267,11 +267,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- GIF Loader -->
-                    <div id="loadingGif"
-                        style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
-                        <img src="{% static 'images/despacho.gif' %}" alt="Processing..."
-                            style="width: 250px; height: 250px;"> <!-- Adjust size here -->
+                    
                     </div>
                     <!-- Lottie Loader -->
                     <div id="loadingLottie"
@@ -282,7 +278,14 @@
 
 
                     </div>
-
+                    <div id="Lottiex"
+                        style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
+                        <!-- Lottie Animation in an iframe -->
+                        <iframe src="https://lottie.host/embed/4ee37462-1e7d-4c82-8dbd-bcba2d81659d/qK0xENiBsP.json"
+                            style="border:none; width: 450px; height: 450px;"></iframe>
+                    
+                    
+                    </div>
 
                     <!-- Modal para finalizar registros -->
 
@@ -410,7 +413,8 @@
                     e.preventDefault();  // Evitar que el formulario haga una recarga de página
 
                     var formData = $(this).serialize();  // Obtener los datos del formulario
-                    $('#loadingLottie').show(); // Mostrar el loading GIF
+                    $('#loadingLottie').show(); // Mostrar el loading GIF para la acción general
+                    $('#loadingLottiex').hide(); // Asegurarse de ocultar el error lottie al inicio
 
                     $.ajax({
                         url: $(this).attr('action'),  // Form action URL
@@ -418,27 +422,39 @@
                         data: formData,
                         success: function (response) {
                             if (response.success) {
+                                // Mostrar loading para éxito y ocultar el de error
+                                $('#loadingLottiex').hide();
+                                $('#loadingLottie').show();
+
                                 // Muestra un mensaje de éxito
                                 alert(response.message);
-                                // Mantener el loading GIF visible por 3 segundos y luego recargar la página
+
+                                // Mantener el loading GIF visible por 1 segundo y luego recargar la página
                                 setTimeout(function () {
-                                    location.reload();  // Recargar la página después de 3 segundos
-                                }, 1000);  // 3-second delay
+                                    location.reload();  // Recargar la página después de 1 segundo
+                                }, 1000);
                                 $('#modalSalidasDespacho').modal('hide');  // Cerrar el modal
                             } else {
-                                // Muestra un mensaje de error
+                                // Ocultar el loading de éxito y mostrar el de error
+                                $('#loadingLottie').hide();
+                                $('#loadingLottiex').show(); // Mostrar el error lottie
                                 alert(response.error);
                             }
                         },
                         error: function (xhr, status, error) {
-                            // Muestra un mensaje de error en caso de fallo en la solicitud
+                            // Manejar errores de conexión o servidor
+                            $('#loadingLottie').hide();  // Ocultar el loading de éxito
+                            $('#loadingLottiex').show();  // Mostrar el error lottie
                             alert('Ocurrió un error al registrar el despacho: ' + error);
                         },
-                        complete: function() { // Esta función se ejecuta cuando se completa la solicitud
-                            $('#loadingLottie').hide(); // Ocultar el loading GIF
+                        complete: function() {
+                            // Ocurre al final de la solicitud en ambos casos
+                            $('#loadingLottie').hide();  // Ocultar el loading de éxito (opcional aquí si ya se maneja en success/error)
                         }
                     });
                 });
+
+
             });
         </script>
 

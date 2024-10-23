@@ -2550,7 +2550,7 @@ def guardar_disponibilidad(request):
             # Insertar los datos en la tabla
             cursor.execute("""
                 INSERT INTO disponiblidad_semanal 
-                (granja, fecha_disponibilidad, caracteristica, genero, disponibilidad_cantidad,disponibilidad_cantidad, 
+                (granja, fecha_disponibilidad, caracteristica, genero, disponibilidad_cantidad,disponibilidadRestante, 
                 peso_promedio_limite_inferior, peso_promedio_limite_superior, observaciones,GUID, USUARIO) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, [granja, fecha_disponibilidad, caracteristica, genero, disponibilidad_cantidad,disponibilidad_restante, 
@@ -2733,10 +2733,9 @@ def registrar_despacho(request):
             conductor = request.POST.get('conductor', '').upper()
             edad_prom = request.POST.get('edadprom', '')
             guid = str(uuid.uuid4())
-        
-            # Obtener el usuario autenticado
             usuario = request.user.username
             fecha_actual = datetime.date.today()
+
             # Validar que la fecha de entrega no sea mayor a la fecha actual
             try:
                 fecha_entrega_dt = datetime.datetime.strptime(fecha_entrega, '%Y-%m-%d').date()
@@ -2776,13 +2775,36 @@ def registrar_despacho(request):
                     consecutivo, id, granja_id, lote, cerdos_despachados, frigorifico, fecha_entrega, peso_total, placa, regic, regica, retiro_alimento, conductor, edad_prom,guid,usuario
                 ])
 
+            actualizar_disponibilidad_restante(consecutivo, cerdos_despachados)
+
             return JsonResponse({'success': True, 'message': 'Despacho registrado correctamente.'})
 
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
 
-   
-
+from django.db import connections, transaction
+ 
+# Función para actualizar disponibilidadRestante
+def actualizar_disponibilidad_restante(consecutivoDisponibilidad, cerdosDespachados):
+    with connections['prodsostenible'].cursor() as cursor:
+        cursor.execute("""
+            SELECT disponibilidadRestante, disponibilidad_cantidad 
+            FROM disponiblidad_semanal 
+            WHERE id = %s
+        """, [consecutivoDisponibilidad])
+        disponibilidad = cursor.fetchone()
+        
+        if disponibilidad:
+            disponibilidadRestante, disponibilidad_cantidad = disponibilidad
+            nueva_disponibilidad_restante = disponibilidadRestante - cerdosDespachados
+             
+            
+            cursor.execute("""
+                UPDATE disponiblidad_semanal
+                SET disponibilidadRestante = %s
+                WHERE id = %s
+            """, [nueva_disponibilidad_restante, consecutivoDisponibilidad])
+            transaction.commit()
 
 
 
