@@ -405,7 +405,7 @@
                                                     viernes: '',
                                                     sabado: '',
                                                     domingo: '',
-                                                    disponibleRestante: item.disponibilidadRestante,
+                                                    disponibleRestante: item.disponibilidad_cantidad,
                                                     id: item.id_disponibilidad_individual
                                                 };
                                             }
@@ -617,7 +617,7 @@
                                 let granja = $(this).find('td:first').text();
                                 if (granja in nuevaDisponibilidad) {
                                     // Actualizar las celdas correspondientes
-                                    $(this).find('td').eq(9).text(nuevaDisponibilidad[granja].disponibilidadRestante);
+                                    $(this).find('td').eq(9).text(nuevaDisponibilidad[granja].disponibilidad_cantidad);
                                 }
                             });
                         }

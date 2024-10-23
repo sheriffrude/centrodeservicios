@@ -2550,7 +2550,7 @@ def guardar_disponibilidad(request):
             # Insertar los datos en la tabla
             cursor.execute("""
                 INSERT INTO disponiblidad_semanal 
-                (granja, fecha_disponibilidad, caracteristica, genero, disponibilidad_cantidad,disponibilidadRestante, 
+                (granja, fecha_disponibilidad, caracteristica, genero, disponibilidad_cantidad,disponibilidad_cantidad, 
                 peso_promedio_limite_inferior, peso_promedio_limite_superior, observaciones,GUID, USUARIO) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, [granja, fecha_disponibilidad, caracteristica, genero, disponibilidad_cantidad,disponibilidad_restante, 
@@ -2582,7 +2582,7 @@ def disponibilidad_semanal(request):
         with connections['prodsostenible'].cursor() as cursor:
             cursor.execute("""
                 SELECT 
-                    g.ID, g.GRANJAS, ds.id, ds.fecha_disponibilidad, ds.disponibilidadRestante, 
+                    g.ID, g.GRANJAS, ds.id, ds.fecha_disponibilidad, ds.disponibilidad_cantidad, 
                     di.id AS id_disponibilidad_individual, di.fechaDisponibilidad, di.cantidadCerdos
                 FROM 
                     prodsostenible.disponiblidad_semanal ds
@@ -2605,7 +2605,7 @@ def disponibilidad_semanal(request):
                     'nombre_granja': row[1],  
                     'consecutivoDisponibilidad': row[2], 
                     'fecha_disponibilidad': row[3],  
-                    'disponibilidadRestante': row[4],
+                    'disponibilidad_cantidad': row[4],
                     'id_disponibilidad_individual': row[5],
                     'fechaDisponibilidad': row[6],
                     'cantidadCerdos': row[7],  # cantidad de cerdos pedidos
@@ -2677,7 +2677,8 @@ def tabladespachos(request):
         with connections['prodsostenible'].cursor() as cursor:
             cursor.execute('''
                 SELECT 
-                    di.id, 
+                    di.id,
+                    di.consecutivoDisponibilidad, 
                     g.id AS granja_id, 
                     g.granjas AS granja_nombre, 
                     di.cantidadCerdos,
@@ -2717,7 +2718,7 @@ def tabladespachos(request):
 def registrar_despacho(request):
     if request.method == 'POST':
         try:
-            consecutivo = request.POST.get('consecutivoDespacho')
+            consecutivo = request.POST.get('consecutivoDisponibilidad')
             id = request.POST.get('consecutivoDespacho')
             granja_id = request.POST.get('granja_id')
             lote = request.POST.get('lote').upper()
@@ -2763,13 +2764,13 @@ def registrar_despacho(request):
                     LEFT JOIN despachoLotesGranjas dlg ON dlg.consecutivo_cercafe = di.id
                     WHERE di.id = %s
                     GROUP BY di.id
-                ''', [consecutivo])
+                ''', [id])
                 cerdos_sin_despachar = cursor.fetchone()[0]
 
             with connections['prodsostenible'].cursor() as cursor:
                 cursor.execute('''
                     INSERT INTO despachoLotesGranjas 
-                    (ConsecutivoDespacho, consecutivo_cercafe, granja, lote, cerdosDespachados, frigorifico, fechaEntrega, pesoTotal, placa, regic, regica, retiroalimento, conductor, edadprom,GUID, USUARIO) 
+                    (ConsecutivoDisponibilidad, consecutivo_cercafe, granja, lote, cerdosDespachados, frigorifico, fechaEntrega, pesoTotal, placa, regic, regica, retiroalimento, conductor, edadprom,GUID, USUARIO) 
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s)
                 ''', [
                     consecutivo, id, granja_id, lote, cerdos_despachados, frigorifico, fecha_entrega, peso_total, placa, regic, regica, retiro_alimento, conductor, edad_prom,guid,usuario
@@ -2785,35 +2786,32 @@ def registrar_despacho(request):
 
 
 
-@never_cache
-@login_required
 @csrf_exempt
+@login_required
+@never_cache
 def finalizar_registro(request):
     if request.method == 'POST':
-        consecutivo_disponibilidad = request.POST.get('id')  # Recibir el consecutivo
-        print(f"Recibido consecutivoDisponibilidad: {consecutivo_disponibilidad}")  # Verificar si el consecutivo está llegando correctamente
+        id = request.POST.get('id')  # Correct key to match the JS
 
-        if not consecutivo_disponibilidad:
-            print("Error: consecutivoDisponibilidad no recibido.")
-            return JsonResponse({'success': False, 'error': 'No se recibió el consecutivoDisponibilidad'})
+        if not id:
+            return JsonResponse({'success': False, 'error': 'No se recibió el Consecutivo Cercafe'})
 
         try:
-            # Actualizar el estado en la tabla prodsostenible.disponibilidadindividual
+            # Actualizar el estado en la base de datos
             with connections['prodsostenible'].cursor() as cursor:
                 cursor.execute('''
                     UPDATE prodsostenible.disponibilidadindividual
                     SET estado = 1
-                    WHERE consecutivoDisponibilidad = %s
-                ''', [consecutivo_disponibilidad])
+                    WHERE id = %s
+                ''', [id])
 
-            print(f"Registro actualizado con éxito para consecutivoDisponibilidad: {consecutivo_disponibilidad}")
             return JsonResponse({'success': True})
 
         except Exception as e:
-            print(f"Error al actualizar la base de datos: {str(e)}")
             return JsonResponse({'success': False, 'error': str(e)})
 
     return JsonResponse({'success': False, 'error': 'Método no permitido'})
+
 
 
 @never_cache
