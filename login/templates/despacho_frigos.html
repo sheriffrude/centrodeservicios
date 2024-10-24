@@ -456,7 +456,7 @@
                 e.preventDefault();  // Evitar la recarga de la página
 
                 var formData = $(this).serialize();  // Obtener los datos del formulario
-                $('#loadingLottie').show();  // Mostrar el loader de carga
+                $('#loadingLottie').hide();  // Mostrar el loader de carga
                 $('#Lottiex').hide();  // Asegurarse de que el error Lottie esté oculto
 
                 $.ajax({
