@@ -2695,8 +2695,9 @@ def tabladespachos(request):
                     dhc.frigorificos f ON di.frigorifico = f.id
                 LEFT JOIN 
                     despachoLotesGranjas dlg ON dlg.consecutivo_cercafe = di.id
-                WHERE 
-                    di.fechaDisponibilidad >= CURDATE() - INTERVAL 15 DAY
+                WHERE
+                    (di.estado = 0 OR di.estado IS NULL)
+                    AND di.fechaDisponibilidad >= CURDATE() - INTERVAL 15 DAY
                 GROUP BY 
                     di.id, g.id, g.granjas, di.cantidadCerdos, f.nombre, di.fechaDisponibilidad, di.observacion
                 ORDER BY 
@@ -2813,7 +2814,7 @@ def actualizar_disponibilidad_restante(consecutivoDisponibilidad, cerdosDespacha
 @never_cache
 def finalizar_registro(request):
     if request.method == 'POST':
-        id = request.POST.get('id')  # Correct key to match the JS
+        id = request.POST.get('id')  
 
         if not id:
             return JsonResponse({'success': False, 'error': 'No se recibió el Consecutivo Cercafe'})

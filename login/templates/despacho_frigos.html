@@ -133,9 +133,10 @@
                                         <!-- Finalizar Registros -->
                                         <td>
                                             {% if despacho.9 <= 0 %}
-                                            <button class="btn btn-success" data-toggle="modal" data-target="#finalizarModal" data-id="{{ despacho.0 }}">
+                                            <button type="button" class="btn btn-success" onclick="handleFinalizarRegistros('{{ despacho.0 }}')">
                                                 Finalizar Registros
                                             </button>
+                                    
                                             {% endif %}
                                         </td>
                                         
@@ -266,11 +267,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    </div>
-                    <!-- Lottie Loader -->
-                    <div id="loadingLottie"
+                        <div id="loadingLottie"
                         style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
                         <!-- Lottie Animation in an iframe -->
                         <iframe src="https://lottie.host/embed/0253666a-e63d-4e63-817c-6bc0bd1186ef/eWKMqDv3fh.json"
@@ -286,6 +283,11 @@
                     
                     
                     </div>
+                    </div>
+                    
+                    </div>
+                    <!-- Lottie Loader -->
+                    
 
                     <!-- Modal para finalizar registros -->
 
@@ -302,8 +304,8 @@
                                     <p>¿Desea terminar los registros?</p>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                    <button type="button" class="btn btn-primary" id="confirmarFinalizar">Aceptar</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-success" id="confirmarFinalizar">Aceptar</button>
                                 </div>
                             </div>
                         </div>
@@ -319,6 +321,13 @@
         <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
         <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs"
             type="module"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <!-- jQuery (required by Bootstrap's JS) -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <!-- Bootstrap JS -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
         <script>
             $(document).ready(function () {
                 // Detectar clic en los botones y pasar el id al modal
@@ -369,93 +378,146 @@
                     });
                 });
 
-                // Manejar la finalización de registros
-                var id = null;  // Almacenar el consecutivo
-
-                // Abrir modal de confirmación al hacer clic en "Finalizar Registros"
-                $('#finalizarModal').on('show.bs.modal', function (event) {
-                    var button = $(event.relatedTarget); // Botón que disparó el modal
-                    id = button.data('id'); // Extraer el consecutivo
-                    console.log("Consecutivo para finalizar:", consecutivoDisponibilidad);  // Verificar el consecutivo extraído
-                });
-
-                // Confirmar finalización de registros con AJAX
-                $('#confirmarFinalizar').on('click', function () {
-                    console.log("Enviando solicitud AJAX para finalizar el registro con ID:", id);
-                    $.ajax({
-                        url: "/finalizar_registro/",  // URL of your Django view
-                        method: "POST",
-                        data: {
-                            'id': id,  // Enviar el ID correcto
-                        },
-                        beforeSend: function (xhr) {
-                            xhr.setRequestHeader("X-CSRFToken", csrftoken);  // Enviar el token CSRF
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                alert('Registros finalizados con éxito.');
-                                $('#finalizarModal').modal('hide');
-                                location.reload();
-                            } else {
-                                alert('Error al finalizar los registros: ' + response.error);
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            alert('Ocurrió un error al finalizar los registros.');
-                        }
-                    });
-                });
-
-
-
-                // Manejar el envío del formulario de despacho
-                $('#formDespacho').on('submit', function (e) {
-                    e.preventDefault();  // Evitar que el formulario haga una recarga de página
-
-                    var formData = $(this).serialize();  // Obtener los datos del formulario
-                    $('#loadingLottie').show(); // Mostrar el loading GIF para la acción general
-                    $('#loadingLottiex').hide(); // Asegurarse de ocultar el error lottie al inicio
-
-                    $.ajax({
-                        url: $(this).attr('action'),  // Form action URL
-                        method: 'POST',
-                        data: formData,
-                        success: function (response) {
-                            if (response.success) {
-                                // Mostrar loading para éxito y ocultar el de error
-                                $('#loadingLottiex').hide();
-                                $('#loadingLottie').show();
-
-                                // Muestra un mensaje de éxito
-                                alert(response.message);
-
-                                // Mantener el loading GIF visible por 1 segundo y luego recargar la página
-                                setTimeout(function () {
-                                    location.reload();  // Recargar la página después de 1 segundo
-                                }, 1000);
-                                $('#modalSalidasDespacho').modal('hide');  // Cerrar el modal
-                            } else {
-                                // Ocultar el loading de éxito y mostrar el de error
-                                $('#loadingLottie').hide();
-                                $('#loadingLottiex').show(); // Mostrar el error lottie
-                                alert(response.error);
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            // Manejar errores de conexión o servidor
-                            $('#loadingLottie').hide();  // Ocultar el loading de éxito
-                            $('#loadingLottiex').show();  // Mostrar el error lottie
-                            alert('Ocurrió un error al registrar el despacho: ' + error);
-                        },
-                        complete: function() {
-                            // Ocurre al final de la solicitud en ambos casos
-                            $('#loadingLottie').hide();  // Ocultar el loading de éxito (opcional aquí si ya se maneja en success/error)
-                        }
-                    });
-                });
-
-
+                
             });
+            function handleFinalizarRegistros(id) {
+    // Mostrar el modal de confirmación
+                $('#finalizarModal').modal('show');
+                
+                // Cuando se hace clic en "Aceptar" en el modal
+                $('#finalizarModal .btn-success').off('click').on('click', function() {
+                    // Obtener el token CSRF de la cookie
+                    const csrftoken = getCookie('csrftoken');
+                    
+                    // Realizar la petición AJAX
+                    $.ajax({
+                        url: '/finalizar_registro/',
+                        type: 'POST',
+                        data: {
+                            'id': id
+                        },
+                        headers: {
+                            'X-CSRFToken': csrftoken
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Cerrar el modal
+                                $('#finalizarModal').modal('hide');
+                                
+                                // Mostrar mensaje de éxito
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Éxito',
+                                    text: 'Registro finalizado correctamente',
+                                    confirmButtonText: 'Aceptar'
+                                }).then((result) => {
+                                    // Recargar la página para actualizar la tabla
+                                    window.location.reload();
+                                });
+                            } else {
+                                // Mostrar mensaje de error
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.error || 'Ocurrió un error al finalizar el registro',
+                                    confirmButtonText: 'Aceptar'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            // Mostrar mensaje de error
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Ocurrió un error al procesar la solicitud',
+                                confirmButtonText: 'Aceptar'
+                            });
+                        }
+                    });
+                });
+            }
+
+            // Función auxiliar para obtener el token CSRF de las cookies
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            $('#formDespacho').on('submit', function (e) {
+                e.preventDefault();  // Evitar la recarga de la página
+
+                var formData = $(this).serialize();  // Obtener los datos del formulario
+                $('#loadingLottie').show();  // Mostrar el loader de carga
+                $('#Lottiex').hide();  // Asegurarse de que el error Lottie esté oculto
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        $('#loadingLottie').hide();  // Ocultar loader de carga
+                        if (response.success) {
+                            // Mostrar modal de éxito utilizando SweetAlert
+                            Swal.fire({
+                            title: 'Éxito',
+                            html: `
+                                <div style="text-align: center;">
+                                    <p>${response.message || 'El despacho se ha registrado correctamente'}</p>
+                                    <iframe src="https://lottie.host/embed/0253666a-e63d-4e63-817c-6bc0bd1186ef/eWKMqDv3fh.json"
+                                        style="border:none; width: 300px; height: 300px;"></iframe>
+                                </div>`,
+                            showConfirmButton: true,
+                            confirmButtonText: 'Aceptar'
+                        }).then((result) => {
+                            // Recargar la página para actualizar la tabla
+                            window.location.reload();
+                        });
+                        } else {
+                            // Mostrar modal de error utilizando SweetAlert
+                            Swal.fire({
+                            title: 'Error',
+                            html: `
+                                <div style="text-align: center;">
+                                    <p>${response.error || 'Ocurrió un error en el registro del despacho'}</p>
+                                    <iframe src="https://lottie.host/embed/4ee37462-1e7d-4c82-8dbd-bcba2d81659d/qK0xENiBsP.json"
+                                        style="border:none; width: 300px; height: 300px;"></iframe>
+                                </div>`,
+                            showConfirmButton: true,
+                            confirmButtonText: 'Aceptar'
+                        });
+                    }
+                  },
+                    error: function (xhr, status, error) {
+                        $('#loadingLottie').hide();  // Ocultar loader de carga
+                        // Mostrar modal de error utilizando SweetAlert
+                        Swal.fire({
+                        title: 'Error',
+                        html: `
+                            <div style="text-align: center;">
+                                <p>Ocurrió un error al procesar la solicitud: ${error}</p>
+                                <iframe src="https://lottie.host/embed/4ee37462-1e7d-4c82-8dbd-bcba2d81659d/qK0xENiBsP.json"
+                                    style="border:none; width: 300px; height: 300px;"></iframe>
+                            </div>`,
+                        showConfirmButton: true,
+                        confirmButtonText: 'Aceptar'
+                    });
+                },
+                    complete: function() {
+                        $('#loadingLottie').hide();  // Asegurarse de ocultar los loaders al finalizar la solicitud
+                        $('#Lottiex').hide();
+                    }
+                });
+            });
+
         </script>
 
 
