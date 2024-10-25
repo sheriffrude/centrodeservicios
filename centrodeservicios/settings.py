@@ -220,9 +220,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.office365.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'mesadeservicios@cercafe.com.co'
-EMAIL_HOST_PASSWORD = 'zxyskzbzpmstbyfm'
-DEFAULT_FROM_EMAIL = 'mesadeservicios@cercafe.com.co'
+EMAIL_HOST_USER = 'info@cercafe.com.co'
+EMAIL_HOST_PASSWORD = 'kqstwmzgsvwctmmm'
+DEFAULT_FROM_EMAIL = 'info@cercafe.com.co'
 
 
 email_from = 'mesadeservicios@cercafe.com.co'
