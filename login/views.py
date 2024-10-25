@@ -2913,9 +2913,9 @@ def tablaremisionnew(consecutivo_cercafe):
     intranetcercafe2_connection = connections['prodsostenible']
     with intranetcercafe2_connection.cursor() as cursor:
         if consecutivo_cercafe:
-            cursor.execute("SELECT ConsecutivoDespacho,consecutivo_cercafe,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from prodsostenible.despachoLotesGranjas WHERE consecutivo_cercafe = %s", [consecutivo_cercafe])
+            cursor.execute("SELECT ConsecutivoDisponibilidad,consecutivo_cercafe,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from prodsostenible.despachoLotesGranjas WHERE consecutivo_cercafe = %s", [consecutivo_cercafe])
         else:
-            cursor.execute("SELECT ConsecutivoDespacho,consecutivo_cercafe,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from prodsostenible.despachoLotesGranjas")
+            cursor.execute("SELECT ConsecutivoDisponibilidad,consecutivo_cercafe,granja,lote,cerdosDespachados,frigorifico,fechaEntrega,pesoTotal,conductor,placa,regic,regica,retiroalimento,edadprom from prodsostenible.despachoLotesGranjas")
         remisionnew = cursor.fetchall()
     return remisionnew
 
@@ -2923,7 +2923,7 @@ def tablaremisionnew(consecutivo_cercafe):
 def filtered_data(start_date, end_date):
     with connections['prodsostenible'].cursor() as cursor:
         cursor.execute('''
-            SELECT ConsecutivoDespacho, consecutivo_cercafe, granja, lote, cerdosDespachados, frigorifico, 
+            SELECT ConsecutivoDisponibilidad, consecutivo_cercafe, granja, lote, cerdosDespachados, frigorifico, 
             fechaEntrega, pesoTotal, conductor, placa, regic, regica, retiroalimento, edadprom 
             FROM prodsostenible.despachoLotesGranjas
             WHERE fechaentrega BETWEEN %s AND %s
@@ -2957,7 +2957,7 @@ def generar_excel(request):
     worksheet = workbook.add_worksheet()
 
     # Escribir los encabezados
-    headers = ['ConsecutivoDespacho', 'consecutivo_cercafe', 'granja', 'lote', 'cerdosDespachados', 'frigorifico', 
+    headers = ['ConsecutivoDisponibilidad', 'consecutivo_cercafe', 'granja', 'lote', 'cerdosDespachados', 'frigorifico', 
                'fechaEntrega', 'pesoTotal', 'conductor', 'placa', 'regic', 'regica', 'retiroalimento', 'edadprom']
     for i, header in enumerate(headers):
         worksheet.write(0, i, header)
@@ -3030,7 +3030,7 @@ def generar_pdf(request):
         with intranetcercafe2_connection.cursor() as cursor:
             cursor.execute("""
                 SELECT 
-                    d.ConsecutivoDespacho, 
+                    d.ConsecutivoDisponibilidad, 
                     d.consecutivo_cercafe, 
                     d.granja, 
                     d.lote, 

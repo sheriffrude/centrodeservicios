@@ -85,6 +85,7 @@
                         Proyeccion Hembras</button>
                     <button id="btn_ventas" class="btn btn-repor btn-lg" onclick="mostrartecnicacia()">Reporte Tecnica
                         Cia</button>
+                    <button id="btn_despacho" class="btn btn-repor btn-lg" onclick="mostrartecnicacia1()" style="margin-top: 8px;">Reporte Despacho Frigorificos</button>
                 </div>
             </section>
 
@@ -348,6 +349,54 @@
                     </div>
                 </section>
             </div>
+
+            <div class="contener">
+                <section class="content">
+                    <div class="card" id="tecnicacia_table" style="display:none;">
+                        <div class="card-header">
+                            <h3 class="card-title">REPORTE DESPACHO FRIGORIFICOS</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tabla_tecnicacia1" class="table table-bordered table-hover ">
+                                <thead>
+
+                                    <tr>
+                                        <th>LINEA GENETICA</th>
+                                        <th>CANTIDAD MACHOS</th>
+                                        <th>PORCENTAJE DISTRIBUCION MACHOS</th>
+                                        <th>CANTIDAD DESECHADO</th>
+                                        <th>PORCENTAJE DESCECHADO</th>
+                                        <th>DOSIS PRODUCIDAS</th>
+                                        <th>DOSIS VENDIDAS</th>
+                                        <th>PROMEDIO MORFOLOGIA</th>
+                                        <th>OBSERVACION</th>
+                                        <th>FECHA CORTE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for tecnicaci in tecnicacia %}
+                                    <tr>
+                                        <td>{{ tecnicaci.0 }}</td>
+                                        <td>{{ tecnicaci.1 }}</td>
+                                        <td>{{ tecnicaci.2 }}</td>
+                                        <td>{{ tecnicaci.3 }}</td>
+                                        <td>{{ tecnicaci.4 }}</td>
+                                        <td>{{ tecnicaci.5 }}</td>
+                                        <td>{{ tecnicaci.6 }}</td>
+                                        <td>{{ tecnicaci.7 }}</td>
+                                        <td>{{ tecnicaci.8 }}</td>
+                                        <td>{{ tecnicaci.9 }}</td>
+                                    </tr>
+                                    {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
             <!-- /.content -->
         
         <!-- /.content-wrapper -->
@@ -367,6 +416,7 @@
                 document.getElementById("pfinalcon_table").style.display = "none";
                 document.getElementById("prohembras_table").style.display = "none";
                 document.getElementById("tecnicacia_table").style.display = "none";
+                document.getElementById("tecnicacia_table1").style.display = "none";
 
             }
 
@@ -377,6 +427,7 @@
                 document.getElementById("pfinalcon_table").style.display = "none";
                 document.getElementById("prohembras_table").style.display = "none";
                 document.getElementById("tecnicacia_table").style.display = "none";
+                document.getElementById("tecnicacia_table1").style.display = "none";
 
             }
             function mostrarakgvendidos() {
@@ -386,6 +437,7 @@
                 document.getElementById("pfinalcon_table").style.display = "none";
                 document.getElementById("prohembras_table").style.display = "none";
                 document.getElementById("tecnicacia_table").style.display = "none";
+                document.getElementById("tecnicacia_table1").style.display = "none";
 
             }
             function mostrarpfinalcon() {
@@ -395,6 +447,7 @@
                 document.getElementById("pfinalcon_table").style.display = "block";
                 document.getElementById("prohembras_table").style.display = "none";
                 document.getElementById("tecnicacia_table").style.display = "none";
+                document.getElementById("tecnicacia_table1").style.display = "none";
 
             }
             function mostrarprohembras() {
@@ -404,6 +457,7 @@
                 document.getElementById("pfinalcon_table").style.display = "none";
                 document.getElementById("prohembras_table").style.display = "block";
                 document.getElementById("tecnicacia_table").style.display = "none";
+                document.getElementById("tecnicacia_table1").style.display = "none";
 
             }
             function mostrartecnicacia() {
@@ -413,6 +467,17 @@
                 document.getElementById("pfinalcon_table").style.display = "none";
                 document.getElementById("prohembras_table").style.display = "none";
                 document.getElementById("tecnicacia_table").style.display = "block";
+                document.getElementById("tecnicacia_table1").style.display = "none";
+
+            }
+            function mostrartecnicacia1() {
+                document.getElementById("abhembras_table").style.display = "none";
+                document.getElementById("fortuitos_table").style.display = "none";
+                document.getElementById("kgvendidos_table").style.display = "none";
+                document.getElementById("pfinalcon_table").style.display = "none";
+                document.getElementById("prohembras_table").style.display = "none";
+                document.getElementById("tecnicacia_table").style.display = "none";
+                document.getElementById("tecnicacia_table1").style.display = "block";
 
             }
             $(document).ready(function () {
@@ -422,7 +487,7 @@
                 $("#tabla_pfinalcon").DataTable();
                 $("#tabla_prohembras").DataTable();
                 $("#tabla_tecnicacia").DataTable();
-
+                $("#tabla_tecnicacia1").DataTable();
             });
         </script>
         <!-- script para llamar los html en el contenido -->
