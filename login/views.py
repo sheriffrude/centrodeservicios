@@ -1,3 +1,4 @@
+import datetime
 import json
 import uuid
 from django.shortcuts import redirect, render
@@ -27,7 +28,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
 from uuid import uuid4
 import os
-import datetime
+
 
 from django.contrib.auth.views import PasswordChangeView
 from django.urls import reverse_lazy
@@ -1278,7 +1279,7 @@ def cargar_excel_beneficiorendimientoinc(request):
 
 
 
-from datetime import datetime as dt
+from datetime import datetime as dt, timedelta
 from openpyxl.cell.cell import Cell
 
 @never_cache
@@ -2499,7 +2500,8 @@ def tablarepsstseveridad(request):
 
 
 from django.db.models import Q
-import datetime
+
+
 
 @never_cache
 @login_required
@@ -2523,44 +2525,92 @@ def disponiblilidad(request):
 def pedido_granja(request):
     return render(request, 'pedido_granja.html', {'granjas': granjas})
 
+def get_week_range(date):
+    """Obtiene el rango de fechas de la semana (domingo a sábado) para una fecha dada"""
+    # Convertir la fecha string a objeto datetime si es necesario
+    if isinstance(date, str):
+        date = dt.strptime(date, '%Y-%m-%d')
+    
+    # Obtener el domingo de la semana
+    start_of_week = date - timedelta(days=date.weekday() + 1)
+    # Obtener el sábado de la semana
+    end_of_week = start_of_week + timedelta(days=6)
+    
+    return start_of_week, end_of_week
+@login_required
+def verificar_disponibilidad(request):
+    fecha = request.GET.get('fecha')
+    granja = request.GET.get('granja')
+    
+    start_of_week, end_of_week = get_week_range(fecha)
+    
+    with connections['prodsostenible'].cursor() as cursor:
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM disponiblidad_semanal 
+            WHERE granja = %s 
+            AND fecha_disponibilidad BETWEEN %s AND %s
+        """, [granja, start_of_week, end_of_week])
+        
+        count = cursor.fetchone()[0]
+        
+    return JsonResponse({'existe': count > 0})
 
 @never_cache
 @never_cache
 @login_required
 def guardar_disponibilidad(request):
     if request.method == 'POST':
-        # Obtén los datos del formulario
-        consecutivocercafe = request.POST.get('id')
         granja = request.POST.get('granja').upper()
-        fecha_disponibilidad = request.POST.get('fecha_disponibilidad').upper()
-        caracteristica = request.POST.get('caracteristica').upper()
-        genero = request.POST.get('genero').upper()
-        disponibilidad_cantidad = request.POST.get('disponibilidad_cantidad').upper()
-        disponibilidad_restante = disponibilidad_cantidad.upper()
-        peso_promedio_limite_inferior = request.POST.get('peso_promedio_limite_inferior').upper()
-        peso_promedio_limite_superior = request.POST.get('peso_promedio_limite_superior').upper()
-        observaciones = request.POST.get('observaciones', '').upper()
-        guid = str(uuid.uuid4())
+        fecha_disponibilidad = request.POST.get('fecha_disponibilidad')
         
-        # Obtener el usuario autenticado
-        usuario = request.user.username
-
-        # Abre una conexión a la base de datos
+        # Verificar si ya existe una disponibilidad para esta granja en la misma semana
+        start_of_week, end_of_week = get_week_range(fecha_disponibilidad)
+        
         with connections['prodsostenible'].cursor() as cursor:
-            # Insertar los datos en la tabla
             cursor.execute("""
-                INSERT INTO disponiblidad_semanal 
-                (granja, fecha_disponibilidad, caracteristica, genero, disponibilidad_cantidad,disponibilidadRestante, 
-                peso_promedio_limite_inferior, peso_promedio_limite_superior, observaciones,GUID, USUARIO) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, [granja, fecha_disponibilidad, caracteristica, genero, disponibilidad_cantidad,disponibilidad_restante, 
-                    peso_promedio_limite_inferior, peso_promedio_limite_superior, observaciones, guid, usuario])
+                SELECT COUNT(*) 
+                FROM disponiblidad_semanal 
+                WHERE granja = %s 
+                AND fecha_disponibilidad BETWEEN %s AND %s
+            """, [granja, start_of_week, end_of_week])
+            
+            count = cursor.fetchone()[0]
+            
+            if count > 0:
+                messages.error(request, 'Ya existe una disponibilidad para esta granja en la semana seleccionada')
+                return redirect('disponiblilidad')  # Redirige de vuelta al formulario
+        
+            # Si no existe, continuar con el guardado
+            caracteristica = request.POST.get('caracteristica').upper()
+            genero = request.POST.get('genero').upper()
+            disponibilidad_cantidad = request.POST.get('disponibilidad_cantidad').upper()
+            disponibilidad_restante = disponibilidad_cantidad
+            peso_promedio_limite_inferior = request.POST.get('peso_promedio_limite_inferior').upper()
+            peso_promedio_limite_superior = request.POST.get('peso_promedio_limite_superior').upper()
+            observaciones = request.POST.get('observaciones', '').upper()
+            guid = str(uuid.uuid4())
+            usuario = request.user.username
 
-    
-        messages.success(request, 'Disponibilidad subida Exitosamente')
+            try:
+                with connections['prodsostenible'].cursor() as cursor:
+                    cursor.execute("""
+                        INSERT INTO disponiblidad_semanal 
+                        (granja, fecha_disponibilidad, caracteristica, genero, disponibilidad_cantidad, 
+                        disponibilidadRestante, peso_promedio_limite_inferior, peso_promedio_limite_superior, 
+                        observaciones, GUID, USUARIO) 
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """, [granja, fecha_disponibilidad, caracteristica, genero, disponibilidad_cantidad,
+                        disponibilidad_restante, peso_promedio_limite_inferior, peso_promedio_limite_superior,
+                        observaciones, guid, usuario])
+                    
+                messages.success(request, 'Disponibilidad subida exitosamente')
+                return redirect('home')
+            except Exception as e:
+                messages.error(request, f'Error al guardar la disponibilidad: {str(e)}')
+                return redirect('disponiblilidad')
 
-        return redirect('home')
-    return render(request, '/home/')
+    return render(request, 'disponible.html')
 
 
 

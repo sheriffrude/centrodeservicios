@@ -239,6 +239,21 @@
                         }
                     });
                 });
+                function verificarFecha() {
+                    const fecha = document.getElementById('fecha_disponibilidad').value;
+                    const granja = document.getElementById('granjas').value;
+                    
+                    if (fecha && granja) {
+                        fetch(`/verificar_disponibilidad/?fecha=${fecha}&granja=${granja}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.existe) {
+                                    alert('Ya existe una disponibilidad para esta granja en la semana seleccionada');
+                                    document.getElementById('fecha_disponibilidad').value = '';
+                                }
+                            });
+                    }
+                }
             </script>
 
 

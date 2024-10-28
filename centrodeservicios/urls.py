@@ -145,6 +145,9 @@ urlpatterns = [
     path('update_pedido/', views.update_pedido, name='update_pedido'),
     path('placas/', views.placas, name='placas'),
     path('conductores/', views.conductores, name='conductores'),
+    path('verificar_disponibilidad/', views.verificar_disponibilidad, name='verificar_disponibilidad'),
+
+    
 #-------------------------------API's ------------------------------------------
 #-----------------------------GENERADAS-----------------------------------------
 #------------------------------INTERNAS-----------------------------------------
