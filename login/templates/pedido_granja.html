@@ -142,13 +142,13 @@
                         <div class="row">
                             <div class="col-sm-12" style="border-right: 1px solid #ddd;">
                                 <div class="row" style="margin-top: 1.8%;">
-                                    <div class="col-sm-5">
+                                    <div class="col-sm-6">
                                         <button type="button" class="btn btn-block btn-outline-dark btn-lg" style="width: 50%;"
                                             data-toggle="modal" data-target="#ModalRangoFecha">
-                                            <b>Semana</b>
+                                            <b> Filtrar Semana</b>
                                         </button>
                                         <br>
-                                        <p class="text-info"><strong>
+                                        <p class="text-info" style="font-size:larger;"><strong>
                                             Fecha filtrada desde: <span id="fechaInicioTexto"class="text-dark"><strong>N/A</strong></span> Hasta: <span id="fechaFinTexto"class="text-dark">N/A</span></strong>
                                         </p>
                                         
@@ -261,7 +261,8 @@
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="staticBackdropLabel">Semana</h5>
+                                    <h5 class="modal-title" id="staticBackdropLabel"> <strong style="font-size:x-large"> Filtrar Semana</strong> <br>Ingresa una semana empezando por Domingo y terminada en Sabado </h5>
+                                   
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">×</span>
                                     </button>
@@ -487,6 +488,9 @@
                                                 </tr>`
                                             );
                                         }
+                                        $('#ModalRangoFecha').modal('hide').removeClass('show').attr('aria-hidden', 'true');
+                                        $('.modal-backdrop').hide();
+                                        
                                     },
                                     error: function (error) {
                                         console.log('Error:', error);
