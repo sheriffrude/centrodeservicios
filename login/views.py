@@ -2520,6 +2520,7 @@ def repremision(request):
 @login_required
 def disponiblilidad(request):
     return render(request, 'disponible.html', {'granjas': granjas})
+
 @never_cache
 @login_required
 def pedido_granja(request):
@@ -2696,9 +2697,8 @@ def solicitar_pedido(request):
 
 
 
-
-@login_required
 @never_cache
+@login_required
 def repdespacho(request):
     despachos = tabladespachos(request)
     # Obtener placas
@@ -3142,16 +3142,13 @@ def generar_pdf(request):
         totalcerdos1 = str(totalcerdos)
         promedio = total_cantidad / totalcerdos if totalcerdos > 0 else 0
         promedio_formateado = f'{promedio:.2f}'
-        
-        # Extraer los nombres del conductor y la placa de los resultados
-        conductor_nombre = remisionnew[0][8] if remisionnew else None  # Conductor nombre
-        placa_nombre = remisionnew[0][9] if remisionnew else None  # Placa nombre
-
+        conductor_nombre = remisionnew[0][8] if remisionnew else None  
+        placa_nombre = remisionnew[0][9] if remisionnew else None  
         input_data = (resultados_dhc[0][0], resultados_dhc[0][2], consecutivo_cercafe, totalcerdos1, total_cantidad1, placa_nombre, conductor_nombre, resultados_dhc[0][3])
 
         generate_qr_code(input_data)
         
-        # Renderizar el HTML con los datos de la remisión filtrados
+        # Renderiza el HTML con los datos de la remisión filtrados
         html = render_to_string('remision_pdf.html', {
             'remisiones': remisiones,
             'promedio_formateado': promedio_formateado,
@@ -3160,10 +3157,10 @@ def generar_pdf(request):
             'consecutivo_cercafe': consecutivo_cercafe,
             'total_cantidad': total_cantidad,
             'totalcerdos': totalcerdos,
-            'nombre_frigorifico': nombre_frigorifico,  # Agregar el nombre del frigorífico aquí
+            'nombre_frigorifico': nombre_frigorifico, 
             'retiro_alimento': remisionnew[0][12] if remisionnew else None,
-            'conductor_nombre': conductor_nombre,  # Agregar nombre del conductor
-            'placa_nombre': placa_nombre,  # Agregar nombre de la placa
+            'conductor_nombre': conductor_nombre, 
+            'placa_nombre': placa_nombre,  
         })
         
         # Convertir el HTML en PDF utilizando wkhtmltopdf

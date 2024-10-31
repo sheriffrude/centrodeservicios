@@ -46,7 +46,7 @@
                                     {% firstof request.user.get_short_name request.user.get_username %}
                                     <span class="float-right text-sm text-danger"><i class="fas fa-online"></i></span>
                                 </h3>
-                                <p class="text-sm"><small>{% trans 'Member since' %} :</small></p>
+                                <p class="text-sm"><small>{% trans 'Mienbro Desde' %} :</small></p>
                                 <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> <small>{{ request.user.date_joined }}</small></p>
                             </div>
                         </div>
@@ -55,8 +55,8 @@
                     <div class="dropdown-divider"></div>
                     <div class="dropdown-footer">
                         <a href="{% block change_password_url %}{% url 'password_change' %}{% endblock %}"
-                            class="btn btn-primary btn-sm">{% trans 'Change password' %}</a>
-                        <a href="/exit" class="btn btn-danger btn-sm">{%trans 'Sign out'%}</a>
+                            class="btn btn-primary btn-sm">{% trans 'Cambiar contraseña' %}</a>
+                        <a href="/exit" class="btn btn-danger btn-sm">{%trans 'Cerrar Sesion'%}</a>
                     </div>
 
                 </div>

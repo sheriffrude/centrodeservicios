@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Disponibilidad</title>
+    <title>Pedido a granja</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
@@ -117,23 +117,10 @@
         <div class="content-wrapper">
             {% block content_header %}
             <section class="content-header">
-                {% block no_heading %}
-                <h1>
-                    {% block page_name %}{% endblock %}
-                    <div class="header-actions">
-                        {% block page_actions %}{% endblock %}
-                    </div>
-                    {% block no_description %}
-                    <small>{% block page_description %}{% endblock %}</small>
-                    {% endblock %}
-                </h1>
-                {% block breadcrumbs %}
-                {% endblock %}
-                {% endblock no_heading %}
                 <h1>Pedidos a Granja</h1>
             </section>
-
             {% endblock %}{% endblock %}
+
             <div class="container-fluid">
                 <div class="">
                     <div class="loader" style="display: none;"></div>
@@ -143,17 +130,19 @@
                             <div class="col-sm-12" style="border-right: 1px solid #ddd;">
                                 <div class="row" style="margin-top: 1.8%;">
                                     <div class="col-sm-6">
-                                        <button type="button" class="btn btn-block btn-outline-dark btn-lg" style="width: 50%;"
-                                            data-toggle="modal" data-target="#ModalRangoFecha">
+                                        <button type="button" class="btn btn-block btn-outline-dark btn-lg"
+                                            style="width: 50%;" data-toggle="modal" data-target="#ModalRangoFecha">
                                             <b> Filtrar Semana</b>
                                         </button>
                                         <br>
                                         <p class="text-info" style="font-size:larger;"><strong>
-                                            Fecha filtrada desde: <span id="fechaInicioTexto"class="text-dark"><strong>N/A</strong></span> Hasta: <span id="fechaFinTexto"class="text-dark">N/A</span></strong>
+                                                Fecha filtrada desde: <span id="fechaInicioTexto"
+                                                    class="text-dark"><strong>N/A</strong></span> Hasta: <span
+                                                    id="fechaFinTexto" class="text-dark">N/A</span></strong>
                                         </p>
-                                        
+
                                     </div>
-                                    
+
                                     <div class="col-sm-9">
                                         <form class="form-inline">
                                             <input id="FechaInicio" name="FechaInicio" class="form-control"
@@ -213,17 +202,20 @@
                                     </table>
                                 </div>
                             </div>
-                            
 
-                           
+
+
                         </div>
                     </div>
-                    <div id="loadingLottie1" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
+                    <div id="loadingLottie1"
+                        style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
                         <!-- Lottie Animation in an iframe -->
-                    <iframe src="https://lottie.host/embed/ff5b9cc8-2cb0-4f82-92b9-c87520a7ed60/fbHdBVDFFC.json" style="border:none; width: 450px; height: 450px;"></iframe>
-                    
+                        <iframe src="https://lottie.host/embed/ff5b9cc8-2cb0-4f82-92b9-c87520a7ed60/fbHdBVDFFC.json"
+                            style="border:none; width: 450px; height: 450px;"></iframe>
+
                     </div>
-                    <div class="modal fade" id="editPedidosModal" tabindex="-1" role="dialog" aria-labelledby="editPedidosModalLabel" aria-hidden="true">
+                    <div class="modal fade" id="editPedidosModal" tabindex="-1" role="dialog"
+                        aria-labelledby="editPedidosModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -234,7 +226,8 @@
                                 </div>
                                 <div class="modal-body">
                                     <form id="editPedidosForm">
-                                        <input type="hidden" id="consecutivoDisponibilidad" name="consecutivoDisponibilidad">
+                                        <input type="hidden" id="consecutivoDisponibilidad"
+                                            name="consecutivoDisponibilidad">
                                         <table class="table">
                                             <thead>
                                                 <tr>
@@ -248,21 +241,24 @@
                                                 <!-- Las filas se llenarán dinámicamente -->
                                             </tbody>
                                         </table>
-                                        <button type="button" class="btn btn-primary" onclick="guardarPedidosEditados()">Guardar Cambios</button>
+                                        <button type="button" class="btn btn-primary"
+                                            onclick="guardarPedidosEditados()">Guardar Cambios</button>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Modal para el rango de fecha -->
                     <div class="modal fade" id="ModalRangoFecha" data-backdrop="static" data-keyboard="false"
                         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="staticBackdropLabel"> <strong style="font-size:x-large"> Filtrar Semana</strong> <br>Ingresa una semana empezando por Domingo y terminada en Sabado </h5>
-                                   
+                                    <h5 class="modal-title" id="staticBackdropLabel"> <strong style="font-size:x-large">
+                                            Filtrar Semana</strong> <br>Ingresa una semana empezando por Domingo y
+                                        terminada en Sabado </h5>
+
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">×</span>
                                     </button>
@@ -304,10 +300,11 @@
 
                             </div>
                             <div class="col-sm-6">
-                                <a id="bt_add"  class="btn btn-app bg-secondary" style=" margin-top: -2.2%; margin-bottom: 0%; float: left">
+                                <a id="bt_add" class="btn btn-app bg-secondary"
+                                    style=" margin-top: -2.2%; margin-bottom: 0%; float: left">
                                     <i class="fas fa-piggy-bank"></i>solicitar cerdos
                                 </a>
-                                
+
                             </div>
                             <input type="hidden" id="consecutivoDisponibilidad" name="consecutivoDisponibilidad"
                                 value="">
@@ -338,8 +335,9 @@
 
                     {% block javascript %}
                     {% include 'adminlte/lib/_scripts.html' %}
-
+                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
                     <!-- Importación de scripts -->
+                    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
                     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
                     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -375,7 +373,7 @@
                                     success: function (response) {
                                         const groupedData = {};
                                         const uniqueGranjas = new Set();
-                                        
+
                                         $('#granjas').empty();
                                         $('#granjas').append('<option value="">Selecciona una opción</option>');
                                         response.forEach(function (item) {
@@ -491,7 +489,7 @@
                                         }
                                         $('#ModalRangoFecha').modal('hide').removeClass('show').attr('aria-hidden', 'true');
                                         $('.modal-backdrop').hide();
-                                        
+
                                     },
                                     error: function (error) {
                                         console.log('Error:', error);
@@ -578,61 +576,61 @@
                         }
 
                         function guardarPedidosEditados() {
-                        let pedidos = [];
-                        
-                        // Recorre todas las filas del modal y recopila los datos editados
-                        $('#pedidosBody tr').each(function () {
-                            let id = $(this).find('input[data-id]').data('id');
-                            let cantidad = $(this).find('input[name="cantidad[]"]').val();
-                            let frigorifico = $(this).find('select[name="frigorifico[]"]').val();
-                            let fecha = $(this).find('input[name="fecha[]"]').val();
-                            let observacion = $(this).find('input[name="observacion[]"]').val();
+                            let pedidos = [];
 
-                            // Agrega los datos del pedido al array
-                            pedidos.push({ id, cantidad, frigorifico, fecha, observacion });
-                        });
+                            // Recorre todas las filas del modal y recopila los datos editados
+                            $('#pedidosBody tr').each(function () {
+                                let id = $(this).find('input[data-id]').data('id');
+                                let cantidad = $(this).find('input[name="cantidad[]"]').val();
+                                let frigorifico = $(this).find('select[name="frigorifico[]"]').val();
+                                let fecha = $(this).find('input[name="fecha[]"]').val();
+                                let observacion = $(this).find('input[name="observacion[]"]').val();
 
-                        // Enviar los pedidos editados al servidor mediante AJAX
-                        $.ajax({
-                            url: '/update_pedido/',  // Asegúrate de que la URL sea correcta
-                            type: 'POST',
-                            data: {
-                                'pedidos': JSON.stringify(pedidos),  // Serializamos el array de pedidos
-                                'csrfmiddlewaretoken': '{{ csrf_token }}'  // Asegúrate de incluir el token CSRF
-                            },
-                            success: function (response) {
-                                if (response.success) {
-                                    Swal.fire({
-                                        title: 'Éxito',
-                                        html: '<div style="text-align: center;">Pedidos actualizados correctamente</div>',
-                                        showConfirmButton: true,
-                                        confirmButtonText: 'Aceptar',
-                                        icon: 'success'
-                                    }).then(() => {
-                                        $('#editPedidosModal').modal('hide');  // Cerrar el modal
-                                        location.reload();  // Recargar la página para ver los cambios
-                                    });
-                                } else {
-                                    Swal.fire({
-                                        title: 'Advertencia',
-                                        html: '<div style="text-align: center;">Error al actualizar los pedidos: ' + response.error + '</div>',
-                                        showConfirmButton: true,
-                                        confirmButtonText: 'Aceptar',
-                                        icon: 'warning'
-                                    });
+                                // Agrega los datos del pedido al array
+                                pedidos.push({ id, cantidad, frigorifico, fecha, observacion });
+                            });
+
+                            // Enviar los pedidos editados al servidor mediante AJAX
+                            $.ajax({
+                                url: '/update_pedido/',  // Asegúrate de que la URL sea correcta
+                                type: 'POST',
+                                data: {
+                                    'pedidos': JSON.stringify(pedidos),  // Serializamos el array de pedidos
+                                    'csrfmiddlewaretoken': '{{ csrf_token }}'  // Asegúrate de incluir el token CSRF
+                                },
+                                success: function (response) {
+                                    if (response.success) {
+                                        Swal.fire({
+                                            title: 'Éxito',
+                                            html: '<div style="text-align: center;">Pedidos actualizados correctamente</div>',
+                                            showConfirmButton: true,
+                                            confirmButtonText: 'Aceptar',
+                                            icon: 'success'
+                                        }).then(() => {
+                                            $('#editPedidosModal').modal('hide');  // Cerrar el modal
+                                            location.reload();  // Recargar la página para ver los cambios
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            title: 'Advertencia',
+                                            html: '<div style="text-align: center;">Error al actualizar los pedidos: ' + response.error + '</div>',
+                                            showConfirmButton: true,
+                                            confirmButtonText: 'Aceptar',
+                                            icon: 'warning'
+                                        });
+                                    }
+                                },
+                                error: function (error) {
+                                    console.error('Error al actualizar los pedidos:', error);
                                 }
-                            },
-                            error: function (error) {
-                                console.error('Error al actualizar los pedidos:', error);
-                            }
-                        });
-                    }
+                            });
+                        }
 
 
                         function eliminarFila(elemento) {
                             $(elemento).closest('tr').remove();
                         }
-                        
+
 
 
                         function actualizarDisponibilidad(nuevaDisponibilidad) {
@@ -742,7 +740,7 @@
                                     });
                                     return;
                                 }
-                                
+
                                 // Enviar datos al servidor
                                 $.ajax({
                                     url: '/solicitar_pedido/',
@@ -786,10 +784,14 @@
                                 });
                             });
                         });
-                     
+
                     </script>
 
+                    <!-- script para llamar los html en el contenido -->
+                    <script src="{% static 'custom.js' %}"></script>
                     {% endblock %}
+                </div>
+            </div>
 </body>
 
 </html>
