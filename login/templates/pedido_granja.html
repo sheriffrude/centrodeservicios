@@ -343,6 +343,7 @@
                     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
                     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                     <!-- Scripts personalizados -->
                     <script>
                         $(document).ready(function () {
@@ -561,7 +562,13 @@
                                             }
                                         });
                                     } else {
-                                        alert('No se encontraron pedidos para editar');
+                                        Swal.fire({
+                                            title: 'Advertencia',
+                                            html: '<div style="text-align: center;">No se encontraron pedidos para editar</div>',
+                                            showConfirmButton: true,
+                                            confirmButtonText: 'Aceptar',
+                                            icon: 'warning'
+                                        });
                                     }
                                 },
                                 error: function (error) {
@@ -595,11 +602,24 @@
                             },
                             success: function (response) {
                                 if (response.success) {
-                                    alert('Pedidos actualizados correctamente');
-                                    $('#editPedidosModal').modal('hide');  // Cerrar el modal
-                                    location.reload();  // Recargar la página para ver los cambios
+                                    Swal.fire({
+                                        title: 'Éxito',
+                                        html: '<div style="text-align: center;">Pedidos actualizados correctamente</div>',
+                                        showConfirmButton: true,
+                                        confirmButtonText: 'Aceptar',
+                                        icon: 'success'
+                                    }).then(() => {
+                                        $('#editPedidosModal').modal('hide');  // Cerrar el modal
+                                        location.reload();  // Recargar la página para ver los cambios
+                                    });
                                 } else {
-                                    alert('Error al actualizar los pedidos: ' + response.error);
+                                    Swal.fire({
+                                        title: 'Advertencia',
+                                        html: '<div style="text-align: center;">Error al actualizar los pedidos: ' + response.error + '</div>',
+                                        showConfirmButton: true,
+                                        confirmButtonText: 'Aceptar',
+                                        icon: 'warning'
+                                    });
                                 }
                             },
                             error: function (error) {
@@ -641,7 +661,13 @@
 
 
                                         if (!granjas) {
-                                            alert('Por favor, selecciona una granja.');
+                                            Swal.fire({
+                                                title: 'Advertencia',
+                                                html: '<div style="text-align: center;">Por favor, selecciona una granja.</div>',
+                                                showConfirmButton: true,
+                                                confirmButtonText: 'Aceptar',
+                                                icon: 'warning'
+                                            });
                                             return;
                                         }
 
@@ -707,10 +733,16 @@
                                 });
 
                                 if (!granjas || productos.length === 0) {
-                                    alert('Por favor, selecciona una granja');
+                                    Swal.fire({
+                                        title: 'Advertencia',
+                                        html: '<div style="text-align: center;">Por favor, diligencia todos los campos</div>',
+                                        showConfirmButton: true,
+                                        confirmButtonText: 'Aceptar',
+                                        icon: 'warning'
+                                    });
                                     return;
                                 }
-                                $('#loadingLottie1').show();
+                                
                                 // Enviar datos al servidor
                                 $.ajax({
                                     url: '/solicitar_pedido/',
@@ -723,13 +755,31 @@
                                     },
                                     success: function (response) {
                                         if (response.success) {
-                                            alert('Pedido realizado con éxito');
-                                            $('#loadingLottie1').hide();
-                                            location.reload();
+                                            Swal.fire({
+                                                title: 'Éxito',
+                                                html: `
+                                                    <div style="text-align: center;">
+                                                        <p>${response.message || 'Pedido realizado correctamente'}</p>
+                                                        <iframe src="https://lottie.host/embed/5167aa24-658e-42f5-983c-33f92680b92a/GMQbNTjKIy.json" 
+                                                        style="border:none; width: 300px; height: 300px;"></iframe>
+                                                            </iframe>
+                                                    </div>`,
+                                                showConfirmButton: true,
+                                                confirmButtonText: 'Aceptar',
+                                            }).then(() => {
+                                                location.reload();
+                                            });
                                         } else {
-                                            alert('Error al realizar el pedido: ' + response.error);
+                                            Swal.fire({
+                                                title: 'Advertencia',
+                                                html: '<div style="text-align: center;">Error al realizar el pedido: ' + response.error + '</div>',
+                                                showConfirmButton: true,
+                                                confirmButtonText: 'Aceptar',
+                                                icon: 'warning'
+                                            });
                                         }
                                     },
+
                                     error: function (error) {
                                         console.log('Error:', error);
                                     }

@@ -2578,8 +2578,7 @@ def guardar_disponibilidad(request):
             count = cursor.fetchone()[0]
             
             if count > 0:
-                messages.error(request, 'Ya existe una disponibilidad para esta granja en la semana seleccionada')
-                return redirect('disponiblilidad')  # Redirige de vuelta al formulario
+                return JsonResponse({'status': 'error', 'message': 'Ya existe una disponibilidad para esta granja en la semana seleccionada'})
         
             # Si no existe, continuar con el guardado
             caracteristica = request.POST.get('caracteristica').upper()
@@ -2604,11 +2603,9 @@ def guardar_disponibilidad(request):
                         disponibilidad_restante, peso_promedio_limite_inferior, peso_promedio_limite_superior,
                         observaciones, guid, usuario])
                     
-                messages.success(request, 'Disponibilidad subida exitosamente')
-                return redirect('home')
+                return JsonResponse({'status': 'success', 'message': 'Disponibilidad subida exitosamente'})
             except Exception as e:
-                messages.error(request, f'Error al guardar la disponibilidad: {str(e)}')
-                return redirect('disponiblilidad')
+                return JsonResponse({'status': 'error', 'message': f'Error al guardar la disponibilidad: {str(e)}'})
 
     return render(request, 'disponible.html')
 

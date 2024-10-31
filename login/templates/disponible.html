@@ -11,8 +11,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
 
-
-
     {% block meta %}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
@@ -36,9 +34,11 @@
             background-color: #651410;
             color: aliceblue;
         }
-        .btn-pdf{
+
+        .btn-pdf {
             margin-bottom: 17px;
         }
+
         .btn-export-excel {
             width: 167px;
             height: 46px;
@@ -46,24 +46,25 @@
             margin-inline: 10px;
             margin-top: 23px;
         }
-        .row{
+
+        .row {
             margin-left: 19.5px !important;
         }
-        .h3, h3 {
+
+        .h3,
+        h3 {
             margin-left: 8px !important;
         }
+
         .btn-danger1 {
             background-color: #c45454;
             color: #ffffff;
         }
     </style>
-    </style>
     {% endblock %}
 
     {% block extra_head %}
-
     {% endblock %}
-</head>
 </head>
 
 <body class="hold-transition sidebar-mini {% block body_class %}{% block bodyclass %}{% endblock %}{% endblock %}">
@@ -80,78 +81,81 @@
         <div class="content-wrapper">
             {% block content_header %}
             <section class="content-header">
-                {% block no_heading %}
-                <h1>
-                    {% block page_name %}{% endblock %}
-                    <div class="header-actions">
-                        {% block page_actions %}{% endblock %}
-                    </div>
-                    {% block no_description %}
-                    <small>{% block page_description %}{% endblock %}</small>
-                    {% endblock %}
-                </h1>
-                {% block breadcrumbs %}
-                {# Breadcrumb implementation left to developers #}
-                {% endblock %}
-                {% endblock no_heading %}
                 <h1>Disponibilidad</h1>
             </section>
             {% endblock %}{% endblock %}
-            <form method="POST" action="{% url 'guardar_disponibilidad' %}" accept-charset="UTF-8" class="form-horizontal" id="dispo">
+
+            <form method="POST" action="{% url 'guardar_disponibilidad' %}" accept-charset="UTF-8"
+                class="form-horizontal" id="dispo">
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="granja" class="col-lg-4 control-label">Granja: </label>
                     <div class="col-lg-4">
-                        <select name="granja" class="form-control select2-hidden-accessible" required id="granjas" tabindex="-1" aria-hidden="true">
+                        <select name="granja" class="form-control select2-hidden-accessible" required id="granjas"
+                            tabindex="-1" aria-hidden="true">
                             <option value="">Selecciona una opción</option>
                             <!-- Aquí se llenarán las opciones con AJAX -->
                         </select>
                     </div>
                 </div>
-                
 
-                    <div class="form-group">
+                <div class="form-group">
                     <label for="fecha_disponibilidad" class="col-lg-4 control-label">Fecha Disponibilidad: </label>
                     <div class="col-lg-4">
-                        <input class="form-control" required="" placeholder="..." onchange="verificarFecha()" name="fecha_disponibilidad" type="date" id="fecha_disponibilidad">
+                        <input class="form-control" required="" placeholder="..." onchange="verificarFecha()"
+                            name="fecha_disponibilidad" type="date" id="fecha_disponibilidad">
                     </div>
                 </div>
+
                 <div class="form-group">
                     <label for="caracteristica" class="col-lg-4 control-label">Caracteristica: </label>
                     <div class="col-lg-4">
-                        <select name="caracteristica" class="form-control select2-hidden-accessible" required id="caracteristicas" tabindex="-1" aria-hidden="true">
+                        <select name="caracteristica" class="form-control select2-hidden-accessible" required
+                            id="caracteristicas" tabindex="-1" aria-hidden="true">
                             <option value="">Selecciona una opción</option>
                             <!-- Aquí se llenarán las opciones con AJAX -->
                         </select>
                     </div>
                 </div>
-                    <div class="form-group">
-                    <label for="genero" class="col-lg-4 control-label">Genero: </label>
+
+                <div class="form-group">
+ <label for="genero" class="col-lg-4 control-label">Genero: </label>
                     <div class="col-lg-4">
-                        <select name="genero" class="form-control select2-hidden-accessible" required id="genero" tabindex="-1" aria-hidden="true">
+                        <select name="genero" class="form-control select2-hidden-accessible" required id="genero"
+                            tabindex="-1" aria-hidden="true">
                             <option value="">Selecciona una opción</option>
                             <!-- Aquí se llenarán las opciones con AJAX -->
                         </select>
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <label for="disponibilidad_cantidad" class="col-lg-4 control-label">Disponibilidad Cantidad: </label>
+                    <label for="disponibilidad_cantidad" class="col-lg-4 control-label">Disponibilidad Cantidad:
+                    </label>
                     <div class="col-lg-4">
-                        <input class="form-control" required="" name="disponibilidad_cantidad" type="number" id="disponibilidad_cantidad">
+                        <input class="form-control" required="" name="disponibilidad_cantidad" type="number"
+                            id="disponibilidad_cantidad">
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <label for="peso_promedio_limite_inferior" class="col-lg-4 control-label">Peso Promedio Limite Inferior: </label>
+                    <label for="peso_promedio_limite_inferior" class="col-lg-4 control-label">Peso Promedio Limite
+                        Inferior: </label>
                     <div class="col-lg-4">
-                        <input class="form-control" required="" name="peso_promedio_limite_inferior" type="number" id="peso_promedio_limite_inferior">
+                        <input class="form-control" required="" name="peso_promedio_limite_inferior" type="number"
+                            id="peso_promedio_limite_inferior">
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <label for="peso_promedio_limite_superior" class="col-lg-4 control-label">Peso Promedio Limite Superior: </label>
+                    <label for="peso_promedio_limite_superior" class="col-lg-4 control-label">Peso Promedio Limite
+                        Superior: </label>
                     <div class="col-lg-4">
-                        <input class="form-control" required="" name="peso_promedio_limite_superior" type="number" id="peso_promedio_limite_superior">
+                        <input class="form-control" required="" name="peso_promedio_limite_superior" type="number"
+                            id="peso_promedio_limite_superior">
                     </div>
                 </div>
+
                 <div class="form-group">
                     <label for="observaciones" class="col-lg-4 control-label">Observaciones: </label>
                     <div class="col-lg-4">
@@ -159,109 +163,169 @@
                     </div>
                 </div>
 
-
                 <div class="form-group col-lg-12 col-xs-12">
                     <ul class="list-inline" align="center">
-
-                        <li><input class="btn btn-success btn-md" id="botonSubirDisponibilidad" type="submit" value="Subir"></li>
+                        <li><input class="btn btn-success btn-md" id="botonSubirDisponibilidad" type="submit"
+                                value="Subir"></li>
                     </ul>
                 </div>
             </form>
 
-
             <!-- Pie de página -->
-        
-
-
 
 
             {% block javascript %}
             {% include 'adminlte/lib/_scripts.html' %}
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
             <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
             <script type="text/javascript">
-                $(document).ready(function() {
+                $(document).ready(function () {
                     $.ajax({
                         url: "{% url 'granjas' %}",
                         method: "GET",
-                        success: function(response) {
+                        success: function (response) {
                             var granjas = response.granjas;
                             var select = $('#granjas');
-            
-                            granjas.forEach(function(granja) {
+
+                            granjas.forEach(function (granja) {
                                 // Crear opciones con el valor del ID y mostrar el nombre
                                 var option = $('<option></option>').attr('value', granja.id).text(granja.nombre);
                                 select.append(option);
                             });
                         },
-                        error: function(xhr, status, error) {
+                        error: function (xhr, status, error) {
                             console.error("Error al cargar las granjas: " + error);
                         }
                     });
                 });
-                $(document).ready(function() {
+
+                $(document).ready(function () {
                     $.ajax({
                         url: "{% url 'caracteristicas' %}",
                         method: "GET",
-                        success: function(response) {
+                        success: function (response) {
                             var caracteristicas = response.caracteristicas;
                             var select = $('#caracteristicas');
-            
-                            caracteristicas.forEach(function(caracteristica) {
+
+                            caracteristicas.forEach(function (caracteristica) {
                                 // Crear opciones con el valor del ID y mostrar el nombre
                                 var option = $('<option></option>').attr('value', caracteristica.id).text(caracteristica.nombre);
                                 select.append(option);
                             });
                         },
-                        error: function(xhr, status, error) {
-                            console.error("Error al cargar las granjas: " + error);
+                        error: function (xhr, status, error) {
+                            console.error("Error al cargar las características: " + error);
                         }
                     });
                 });
-                $(document).ready(function() {
+
+                $(document).ready(function () {
                     $.ajax({
                         url: "{% url 'genero' %}",
                         method: "GET",
-                        success: function(response) {
+                        success: function (response) {
                             var genero = response.genero;
                             var select = $('#genero');
-            
-                            genero.forEach(function(gener) {
-                                // Crear opciones con el valor del ID y mostrar el nombre
+
+                            genero.forEach(function (gener) {
+                                // Cre ar opciones con el valor del ID y mostrar el nombre
                                 var option = $('<option></option>').attr('value', gener.id).text(gener.nombre);
                                 select.append(option);
                             });
                         },
-                        error: function(xhr, status, error) {
-                            console.error("Error al cargar las granjas: " + error);
+                        error: function (xhr, status, error) {
+                            console.error("Error al cargar los géneros: " + error);
                         }
                     });
                 });
+
                 function verificarFecha() {
                     const fecha = document.getElementById('fecha_disponibilidad').value;
                     const granja = document.getElementById('granjas').value;
-                    
+
                     if (fecha && granja) {
                         fetch(`/verificar_disponibilidad/?fecha=${fecha}&granja=${granja}`)
                             .then(response => response.json())
                             .then(data => {
                                 if (data.existe) {
-                                    alert('Ya existe una disponibilidad para esta granja en la semana seleccionada');
+                                    Swal.fire({
+                                        title: 'Advertencia',
+                                        html: `
+                                <div style="text-align: center;">
+                                    <p>Ya existe una disponibilidad para esta granja en la semana seleccionada.</p>
+                                </div>`,
+                                        showConfirmButton: true,
+                                        confirmButtonText: 'Aceptar',
+                                        icon: 'warning'
+                                    });
                                     document.getElementById('fecha_disponibilidad').value = '';
                                 }
                             });
                     }
                 }
+
+                $('#dispo').on('submit', function (event) {
+                    event.preventDefault();
+
+                    const formData = new FormData(this);
+
+                    fetch('{% url "guardar_disponibilidad" %}', {
+                        method: 'POST',
+                        body: formData,
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            Swal.fire({
+                                title: 'Éxito',
+                                html: `<div style="text-align: center;">
+                                            <p>${data.message}</p>
+                                        </div>`,
+                                showConfirmButton: true,
+                                confirmButtonText: 'Aceptar',
+                                icon: 'success'
+                            }).then(() => {
+                                // Redirigir o limpiar el formulario
+                                window.location.href = '/home'; // Cambia esto según sea necesario
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Advertencia',
+                                html: `<div style="text-align: center;">
+                                            <p>${data.message}</p>
+                                        </div>`,
+                                showConfirmButton: true,
+                                confirmButtonText: 'Aceptar',
+                                icon: 'warning'
+                            }).then(() => {
+                                // Limpiar el campo de fecha si es necesario
+                                document.getElementById('fecha_disponibilidad').value = '';
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        Swal.fire({
+                            title: 'Error',
+                            html: `<div style="text-align: center;">
+                                        <p>Ocurrió un error al intentar guardar la disponibilidad.</p>
+                                    </div>`,
+                            showConfirmButton: true,
+                            confirmButtonText: 'Aceptar',
+                            icon: 'error'
+                        });
+                    });
+                });
             </script>
-
-
 
             <!-- script para llamar los html en el contenido -->
             <script src="{% static 'custom.js' %}"></script>
             {% endblock %}
-
+        </div>
+    </div>
 </body>
 
 </html>
