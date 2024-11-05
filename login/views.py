@@ -3068,12 +3068,11 @@ def generar_pdf(request):
     dhc_connection = connections['dhc'] 
     consecutivo_cercafe = request.GET.get('consecutivoCercafe', None)
     
-    # Verificar si se proporciona un consecutivo_cercafe
     if consecutivo_cercafe: 
         # Obtener los datos de la remisión filtrados por el consecutivo ceracafe
         remisiones = tablaremisionnew(consecutivo_cercafe)
         
-        # Consultar los datos de la tabla despachoLotesGranjas de intranetcercafe2
+        # Consulta en la tabla despachoLotesGranjas
         with intranetcercafe2_connection.cursor() as cursor:
             cursor.execute("""
                 SELECT 
@@ -3102,9 +3101,17 @@ def generar_pdf(request):
             """, [consecutivo_cercafe])
             remisionnew = cursor.fetchall()
         
-        granja_primera_consulta = remisionnew[0][2] if remisionnew else None
+        # Verificar si hay datos y seleccionar los últimos
+        if remisionnew:
+            ultimo_registro = remisionnew[-1]
+            granja_primera_consulta = ultimo_registro[2]
+            conductor_nombre = ultimo_registro[8]
+            placa_nombre = ultimo_registro[9]
+            regic = ultimo_registro[10]
+            regica = ultimo_registro[11]
+            retiro_alimento = ultimo_registro[12]
         
-        if granja_primera_consulta:
+            # Consulta adicional en dhc.granjas
             with dhc_connection.cursor() as cursor:
                 cursor.execute("""
                     SELECT
@@ -3123,57 +3130,44 @@ def generar_pdf(request):
                         UPPER(C.ID) = %s;
                 """, [granja_primera_consulta])
                 resultados_dhc = cursor.fetchall()
-        
-        # Obtener el ID del frigorífico
-        frigorifico_id = remisionnew[0][5] if remisionnew else None
-        nombre_frigorifico = None
-        
-        if frigorifico_id:
-            with dhc_connection.cursor() as cursor:
-                cursor.execute("SELECT nombre FROM frigorificos WHERE ID = %s", [frigorifico_id])
-                nombre_frigorifico_result = cursor.fetchone()
-                if nombre_frigorifico_result:
-                    nombre_frigorifico = nombre_frigorifico_result[0]
-        
-        # Combinar los resultados de ambas consultas
-        total_cantidad = sum(remisionne[7] for remisionne in remisionnew)
-        total_cantidad1 = str(total_cantidad)
-        totalcerdos = sum(remisionne[4] for remisionne in remisionnew)
-        totalcerdos1 = str(totalcerdos)
-        promedio = total_cantidad / totalcerdos if totalcerdos > 0 else 0
-        promedio_formateado = f'{promedio:.2f}'
-        conductor_nombre = remisionnew[0][8] if remisionnew else None  
-        placa_nombre = remisionnew[0][9] if remisionnew else None  
-        input_data = (resultados_dhc[0][0], resultados_dhc[0][2], consecutivo_cercafe, totalcerdos1, total_cantidad1, placa_nombre, conductor_nombre, resultados_dhc[0][3])
-
-        generate_qr_code(input_data)
-        
-        # Renderiza el HTML con los datos de la remisión filtrados
-        html = render_to_string('remision_pdf.html', {
-            'remisiones': remisiones,
-            'promedio_formateado': promedio_formateado,
-            'remisionnew': remisionnew,
-            'resultados_dhc': resultados_dhc,
-            'consecutivo_cercafe': consecutivo_cercafe,
-            'total_cantidad': total_cantidad,
-            'totalcerdos': totalcerdos,
-            'nombre_frigorifico': nombre_frigorifico, 
-            'retiro_alimento': remisionnew[0][12] if remisionnew else None,
-            'conductor_nombre': conductor_nombre, 
-            'placa_nombre': placa_nombre,  
-        })
-        
-        # Convertir el HTML en PDF utilizando wkhtmltopdf
-        pdf = pdfkit.from_string(html, False, configuration=pdfkit.configuration(wkhtmltopdf='C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'))
-
-        # Retornar el PDF como una respuesta HTTP para descargar
-        response = HttpResponse(pdf, content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="reporte_remisiones.pdf"'
-        return response
-    else:
-        # Si no se proporciona un consecutivo, devolver un mensaje de error
-        return HttpResponse("No se proporcionó un consecutivo válido.")
-
+            
+            frigorifico_id = ultimo_registro[5]
+            nombre_frigorifico = None
+            
+            if frigorifico_id:
+                with dhc_connection.cursor() as cursor:
+                    cursor.execute("SELECT nombre FROM frigorificos WHERE ID = %s", [frigorifico_id])
+                    nombre_frigorifico_result = cursor.fetchone()
+                    if nombre_frigorifico_result:
+                        nombre_frigorifico = nombre_frigorifico_result[0]
+            
+            total_cantidad = sum(remision[7] for remision in remisionnew)
+            total_cerdos = sum(remision[4] for remision in remisionnew)
+            promedio = total_cantidad / total_cerdos if total_cerdos > 0 else 0
+            promedio_formateado = f'{promedio:.2f}'
+            
+            input_data = (resultados_dhc[0][0], resultados_dhc[0][2], consecutivo_cercafe, str(total_cerdos), str(total_cantidad), placa_nombre, conductor_nombre, resultados_dhc[0][3])
+            generate_qr_code(input_data)
+            
+            html = render_to_string('remision_pdf.html', {
+                'remisiones': remisiones,
+                'promedio_formateado': promedio_formateado,
+                'remisionnew': remisionnew,
+                'resultados_dhc': resultados_dhc,
+                'consecutivo_cercafe': consecutivo_cercafe,
+                'total_cantidad': total_cantidad,
+                'total_cerdos': total_cerdos,
+                'nombre_frigorifico': nombre_frigorifico,
+                'retiro_alimento': retiro_alimento,
+                'conductor_nombre': conductor_nombre,
+                'placa_nombre': placa_nombre,
+            })
+            
+            pdf = pdfkit.from_string(html, False, configuration=pdfkit.configuration(wkhtmltopdf='C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'))
+            response = HttpResponse(pdf, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="reporte_remisiones.pdf"'
+            return response
+    return HttpResponse("No se proporcionó un consecutivo válido.")
 
 
 
