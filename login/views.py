@@ -3167,6 +3167,7 @@ def generar_pdf(request):
             response = HttpResponse(pdf, content_type='application/pdf')
             response['Content-Disposition'] = 'attachment; filename="reporte_remisiones.pdf"'
             return response
+        
     return HttpResponse("No se proporcionó un consecutivo válido.")
 
 
