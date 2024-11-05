@@ -71,7 +71,7 @@ def main4():
             item.get('Semana', ''),
             item.get('Tiquete', ''),
             item.get('Novedad', ''),
-            item.get('Granja_id', ''),
+            item.get('granja_id', ''),
             item.get('Asociado', ''),
             item.get('Zona Afectada', ''),
             formatted_metadata
