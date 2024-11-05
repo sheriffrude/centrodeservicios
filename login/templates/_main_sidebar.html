@@ -282,7 +282,7 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if request.user|user_belongs_to_group:'tecnica' %}
+                        {% if request.user|user_belongs_to_group:'abastecimiento' %}
                         <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
                             <a href="{% url 'pedido_granja' %}"  >
                                 <i class="nav-icon  fas fa-cart-plus"></i>Pedido a Granja
