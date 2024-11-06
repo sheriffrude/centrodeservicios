@@ -144,8 +144,8 @@ base_config = {
     'ENGINE': 'django.db.backends.mysql',
     'USER': 'DEV_USER',
     'PASSWORD': 'DEV-USER12345',
-    'HOST': '192.168.9.41',
-    'PORT': '3306',
+    'HOST': '192.168.9.64',
+    'PORT': '3308',
 }
 
 # Crear la configuración para cada esquema adicional
@@ -181,11 +181,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es-ES'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Bogota'
 
 USE_I18N = True
 
-USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
