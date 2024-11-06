@@ -37,7 +37,7 @@ def main():
     else:
         print(f"Error al obtener datos de la API: {response.status_code}")
         exit()
-    time_difference = timedelta(hours=-7)
+    time_difference = timedelta(hours=-8)
     # Comprobar la estructura de `data`
     if isinstance(data, list):
         rows = data
