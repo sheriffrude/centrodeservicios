@@ -275,7 +275,7 @@
                     </ul>
                 </li>
                 
-                        {% if request.user|user_belongs_to_group:'tecnica' %}
+                        {% if request.user|user_belongs_to_group:'granjas' %}
                         <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
                             <a href="{% url 'disponiblilidad' %}"  >
                                 <i class="nav-icon  fas fa-tag"></i>Disponibilidad
@@ -289,14 +289,14 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if request.user|user_belongs_to_group:'tecnica' %}
+                        {% if request.user|user_belongs_to_group:'granjas' %}
                         <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
                             <a href="{% url 'repdespacho' %}"  >
                                 <i class="nav-icon  fas fa-industry"></i>Despacho a Frigorificos
                             </a>
                         </li>
                         {% endif %}
-                        {% if request.user|user_belongs_to_group:'tecnica' %}
+                        {% if request.user|user_belongs_to_group:'granjas' %}
                         <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
                             <a href="{% url 'repremision' %}"  >
                                 <i class="nav-icon fas fa-qrcode"></i>Remisiones
