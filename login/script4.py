@@ -74,6 +74,8 @@ def main4():
             item.get('granja_id', ''),
             item.get('Asociado', ''),
             item.get('Zona Afectada', ''),
+            item.get('Descuento sugerido', ''),
+            item.get('Tipo Novedad', ''),
             formatted_metadata
         
         ))
@@ -88,8 +90,8 @@ def main4():
         # SQL para insertar datos
         insert_query = """
         INSERT INTO auditoria_calidad (
-            fecha_sacrificio,mes,semana,tiquete,novedad,granja,asociado,zona_afectada,metadata
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            fecha_sacrificio,mes,semana,tiquete,novedad,granja,asociado,zona_afectada,descuento_sugerido,tipo_novedad,metadata
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
 
         # Insertar los datos
