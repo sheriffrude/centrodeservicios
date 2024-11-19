@@ -2614,8 +2614,6 @@ def guardar_disponibilidad(request):
 
 
 
-
-@never_cache
 @never_cache
 @login_required
 def disponibilidad_semanal(request):
@@ -2640,8 +2638,8 @@ def disponibilidad_semanal(request):
                     prodsostenible.disponibilidadindividual di 
                 ON 
                     di.consecutivoDisponibilidad = ds.id
-                WHERE 
-                    ds.fecha_disponibilidad BETWEEN %s AND %s
+                WHERE DATE 
+                   (ds.fecha_disponibilidad) BETWEEN %s AND %s
             """, [fecha_inicio, fecha_fin])
             rows = cursor.fetchall()
 

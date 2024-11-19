@@ -160,6 +160,8 @@
                                                 </th>
                                                 <input type="hidden" id="total_antes" value="0">
                                                 <th class="tdd" style="text-align: center;" scope="col"
+                                                    id="total_domingo">0</th>
+                                                <th class="tdd" style="text-align: center;" scope="col"
                                                     id="total_lunes">0</th>
                                                 <th class="tdd" style="text-align: center;" scope="col"
                                                     id="total_martes">0</th>
@@ -171,8 +173,7 @@
                                                     id="total_viernes">0</th>
                                                 <th class="tdd" style="text-align: center;" scope="col"
                                                     id="total_sabado">0</th>
-                                                <th class="tdd" style="text-align: center;" scope="col"
-                                                    id="total_domingo">0</th>
+                                                
                                                 <th class="tdd" style="text-align: center;" scope="col"
                                                     id="total_ubicados">0</th>
                                                 <th class="tdd" style="text-align: center;" scope="col"
@@ -183,13 +184,13 @@
                                             </tr>
                                             <tr>
                                                 <th class="tdd" style="text-align: center;" scope="col">Granja</th>
+                                                <th class="tdd" style="text-align: center;" scope="col">Do</th>
                                                 <th class="tdd" style="text-align: center;" scope="col">Lu</th>
                                                 <th class="tdd" style="text-align: center;" scope="col">Ma</th>
                                                 <th class="tdd" style="text-align: center;" scope="col">Mi</th>
                                                 <th class="tdd" style="text-align: center;" scope="col">Ju</th>
                                                 <th class="tdd" style="text-align: center;" scope="col">Vi</th>
                                                 <th class="tdd" style="text-align: center;" scope="col">Sa</th>
-                                                <th class="tdd" style="text-align: center;" scope="col">Do</th>
                                                 <th class="tdd" style="text-align: center;" scope="col">Ubicado</th>
                                                 <th class="tdd" style="text-align: center;" scope="col">Disponible</th>
                                                 <th class="tdd" style="text-align: center;" scope="col">Por Ubicar</th>
@@ -398,13 +399,13 @@
                                             if (!groupedData[consecutivo]) {
                                                 groupedData[consecutivo] = {
                                                     nombre_granja: item.nombre_granja,
+                                                    domingo: '',
                                                     lunes: '',
                                                     martes: '',
                                                     miercoles: '',
                                                     jueves: '',
                                                     viernes: '',
                                                     sabado: '',
-                                                    domingo: '',
                                                     disponibleRestante: item.disponibilidad_cantidad,
                                                     id: item.id_disponibilidad_individual
                                                 };
@@ -442,7 +443,60 @@
                                         // Iterar sobre los datos agrupados y renderizarlos en la tabla
                                         for (const key in groupedData) {
                                             const row = groupedData[key];
+                                            // Variables para almacenar los totales por día y las columnas finales
+                                            let totalDomingo = 0;
+                                            let totalLunes = 0;
+                                            let totalMartes = 0;
+                                            let totalMiercoles = 0;
+                                            let totalJueves = 0;
+                                            let totalViernes = 0;
+                                            let totalSabado = 0;
+                                            let totalUbicado = 0;
+                                            let totalDisponible = 0;
+                                            let totalPorUbicar = 0;
 
+                                            // Iterar sobre los datos agrupados para calcular totales
+                                            for (const key in groupedData) {
+                                                const row = groupedData[key];
+
+                                                // Función para sumar correctamente la cantidad de cerdos en cada día
+                                                const sumarCerdos = (dia) => {
+                                                    if (!dia) return 0;
+                                                    return dia.split(',').reduce((total, item) => {
+                                                        const cantidad = parseInt(item.trim().split(' ')[0]);
+                                                        return total + (isNaN(cantidad) ? 0 : cantidad);
+                                                    }, 0);
+                                                };
+
+                                                // Sumar valores por día
+                                                totalDomingo += sumarCerdos(row.domingo);
+                                                totalLunes += sumarCerdos(row.lunes);
+                                                totalMartes += sumarCerdos(row.martes);
+                                                totalMiercoles += sumarCerdos(row.miercoles);
+                                                totalJueves += sumarCerdos(row.jueves);
+                                                totalViernes += sumarCerdos(row.viernes);
+                                                totalSabado += sumarCerdos(row.sabado);
+
+                                                // Sumar totales de "Ubicado", "Disponible" y "Por Ubicar"
+                                                const ubicado = sumarCerdos(row.domingo) + sumarCerdos(row.lunes) + sumarCerdos(row.martes) +
+                                                                sumarCerdos(row.miercoles) + sumarCerdos(row.jueves) + sumarCerdos(row.viernes) +
+                                                                sumarCerdos(row.sabado);
+                                                totalUbicado += ubicado;
+                                                totalDisponible += row.disponibleRestante;
+                                                totalPorUbicar += row.disponibleRestante - ubicado;
+                                            }
+
+                                            // Actualizar los valores en el encabezado
+                                            $('#total_lunes').text(totalLunes);
+                                            $('#total_martes').text(totalMartes);
+                                            $('#total_miercoles').text(totalMiercoles);
+                                            $('#total_jueves').text(totalJueves);
+                                            $('#total_viernes').text(totalViernes);
+                                            $('#total_sabado').text(totalSabado);
+                                            $('#total_domingo').text(totalDomingo);
+                                            $('#total_ubicados').text(totalUbicado);
+                                            $('#total_disponibles').text(totalDisponible);
+                                            $('#total_porUbicar').text(totalPorUbicar);
                                             // Sumar la cantidad de cerdos solicitados en todos los días de la semana (lunes a domingo)
                                             let ubicado = 0;
 
@@ -455,13 +509,14 @@
                                                 }, 0);
                                             };
 
+                                            ubicado += sumarCerdos(row.domingo);
                                             ubicado += sumarCerdos(row.lunes);
                                             ubicado += sumarCerdos(row.martes);
                                             ubicado += sumarCerdos(row.miercoles);
                                             ubicado += sumarCerdos(row.jueves);
                                             ubicado += sumarCerdos(row.viernes);
                                             ubicado += sumarCerdos(row.sabado);
-                                            ubicado += sumarCerdos(row.domingo);
+                                            
 
                                             // Calcular el valor de "Por ubicar"
                                             let porUbicar = row.disponibleRestante - ubicado;
@@ -473,13 +528,13 @@
                                             $('#tablaVistaSolicitud tbody').append(
                                                 `<tr>
                                                     <td>${row.nombre_granja}</td>
+                                                    <td>${row.domingo || '0'}</td>
                                                     <td>${row.lunes || '0'}</td>
                                                     <td>${row.martes || '0'}</td>
                                                     <td>${row.miercoles || '0'}</td>
                                                     <td>${row.jueves || '0'}</td>
                                                     <td>${row.viernes || '0'}</td>
                                                     <td>${row.sabado || '0'}</td>
-                                                    <td>${row.domingo || '0'}</td>
                                                     <td>${ubicado}</td> <!-- Ubicado: suma de cantidad de cerdos de todos los días -->
                                                     <td>${row.disponibleRestante}</td> <!-- disponible -->
                                                     <td>${porUbicar}</td> <!-- Por ubicar: disponibleRestante - ubicado -->
