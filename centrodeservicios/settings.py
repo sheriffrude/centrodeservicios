@@ -144,7 +144,7 @@ base_config = {
     'ENGINE': 'django.db.backends.mysql',
     'USER': 'DEV_USER',
     'PASSWORD': 'DEV-USER12345',
-    'HOST': '192.168.9.64',
+    'HOST': '192.168.9.134',
     'PORT': '3308',
 }
 
