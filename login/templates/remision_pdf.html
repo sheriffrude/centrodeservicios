@@ -93,10 +93,10 @@
         {% endif %}
         <td style="width: 3.5014%; height: 18px;">&nbsp;</td>
         <td style="width: 4.06156%; height: 18px;">&nbsp;</td>
-        <td style="width: 34.1737%; height: 18px;"><strong>Registro IC:</strong></td>
+        <td style="width: 34.1737%; height: 18px;"><strong></strong></td>
         {% if remisionnew %}
         {% with last_remision=remisionnew|last %}
-        <td style="width: 14.2857%; height: 18px;">{{ last_remision.10}}</td>
+        <td style="width: 14.2857%; height: 18px;"></td>
         {% endwith %}
         {% endif %}
         </tr>
@@ -147,38 +147,40 @@
         <tbody>
         <tr style="height: 18px;">
         <td style="width: 16.6667%; height: 18px;">&nbsp;</td>
-        <td style="width: 16.5266%; height: 18px;">&nbsp;</td>
-        <td style="width: 26.7507%; height: 18px;">&nbsp;</td>
-        <td style="width: 21.5687%; height: 18px;">&nbsp;</td>
-        <td style="width: 9.94403%; height: 18px;">&nbsp;</td>
-        <td style="width: 8.54345%; height: 18px;">&nbsp;</td>
+        <td style="width: 16.6667%; height: 18px;">&nbsp;</td>
+        <td style="width: 16.6667%; height: 18px;">&nbsp;</td>
+        <td style="width: 16.6667%; height: 18px;">&nbsp;</td>
+        <td style="width: 16.6667%; height: 18px;">&nbsp;</td>
+        <td style="width: 16.6667%; height: 18px;">&nbsp;</td>
         </tr>
         <tr style="height: 18px;">
         
-        <td style="width: 16.5266%; height: 18px;"><strong>LOTE</strong></td>
-        
-        <td style="width: 21.5687%; height: 18px;"><strong>DESCRIPCION</strong></td>
-        <td style="width: 9.94403%; height: 18px;"><strong>CANT</strong></td>
-        <td style="width: 8.54345%; height: 18px;"><strong>PESO</strong></td>
-        <td style="width: 8.54345%; height: 18px;"><strong>EDAD(días)</strong></td>
+        <td style="width: 16.6667%; height: 18px;"><strong>LOTE</strong></td>
+        <td style="width: 16.6667%; height: 18px;"><strong>DESCRIPCION</strong></td>
+        <td style="width: 16.6667%; height: 18px;"><strong>CANT</strong></td>
+        <td style="width: 16.6667%; height: 18px;"><strong>PESO</strong></td>
+        <td style="width: 16.6667%; height: 18px;"><strong>EDAD(días)</strong></td>
+        <td style="width: 16.6667%; height: 18px;"><strong>IC</strong></td>
         </tr>{% for remisionne in remisionnew %}
         <tr style="height: 18px;">
         
         <td style="width: 16.5266%; height: 18px;">{{remisionne.3}}</td>
-        <td style="width: 21.5687%; height: 18px;">CERDO EN PIE</td>
-        <td style="width: 9.94403%; height: 18px;">{{remisionne.4}}</td>
-        <td style="width: 8.54345%; height: 18px;">{{remisionne.7}}</td>
-        <td style="width: 8.54345%; height: 18px;">{{remisionne.13}}</td>
+        <td style="width: 16.5266%; height: 18px;">CERDO EN PIE</td>
+        <td style="width: 16.5266%; height: 18px;">{{remisionne.4}}</td>
+        <td style="width: 16.5266%; height: 18px;">{{remisionne.7}}</td>
+        <td style="width: 16.5266%; height: 18px;">{{remisionne.13}}</td>
+        <td style="width: 16.5266%; height: 18px;">{{remisionne.10}}</td>
         </tr>
         {% endfor %}
        
         <tr style="height: 18px;">
         <td style="width: 16.6667%; height: 18px;">&nbsp;</td>
-        <td style="width: 16.5266%; height: 18px;">&nbsp;</td>
-        <td style="width: 26.7507%; height: 18px;">&nbsp;</td>
-        <td style="width: 21.5687%; height: 18px;">&nbsp;</td>
-        <td style="width: 9.94403%; height: 18px;">&nbsp;</td>
-        <td style="width: 8.54345%; height: 18px;">&nbsp;</td>
+        <td style="width: 16.6667%; height: 18px;">&nbsp;</td>
+        <td style="width: 16.6667%; height: 18px;">&nbsp;</td>
+        <td style="width: 16.6667%; height: 18px;">&nbsp;</td>
+        <td style="width: 16.6667%; height: 18px;">&nbsp;</td>
+        <td style="width: 16.6667%; height: 18px;">&nbsp;</td>
+        <td style="width: 16.6667%; height: 18px;">&nbsp;</td>
         </tr>
         </tbody>
         </table>
