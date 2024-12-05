@@ -274,7 +274,13 @@
 
                     </ul>
                 </li>
-                
+                        {% if request.user|user_belongs_to_group:'granjas' %}
+                        <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
+                            <a href="{% url 'disponiblilidad' %}"  >
+                                <i class="nav-icon  fas fa-skull"></i>Mortalidad
+                            </a>
+                        </li>
+                        {% endif %}
                         {% if request.user|user_belongs_to_group:'granjas' %}
                         <li class="nav-item" style="margin-bottom: 20px; margin-left: 10px;">
                             <a href="{% url 'disponiblilidad' %}"  >

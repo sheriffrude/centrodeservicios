@@ -128,7 +128,8 @@
                                         <td>
                                             <button class="btn btn-repor" data-toggle="modal"
                                                 data-target="#modalSalidasDespacho" data-id="{{ despacho.0 }}"
-                                                data-consecutivo="{{ despacho.1 }}"
+                                                data-consecutivo="{{ despacho.1 }}" data-granja="{{ despacho.3}}"
+                                                data-frigo="{{ despacho.6}}"
                                                 data-granja-id="{{ despacho.2 }}" data-frigorifico-id="{{ despacho.5 }}"
                                                 {% if despacho.9 <= 0 %} disabled {% endif %}>
                                                 <i class="fa-solid fa-truck"></i>
@@ -171,10 +172,10 @@
                                             <input type="text" class="form-control" id="consecutivoDespacho"
                                                 name="consecutivoDespacho" required readonly>
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group"hidden>
                                             <label for="granja_id">Granja:</label>
                                             <input type="text" class="form-control" id="granja_id" name="granja_id"
-                                                required readonly>
+                                                required readonly >
                                         </div>
                                         <!-- Lote -->
                                         <div class="form-group">
@@ -190,7 +191,7 @@
                                         </div>
 
                                         <!-- Frigorífico -->
-                                        <div class="form-group">
+                                        <div class="form-group" hidden>
                                             <label for="frigorifico_id">Frigorifico:</label>
                                             <input type="text" class="form-control" id="frigorifico_id"
                                                 name="frigorifico_id" required readonly>
@@ -342,10 +343,15 @@
                     var consecutivoD = $(this).data('consecutivo'); 
                     var granjaId = $(this).data('granja-id');
                     var frigorificoId = $(this).data('frigorifico-id');
+                    var granja_nombre = $(this).data('data-granja');
+                    var frigorificoname = $(this).data('data-frigorifico');
                     $('#consecutivoDespacho').val(id);
                     $('#consecutivoDisponibilidad').val(consecutivoD);
                     $('#granja_id').val(granjaId);
                     $('#frigorifico_id').val(frigorificoId);
+                    $('#granja_nombre').val(granja_nombre);
+                    $('#data-frigorifico').val(frigorificoname);
+
                 });
                 $('#despachoTable').DataTable({
                     "paging": true,
