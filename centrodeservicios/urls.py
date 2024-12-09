@@ -146,6 +146,11 @@ urlpatterns = [
     path('placas/', views.placas, name='placas'),
     path('conductores/', views.conductores, name='conductores'),
     path('verificar_disponibilidad/', views.verificar_disponibilidad, name='verificar_disponibilidad'),
+    path('mortalidad/', views.mortalidad, name='mortalidad'),
+    path('guardar_mortalidad/', views.guardar_mortalidad, name='guardar_mortalidad'),
+    path('sitio/', views.sitio, name='sitio'),
+
+
 
     
 #-------------------------------API's ------------------------------------------

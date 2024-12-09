@@ -1,0 +1,299 @@
+{% load adminlte_helpers i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mortalidad</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+
+    {% block meta %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% endblock %}
+
+    {% block stylesheets %}
+    {% include 'adminlte/lib/_styles.html' %}
+    <style type="text/css">
+        .btn-circle.btn-xl {
+            width: 130px;
+            height: 100px;
+            padding: 13px 18px;
+            border-radius: 100px;
+            font-size: 15px;
+            text-align: center;
+            margin-left: 50px;
+        }
+
+        .btn-repor {
+            background-color: #651410;
+            color: aliceblue;
+        }
+
+        .btn-pdf {
+            margin-bottom: 17px;
+        }
+
+        .btn-export-excel {
+            width: 167px;
+            height: 46px;
+            margin-bottom: 50px;
+            margin-inline: 10px;
+            margin-top: 23px;
+        }
+
+        .row {
+            margin-left: 19.5px !important;
+        }
+
+        .h3,
+        h3 {
+            margin-left: 8px !important;
+        }
+
+        .btn-danger1 {
+            background-color: #c45454;
+            color: #ffffff;
+        }
+    </style>
+    {% endblock %}
+
+    {% block extra_head %}
+    {% endblock %}
+</head>
+
+<body class="hold-transition sidebar-mini {% block body_class %}{% block bodyclass %}{% endblock %}{% endblock %}">
+    <div class="wrapper">
+        {% block nav_header %}
+        {% include '_main_header.html' %}
+        {% endblock %}
+
+        {% block nav_sidebar %}
+        {% include '_main_sidebar.html' %}
+        {% endblock %}
+
+        {% block content_wrapper %}
+        <div class="content-wrapper">
+            {% block content_header %}
+            <section class="content-header">
+                <h1>Mortalidad</h1>
+            </section>
+            {% endblock %}{% endblock %}
+
+            <form method="POST" action="{% url 'guardar_mortalidad' %}" accept-charset="UTF-8"
+                class="form-horizontal" id="dispo">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="sitio" class="col-lg-4 control-label">Sitio: </label>
+                    <div class="col-lg-4">
+                        <select name="sitio" class="form-control select2-hidden-accessible" required id="sitio"
+                            tabindex="-1" aria-hidden="true">
+                            <option value="">Selecciona una opción</option>
+                            <!-- Aquí se llenarán las opciones con AJAX -->
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="granjas" class="col-lg-4 control-label">Granja: </label>
+                    <div class="col-lg-4">
+                        <select name="granja" class="form-control select2-hidden-accessible" required id="granjas"
+                            tabindex="-1" aria-hidden="true">
+                            <option value="">Selecciona una opción</option>
+                            <!-- Aquí se llenarán las opciones con AJAX -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" readonly>
+                    <label for="tipo_salida" class="col-lg-4 control-label">Tipo De Salida:
+                    </label>
+                    <div class="col-lg-4">
+                        <input class="form-control" required="" name="tipo_salida" type="text" placeholder="MORTALIDAD"
+                            id="tipo_salida" value="MORTALIDAD" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="lote" class="col-lg-4 control-label">Lote:
+                    </label>
+                    <div class="col-lg-4">
+                        <input class="form-control" required="" name="lote" type="text"
+                            id="lote">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fecha_salida" class="col-lg-4 control-label">Fecha Liquidacion Lote: </label>
+                    <div class="col-lg-4">
+                        <input class="form-control" required="" placeholder="..."
+                            name="fecha_salida" type="date" id="fecha_salida">
+                    </div>
+                </div>
+
+              
+
+                <div class="form-group">
+                    <label for="cantidad_cerdos" class="col-lg-4 control-label">Cantidad Cerdos:
+                    </label>
+                    <div class="col-lg-4">
+                        <input class="form-control" required="" name="cantidad_cerdos" type="number"
+                            id="cantidad_cerdos">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="peso" class="col-lg-4 control-label">Peso:</label>
+                    <div class="col-lg-4">
+                        <input class="form-control" required="" name="peso" type="number"
+                            id="peso">
+                    </div>
+                </div>
+
+               
+                <div class="form-group col-lg-12 col-xs-12">
+                    <ul class="list-inline" align="center">
+                        <li><input class="btn btn-success btn-md" id="botonSubirDisponibilidad" type="submit"
+                                value="Subir"></li>
+                    </ul>
+                </div>
+            </form>
+
+            <!-- Pie de página -->
+
+
+            {% block javascript %}
+            {% include 'adminlte/lib/_scripts.html' %}
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $.ajax({
+                        url: "{% url 'granjas' %}",
+                        method: "GET",
+                        success: function (response) {
+                            var granjas = response.granjas;
+                            var select = $('#granjas');
+
+                            granjas.forEach(function (granja) {
+                                // Crear opciones con el valor del ID y mostrar el nombre
+                                var option = $('<option></option>').attr('value', granja.id).text(granja.nombre);
+                                select.append(option);
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error al cargar las granjas: " + error);
+                        }
+                    });
+                });
+
+                $(document).ready(function () {
+                    $.ajax({
+                        url: "{% url 'sitio' %}",
+                        method: "GET",
+                        success: function (response) {
+                            var sitio = response.sitio;
+                            var select = $('#sitio');
+
+                            sitio.forEach(function (sitio) {
+                                // Crear opciones con el valor del ID y mostrar el nombre
+                                var option = $('<option></option>').attr('value', sitio.id).text(sitio.nombre);
+                                select.append(option);
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error al cargar las sitio: " + error);
+                        }
+                    });
+                });
+
+                $(document).ready(function () {
+                    $.ajax({
+                        url: "{% url 'genero' %}",
+                        method: "GET",
+                        success: function (response) {
+                            var genero = response.genero;
+                            var select = $('#genero');
+
+                            genero.forEach(function (gener) {
+                                // Cre ar opciones con el valor del ID y mostrar el nombre
+                                var option = $('<option></option>').attr('value', gener.id).text(gener.nombre);
+                                select.append(option);
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error al cargar los géneros: " + error);
+                        }
+                    });
+                });
+
+               
+
+                $('#dispo').on('submit', function (event) {
+                    event.preventDefault();
+
+                    const formData = new FormData(this);
+
+                    fetch('{% url "guardar_mortalidad" %}', {
+                        method: 'POST',
+                        body: formData,
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            Swal.fire({
+                                title: 'Éxito',
+                                html: `<div style="text-align: center;">
+                                            <p>${data.message}</p>
+                                        </div>`,
+                                showConfirmButton: true,
+                                confirmButtonText: 'Aceptar',
+                                icon: 'success'
+                            }).then(() => {
+                                // Redirigir o limpiar el formulario
+                                window.location.href = '/home'; // Cambia esto según sea necesario
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Advertencia',
+                                html: `<div style="text-align: center;">
+                                            <p>${data.message}</p>
+                                        </div>`,
+                                showConfirmButton: true,
+                                confirmButtonText: 'Aceptar',
+                                icon: 'warning'
+                            }).then(() => {
+                                // Limpiar el campo de fecha si es necesario
+                                document.getElementById('fecha_disponibilidad').value = '';
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        Swal.fire({
+                            title: 'Error',
+                            html: `<div style="text-align: center;">
+                                        <p>Ocurrió un error al intentar guardar la Mortalidad.</p>
+                                    </div>`,
+                            showConfirmButton: true,
+                            confirmButtonText: 'Aceptar',
+                            icon: 'error'
+                        });
+                    });
+                });
+            </script>
+
+            <!-- script para llamar los html en el contenido -->
+            <script src="{% static 'custom.js' %}"></script>
+            {% endblock %}
+        </div>
+    </div>
+</body>
+
+</html>

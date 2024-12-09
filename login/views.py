@@ -2169,6 +2169,14 @@ def granjas(request):
     
     return JsonResponse({'granjas': granjas})
 
+def sitio(request):
+    with connections['dhc'].cursor() as cursor:
+        cursor.execute('''SELECT id, nombre_sitio FROM dhc.p_sitio_ps''')  
+        sitio = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]  
+    
+    return JsonResponse({'sitio': sitio})
+
+
 def caracteristicas(request):
     with connections['dhc'].cursor() as cursor:
         cursor.execute('''SELECT id, ncaracteristica FROM dhc.p_caracteristicas''')  
@@ -2515,6 +2523,11 @@ def repremision(request):
         # Si no se proporciona un consecutivo, simplemente renderiza la plantilla HTML
         return render(request, 'remision.html')
 
+@never_cache
+@login_required
+def mortalidad(request):
+    return render(request, 'mortalidad.html', {'granjas': granjas,'sitio': sitio})
+
 
 @never_cache
 @login_required
@@ -2611,6 +2624,33 @@ def guardar_disponibilidad(request):
     return render(request, 'disponible.html')
 
 
+@never_cache
+@login_required
+def guardar_mortalidad(request):
+    if request.method == 'POST':
+            sitio = request.POST.get('sitio').upper()
+            granja = request.POST.get('granja')
+            tipo_salida = request.POST.get('tipo_salida')
+            lote = request.POST.get('lote')
+            fecha_salida = request.POST.get('fecha_salida')
+            cantidad_cerdos = request.POST.get('cantidad_cerdos')
+            peso = request.POST.get('peso')
+            guid = str(uuid.uuid4())
+            usuario = request.user.username
+
+            try:
+                with connections['prodsostenible'].cursor() as cursor:
+                    cursor.execute("""
+                        INSERT INTO mortalidad 
+                        (sitio, granja, tipo_salida, lote, fecha_salida, cantidad_cerdos, peso, GUID, USUARIO) 
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """, [sitio,granja,tipo_salida,lote, fecha_salida , cantidad_cerdos, peso, guid, usuario])
+
+                return JsonResponse({'status': 'success', 'message': 'Mortalidad Guardada Exitosamente'})
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'message': f'Error al guardar la mortalidad: {str(e)}'})
+
+    return render(request, 'mortalidad.html')
 
 
 
@@ -2707,7 +2747,7 @@ def repdespacho(request):
     with connections['dhc'].cursor() as cursor:
         cursor.execute('SELECT id, conductor FROM dhc.Conductores')
         conductores = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]
-        
+
     with connections['dhc'].cursor() as cursor:
         cursor.execute('SELECT id, granjas FROM dhc.granjas')
         conductores = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]
