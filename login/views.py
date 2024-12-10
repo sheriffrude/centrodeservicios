@@ -2748,15 +2748,13 @@ def repdespacho(request):
         cursor.execute('SELECT id, conductor FROM dhc.Conductores')
         conductores = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]
 
-    with connections['dhc'].cursor() as cursor:
-        cursor.execute('SELECT id, granjas FROM dhc.granjas')
-        conductores = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]
+
     
     return render(request, 'despacho_frigos.html', {
         'despachos': despachos,
         'placas': placas,
         'conductores': conductores,
-        'granjas':granjas
+        
     })
 
 
