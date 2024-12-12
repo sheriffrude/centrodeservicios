@@ -118,6 +118,7 @@ urlpatterns = [
     path('cargar_excel_oinc/', views.cargar_excel_oinc, name='cargar_excel_oinc'),
     path('cargar_excel_ingresoinc/', views.cargar_excel_ingresoinc, name='cargar_excel_ingresoinc'),
     path('cargar_excel_despachoinc/', views.cargar_excel_despachoinc, name='cargar_excel_despachoinc'),
+    path('cargar_excel_decomisoinc/', views.cargar_excel_decomisoinc, name='cargar_excel_decomisoinc'),
     path('cargar_excel_beneficiorendimientoinc/', views.cargar_excel_beneficiorendimientoinc, name='cargar_excel_beneficiorendimientoinc'),
     path('solicitar_pedido/', views.solicitar_pedido, name='solicitar_pedido'),
 

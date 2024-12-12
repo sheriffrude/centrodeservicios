@@ -1254,7 +1254,35 @@ def cargar_excel_beneficiorendimientoinc(request):
 
 
 
-
+@never_cache
+@login_required
+def cargar_excel_decomisoinc(request):
+    if request.method == 'POST':
+        try:
+            archivo_excel = request.FILES['archivo_excel']
+            wb = openpyxl.load_workbook(archivo_excel)
+            ws = wb.active
+            guid = str(uuid4())
+            usuario = request.user
+            # Abre una conexión a la base de datos b_c
+            with connections['oinc'].cursor() as cursor:
+                for row in ws.iter_rows(min_row=2):
+                    print(row)
+                    lote,f_ingreso,f_beneficio,solicitante,propietario,granja,lote_turno_beneficio,lote_cod_canal, turno_beneficio, cod_canal, acta_decomiso, f_decomiso, decomiso, patologias,cantidad,unidad_m = row
+                    # Ejecuta una consulta SQL para insertar los datos en la tabla decomisos
+                    cursor.execute(
+                        'INSERT INTO decomisos (lote,f_ingreso,f_beneficio,solicitante,propietario,granja,lote_turno_beneficio,lote_cod_canal, turno_beneficio, cod_canal, acta_decomiso, f_decomiso, decomiso, patologias,cantidad,unidad_m,GUID,USUARIO) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
+                        (lote.value, f_ingreso.value, f_beneficio.value, solicitante.value, propietario.value, granja.value, lote_turno_beneficio.value, lote_cod_canal.value, turno_beneficio.value, cod_canal.value, acta_decomiso.value, f_decomiso.value, decomiso.value, patologias.value, cantidad.value, unidad_m.value, guid,usuario.username)
+                    )
+                messages.success(request, 'Carga de datos en decomisos exitosa')
+        except KeyError:
+            messages.error(request, 'No se ha proporcionado un archivo Excel.')
+        except IntegrityError as e:
+            messages.error(request, f'Error al insertar datos en la base de datos: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Se ha producido un error inesperado: {str(e)}')
+        return redirect('home')
+    return render(request, '/home/')
 
 
 
