@@ -483,11 +483,11 @@ def cargar_excel_clientesactivos(request):
 #             # Abre una conexión a la base de datos b_gc
 #             with connections['dhc'].cursor() as cursor:
 #                 for row in ws.iter_rows(min_row=2):
-#                     NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION, ID_VENDEDOR,ID_SEGMENTO,ID_MIX_VENTAS = row
+#                     NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION, ID_VENDEDOR,ID_SEGMENTO,ID_linea_negocio = row
 #                     # Ejecuta una consulta SQL para insertar los datos en la tabla compromiso_mes
 #                     cursor.execute(
-#                         'INSERT INTO clientes (NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION, ID_VENDEDOR,ID_SEGMENTO,ID_MIX_VENTAS,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)',
-#                         (NIT.value,RAZON_SOCIAL.value,CUPO.value,DIRECCION_SEDE_PRINCIPAL.value,DIRECCION_EXPENDIO.value,ID_CLASIFICACION.value,ID_MUNICIPIO.value,ID_DEPARTAMENTO.value,ID_REGION.value, ID_VENDEDOR.value,ID_SEGMENTO.value,ID_MIX_VENTAS.value,guid,usuario.username)
+#                         'INSERT INTO clientes (NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION, ID_VENDEDOR,ID_SEGMENTO,ID_linea_negocio,GUID,USUARIO) VALUES (%s, %s,%s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)',
+#                         (NIT.value,RAZON_SOCIAL.value,CUPO.value,DIRECCION_SEDE_PRINCIPAL.value,DIRECCION_EXPENDIO.value,ID_CLASIFICACION.value,ID_MUNICIPIO.value,ID_DEPARTAMENTO.value,ID_REGION.value, ID_VENDEDOR.value,ID_SEGMENTO.value,ID_linea_negocio.value,guid,usuario.username)
 #                     )
 #             messages.success(request, 'Carga de datos en CLIENTES  exitosa')
 #         except KeyError:
@@ -1712,11 +1712,11 @@ def cargar_excel_clientes(request):
             with connections['dhc'].cursor() as cursor:
                 for row in ws.iter_rows(min_row=2):
                     
-                    NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION,ID_VENDEDOR,ID_SEGMENTO,ID_MIX_VENTAS, = row
+                    NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION,ID_VENDEDOR,ID_SEGMENTO,ID_linea_negocio, = row
                     # Ejecuta una consulta SQL para insertar los datos en la tabla precio_canales_semana
                     cursor.execute(
-                        'INSERT INTO clientes (NIT, RAZON_SOCIAL, CUPO, DIRECCION_SEDE_PRINCIPAL, DIRECCION_EXPENDIO, ID_CLASIFICACION, ID_MUNICIPIO, ID_DEPARTAMENTO, ID_REGION, ID_VENDEDOR, ID_SEGMENTO, ID_MIX_VENTAS, GUID, USUARIO) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                        (NIT.value, RAZON_SOCIAL.value, CUPO.value, DIRECCION_SEDE_PRINCIPAL.value, DIRECCION_EXPENDIO.value, ID_CLASIFICACION.value, ID_MUNICIPIO.value, ID_DEPARTAMENTO.value, ID_REGION.value, ID_VENDEDOR.value, ID_SEGMENTO.value, ID_MIX_VENTAS.value, guid, usuario.username)
+                        'INSERT INTO clientes (NIT, RAZON_SOCIAL, CUPO, DIRECCION_SEDE_PRINCIPAL, DIRECCION_EXPENDIO, ID_CLASIFICACION, ID_MUNICIPIO, ID_DEPARTAMENTO, ID_REGION, ID_VENDEDOR, ID_SEGMENTO, ID_linea_negocio, GUID, USUARIO) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                        (NIT.value, RAZON_SOCIAL.value, CUPO.value, DIRECCION_SEDE_PRINCIPAL.value, DIRECCION_EXPENDIO.value, ID_CLASIFICACION.value, ID_MUNICIPIO.value, ID_DEPARTAMENTO.value, ID_REGION.value, ID_VENDEDOR.value, ID_SEGMENTO.value, ID_linea_negocio.value, guid, usuario.username)
                     )
 
                     print(row)
@@ -2440,7 +2440,7 @@ def tablareppreciocanal(request):
     return preciocanal
 def tablarepnuevosclientes(request):
     with connections['dhc'].cursor() as cursor:
-        cursor.execute('''SELECT NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION,ID_VENDEDOR,ID_SEGMENTO,ID_MIX_VENTAS FROM dhc.clientes;''')
+        cursor.execute('''SELECT NIT,RAZON_SOCIAL,CUPO,DIRECCION_SEDE_PRINCIPAL,DIRECCION_EXPENDIO,ID_CLASIFICACION,ID_MUNICIPIO,ID_DEPARTAMENTO,ID_REGION,ID_VENDEDOR,ID_SEGMENTO,ID_linea_negocio FROM dhc.clientes;''')
         nuevosclientes = cursor.fetchall()   
     return nuevosclientes
 
