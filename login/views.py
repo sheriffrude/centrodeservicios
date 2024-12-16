@@ -3215,7 +3215,7 @@ def generar_pdf(request):
             promedio = total_cantidad / total_cerdos if total_cerdos > 0 else 0
             promedio_formateado = f'{promedio:.2f}'
             
-            input_data = (resultados_dhc[0][0], resultados_dhc[0][2], consecutivo_cercafe, str(total_cerdos), str(total_cantidad), placa_nombre, conductor_nombre, resultados_dhc[0][3])
+            input_data = (resultados_dhc[0][0], resultados_dhc[0][2], consecutivo_cercafe, str(total_cerdos), str(total_cantidad), placa_nombre, regica, resultados_dhc[0][3])
             generate_qr_code(input_data)
             
             html = render_to_string('remision_pdf.html', {
