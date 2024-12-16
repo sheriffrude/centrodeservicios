@@ -2912,10 +2912,12 @@ def actualizar_disponibilidad_restante(consecutivoDisponibilidad, cerdosDespacha
         disponibilidad = cursor.fetchone()
         
         if disponibilidad:
-            disponibilidadRestante, disponibilidad_cantidad = disponibilidad
+            # Explicitly convert to int to ensure type compatibility
+            disponibilidadRestante = int(disponibilidad[0]) if disponibilidad[0] is not None else 0
+            disponibilidad_cantidad = int(disponibilidad[1]) if disponibilidad[1] is not None else 0
+            
             nueva_disponibilidad_restante = disponibilidadRestante - cerdosDespachados
              
-            
             cursor.execute("""
                 UPDATE disponiblidad_semanal
                 SET disponibilidadRestante = %s
