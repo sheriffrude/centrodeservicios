@@ -2568,15 +2568,19 @@ def pedido_granja(request):
     return render(request, 'pedido_granja.html', {'granjas': granjas})
 
 def get_week_range(date):
-    """Obtiene el rango de fechas de la semana (domingo a sábado) para una fecha dada"""
-    # Convertir la fecha string a objeto datetime si es necesario
     if isinstance(date, str):
         date = dt.strptime(date, '%Y-%m-%d')
     
-    # Obtener el domingo de la semana
-    start_of_week = date - timedelta(days=date.weekday() + 1)
-    # Obtener el sábado de la semana
-    end_of_week = start_of_week + timedelta(days=6)
+    # Ajustar para semana domingo-sábado
+    current_day = date.weekday()  # 0 = Lunes, 6 = Domingo
+    if current_day == 6:  # Si es domingo
+        start_of_week = date
+    else:
+        # Retroceder hasta el domingo anterior
+        days_to_sunday = (current_day + 1) % 7
+        start_of_week = date - timedelta(days=days_to_sunday)
+    
+    end_of_week = start_of_week + timedelta(days=6)  # Sábado
     
     return start_of_week, end_of_week
 @login_required
@@ -2829,9 +2833,10 @@ def tabladespachos(request):
 
 
 
-@never_cache
+
 @login_required
 @csrf_exempt
+@never_cache
 def registrar_despacho(request):
     if request.method == 'POST':
         try:
@@ -3431,8 +3436,8 @@ def obtener_informeinventario(token, fecha_corte):
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json",
-        "id_empresa": "01",  # Se agrega el id_empresa como header
-        "usuario": "API"     # Se agrega el usuario como header
+        "id_empresa": "01",  
+        "usuario": "API"    
     }
 
     response = requests.post(url, json=payload, headers=headers)
@@ -3446,7 +3451,7 @@ def informe_view(request):
     if request.method == "POST" or request.method == "GET":
         try:
             token = obtener_token()
-            fecha_corte = request.GET.get("fecha_corte", "01-02-2024")  
+            fecha_corte = request.GET.get("fecha_corte", "01-10-2024")  
             informe = obtener_informeinventario(token, fecha_corte)
             return JsonResponse(informe)
         except Exception as e:

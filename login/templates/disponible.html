@@ -245,27 +245,28 @@
                 function verificarFecha() {
                     const fecha = document.getElementById('fecha_disponibilidad').value;
                     const granja = document.getElementById('granjas').value;
+                    
+                    if (!fecha || !granja) return;
 
-                    if (fecha && granja) {
-                        fetch(`/verificar_disponibilidad/?fecha=${fecha}&granja=${granja}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.existe) {
-                                    Swal.fire({
-                                        title: 'Advertencia',
-                                        html: `
-                                <div style="text-align: center;">
-                                    <p>Ya existe una disponibilidad para esta granja en la semana seleccionada.</p>
-                                </div>`,
-                                        showConfirmButton: true,
-                                        confirmButtonText: 'Aceptar',
-                                        icon: 'warning'
-                                    });
+                    console.log('Verificando fecha:', fecha, 'granja:', granja); // Para debug
+                    
+                    fetch(`/verificar_disponibilidad/?fecha=${fecha}&granja=${granja}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Respuesta:', data); // Para debug
+                            if (data.existe) {
+                                Swal.fire({
+                                    title: 'Advertencia',
+                                    text: 'Ya existe una disponibilidad para esta granja en la semana seleccionada.',
+                                    icon: 'warning'
+                                }).then(() => {
                                     document.getElementById('fecha_disponibilidad').value = '';
-                                }
-                            });
-                    }
+                                });
+                            }
+                        });
                 }
+            // Añade esta verificación cuando cambie la granja
+            document.getElementById('granjas').addEventListener('change', verificarFecha);
 
                 $('#dispo').on('submit', function (event) {
                     event.preventDefault();
@@ -288,8 +289,8 @@
                                 confirmButtonText: 'Aceptar',
                                 icon: 'success'
                             }).then(() => {
-                                // Redirigir o limpiar el formulario
-                                window.location.href = '/home'; // Cambia esto según sea necesario
+                                
+                                window.location.href = '/home'; 
                             });
                         } else {
                             Swal.fire({
@@ -301,7 +302,7 @@
                                 confirmButtonText: 'Aceptar',
                                 icon: 'warning'
                             }).then(() => {
-                                // Limpiar el campo de fecha si es necesario
+                                
                                 document.getElementById('fecha_disponibilidad').value = '';
                             });
                         }
