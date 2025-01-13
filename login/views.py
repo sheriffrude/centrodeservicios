@@ -3507,3 +3507,19 @@ def decomisos_view(request):
         form = DateRangeForm()
     
     return render(request, 'decomisos.html', {'form': form})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
