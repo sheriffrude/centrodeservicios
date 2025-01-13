@@ -118,7 +118,7 @@ def insert_data_into_db(data):
         record['id_propietario'] = get_id_propietario(record.get('nit_propietario'))
         
         # Obtener el id_tipo_corte según la hora actual
-        current_time = datetime.now().strftime("%H:%M:%S")
+        current_time = datetime.now().strftime("%H:%M")
         tipo_corte = get_tipo_corte_id(current_time)
         record['tipo_corte'] = tipo_corte
         
