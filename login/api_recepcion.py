@@ -43,7 +43,30 @@ def get_registro_ic_and_frigorifico(consecutivo_cercafe):
     cursor.close()
     connection.close()
     
-    return result if result else (None, None)
+    return result if result else (None, None, None)
+
+# Obtener la hora actual en formato HH:MM:SS
+current_time = datetime.now().strftime("%H:%M")
+def get_tipo_corte_id(current_time):
+    connection = pymysql.connect(**DB_CONFIG)
+    cursor = connection.cursor()
+    
+    # Consultamos el id correspondiente al tipo_corte
+    query = """
+    SELECT id
+    FROM dhc.p_tipo_corte
+    WHERE tipo_corte = %s
+    LIMIT 1
+    """
+    cursor.execute(query, (current_time,))
+    result = cursor.fetchone()
+    
+    cursor.close()
+    connection.close()
+    
+    return result[0] if result else None
+
+
 
 # Función para obtener el ID del propietario basado en el NIT
 def get_id_propietario(nit_propietario):
@@ -73,11 +96,11 @@ def insert_data_into_db(data):
     INSERT INTO recepcion (
         fecha_recepcion, consecutivo_cercafe, orden_recepcion, nit_propietario,
         id_propietario, id_granja, cerdos_recibidos, peso_total, ingreso_qr,
-        registro_ic, id_frigorifico, placa, ica
+        registro_ic, id_frigorifico, placa, ica, tipo_corte
     ) VALUES (
         %(fecha_recepcion)s, %(consecutivo_cercafe)s, %(orden)s, %(nit_propietario)s,
-        %(id_propietario)s,%(id_granja)s ,%(cantidad)s, %(peso_total)s, %(ingreso_qr)s,
-        %(registro_ic)s, %(id_frigorifico)s, %(placa)s, %(ica)s
+        %(id_propietario)s, %(id_granja)s, %(cantidad)s, %(peso_total)s, %(ingreso_qr)s,
+        %(registro_ic)s, %(id_frigorifico)s, %(placa)s, %(ica)s, %(tipo_corte)s
     )
     """
     
@@ -94,11 +117,17 @@ def insert_data_into_db(data):
         # Obtener ID del propietario
         record['id_propietario'] = get_id_propietario(record.get('nit_propietario'))
         
+        # Obtener el id_tipo_corte según la hora actual
+        current_time = datetime.now().strftime("%H:%M:%S")
+        tipo_corte = get_tipo_corte_id(current_time)
+        record['tipo_corte'] = tipo_corte
+        
         cursor.execute(query, record)
     
     connection.commit()
     cursor.close()
     connection.close()
+
 
 # Función principal
 def main():
