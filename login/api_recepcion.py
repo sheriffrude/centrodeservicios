@@ -2,7 +2,7 @@ import requests
 import pymysql
 from datetime import datetime
 
-# Configuración de la base de datos
+
 DB_CONFIG = {
     'host': '192.168.9.134',
     'user': 'DEV_USER',
@@ -13,11 +13,11 @@ DB_CONFIG = {
     'autocommit': True,
 }
 
-# API Configuration
+
 API_URL = "https://api.controlfrigo.com/api/v1/receptions"
 API_KEY = "a2217af9-7730-430b-8a28-32935108f49e"
 
-# Función para consumir la API
+
 def fetch_data_from_api(start_date, end_date):
     headers = {'Key': API_KEY}
     params = {'startDate': start_date, 'endDate': end_date}
@@ -26,7 +26,7 @@ def fetch_data_from_api(start_date, end_date):
     response.raise_for_status()
     return response.json()
 
-# Función para obtener el registro IC y frigorífico de la tabla externa
+
 def get_registro_ic_and_frigorifico(consecutivo_cercafe):
     connection = pymysql.connect(**DB_CONFIG)
     cursor = connection.cursor()
@@ -45,13 +45,13 @@ def get_registro_ic_and_frigorifico(consecutivo_cercafe):
     
     return result if result else (None, None, None)
 
-# Obtener la hora actual en formato HH:MM:SS
+
 current_time = datetime.now().strftime("%H:%M")
 def get_tipo_corte_id(current_time):
     connection = pymysql.connect(**DB_CONFIG)
     cursor = connection.cursor()
     
-    # Consultamos el id correspondiente al tipo_corte
+
     query = """
     SELECT id
     FROM dhc.p_tipo_corte
@@ -67,8 +67,6 @@ def get_tipo_corte_id(current_time):
     return result[0] if result else None
 
 
-
-# Función para obtener el ID del propietario basado en el NIT
 def get_id_propietario(nit_propietario):
     connection = pymysql.connect(**DB_CONFIG)
     cursor = connection.cursor()
@@ -87,7 +85,7 @@ def get_id_propietario(nit_propietario):
     
     return result[0] if result else None
 
-# Función para insertar los datos en la base de datos
+
 def insert_data_into_db(data):
     connection = pymysql.connect(**DB_CONFIG)
     cursor = connection.cursor()
@@ -105,19 +103,19 @@ def insert_data_into_db(data):
     """
     
     for record in data:
-        # Validación de ingreso_qr
+       
         record['ingreso_qr'] = "SI" if record.get('placa') else "NO"
         
-        # Obtener registro IC y frigorífico
+        
         registro_ic, id_frigorifico, id_granja = get_registro_ic_and_frigorifico(record.get('consecutivo_cercafe'))
         record['registro_ic'] = registro_ic
         record['id_frigorifico'] = id_frigorifico
         record['id_granja'] = id_granja
         
-        # Obtener ID del propietario
+        
         record['id_propietario'] = get_id_propietario(record.get('nit_propietario'))
         
-        # Obtener el id_tipo_corte según la hora actual
+        
         current_time = datetime.now().strftime("%H:%M")
         tipo_corte = get_tipo_corte_id(current_time)
         record['tipo_corte'] = tipo_corte
@@ -129,18 +127,18 @@ def insert_data_into_db(data):
     connection.close()
 
 
-# Función principal
+
 def main():
-    # Rango de fechas: día actual
+    
     today = datetime.now().strftime("%Y-%m-%d")
-    start_date = today
+    start_date = "2025-01-13"
     end_date = today
     
     try:
-        # Obtén los datos de la API
+        
         data = fetch_data_from_api(start_date, end_date)
         
-        # Inserta los datos en la base de datos
+        
         insert_data_into_db(data)
         
         print("Datos insertados correctamente.")
