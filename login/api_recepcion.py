@@ -164,7 +164,12 @@ def validate_and_update_orders(data):
     SET orden = %s
     WHERE consecutivo_cercafe = %s
     """
-    
+     # Query para actualizar los campos 'orden' y 'novedad_orden' en prod_carnica.recepcion
+    update_query = """
+    UPDATE prod_carnica.recepcion
+    SET orden = %s, novedad_orden = %s
+    WHERE consecutivo_cercafe = %s
+    """
     for record in data:
         consecutivo_cercafe = record.get('consecutivo_cercafe')
         cantidad_api = record.get('cantidad')
@@ -181,25 +186,41 @@ def validate_and_update_orders(data):
         nit_result = cursor.fetchone()
         nit_asociado = nit_result[3] if nit_result else None
 
-        if not results or not nit_asociado:
-            # Si no hay registros o no se encuentra el Nit_asociado, marcar como ABIERTA
-            orden_status = 'ABIERTA'
+        # Inicializar motivo
+        motivo_abierta = None
+
+        if not results:
+            motivo_abierta = "No hay registros relacionados en despachoLotesGranjas."
+        elif not nit_asociado:
+            motivo_abierta = "No se encontró un Nit_asociado para la granja."
         else:
             # Calcular la suma de cerdos despachados y validar otros campos
             total_cerdos_despachados = sum(row[1] for row in results)
             granjas_bd = {row[2] for row in results}
 
-            # Validar coincidencias
-            if (cantidad_api == total_cerdos_despachados and
-                granja_api in granjas_bd and
-                propietario_api == nit_asociado and
-                ingreso_qr == "SI"):
-                orden_status = 'CERRADA'
-            else:
-                orden_status = 'ABIERTA'
+            if cantidad_api != total_cerdos_despachados:
+                motivo_abierta = f"La cantidad API ({cantidad_api}) no coincide con los cerdos despachados ({total_cerdos_despachados})."
+            elif granja_api not in granjas_bd:
+                motivo_abierta = f"La granja API ({granja_api}) no coincide con las granjas en la BD ({granjas_bd})."
+            elif propietario_api != nit_asociado:
+                motivo_abierta = f"El propietario API ({propietario_api}) no coincide con el Nit_asociado ({nit_asociado})."
+            elif ingreso_qr != "SI":
+                motivo_abierta = "No ingreso con QR"
 
-        # Actualizar la tabla recepcion con el estado de orden
-        cursor.execute(update_query, (orden_status, consecutivo_cercafe))
+         # Determinar el estado de la orden y novedad_orden
+        if motivo_abierta:
+            orden_status = 'ABIERTA'
+            novedad_orden = motivo_abierta
+        else:
+            orden_status = 'CERRADA'
+            novedad_orden = "S/N"
+
+        # Imprimir motivo si está abierta
+        if orden_status == 'ABIERTA':
+            print(f"Orden ABIERTA: {consecutivo_cercafe} - Motivo: {motivo_abierta}")
+
+        # Actualizar la tabla recepcion con el estado de orden y la novedad
+        cursor.execute(update_query, (orden_status, novedad_orden, consecutivo_cercafe))
 
     connection.commit()
     cursor.close()
