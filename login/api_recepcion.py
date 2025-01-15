@@ -177,16 +177,16 @@ def validate_and_update_orders(data):
         propietario_api = record.get('nit_propietario')
         ingreso_qr = record.get('ingreso_qr')
 
-        # Buscar registros en despachoLotesGranjas
+        
         cursor.execute(fetch_query, (consecutivo_cercafe,))
         results = cursor.fetchall()
 
-        # Obtener el Nit_asociado de la granja
+        
         cursor.execute(fetch_nit_query, (granja_api,))
         nit_result = cursor.fetchone()
         nit_asociado = nit_result[3] if nit_result else None
 
-        # Inicializar motivo
+        
         motivo_abierta = None
 
         if not results:
@@ -194,20 +194,19 @@ def validate_and_update_orders(data):
         elif not nit_asociado:
             motivo_abierta = "No se encontró un Nit_asociado para la granja."
         else:
-            # Calcular la suma de cerdos despachados y validar otros campos
+            
             total_cerdos_despachados = sum(row[1] for row in results)
             granjas_bd = {row[2] for row in results}
 
             if cantidad_api != total_cerdos_despachados:
                 motivo_abierta = f"La cantidad API ({cantidad_api}) no coincide con los cerdos despachados ({total_cerdos_despachados})."
             elif granja_api not in granjas_bd:
-                motivo_abierta = f"La granja API ({granja_api}) no coincide con las granjas en la BD ({granjas_bd})."
+                motivo_abierta = f"La granja API ({granja_api}) no coincide con la granja en la BD ({granjas_bd})."
             elif propietario_api != nit_asociado:
                 motivo_abierta = f"El propietario API ({propietario_api}) no coincide con el Nit_asociado ({nit_asociado})."
-            elif ingreso_qr != "SI":
-                motivo_abierta = "No ingreso con QR"
+            
 
-         # Determinar el estado de la orden y novedad_orden
+         
         if motivo_abierta:
             orden_status = 'ABIERTA'
             novedad_orden = motivo_abierta
