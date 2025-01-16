@@ -3547,6 +3547,58 @@ def api_recepcion(request):
         }
         return JsonResponse(response, status=500)
 
+def api_proveeduria(request):
+    # Conexión a la base de datos
+    prodsostenible_connection = connections['prodsostenible']
+
+    try:
+        with prodsostenible_connection.cursor() as cursor:
+            # Consulta para unir las tablas y filtrar por el año 2025
+            query = """
+            SELECT 
+                dl.consecutivo_cercafe, 
+                dl.granja, 
+                dl.cerdosDespachados, 
+                dl.lote, 
+                dl.pesoTotal, 
+                dl.FechaDatos,
+                ds.id AS consecutivo_disponibilidad,
+                ds.fecha_disponibilidad,
+                ds.disponibilidad_cantidad,
+                ds.disponibilidadRestante
+            FROM despachoLotesGranjas dl
+            INNER JOIN disponiblidad_semanal ds
+                ON dl.ConsecutivoDisponibilidad = ds.id
+            WHERE YEAR(dl.FechaDatos) = 2025
+            """
+
+            # Ejecutar la consulta
+            cursor.execute(query)
+            results = cursor.fetchall()
+
+            # Obtener los nombres de las columnas
+            column_names = [col[0] for col in cursor.description]
+
+        # Construir la respuesta JSON
+        items = {'proveeduria': []}
+        for row in results:
+            # Combinar columnas y valores para formar un diccionario para cada fila
+            item = dict(zip(column_names, row))
+            items['proveeduria'].append(item)
+
+        response = {
+            'success': True,
+            'data': items,
+            'message': 'data_proveeduria_completa'
+        }
+        return JsonResponse(response, status=200)
+    except Exception as e:
+        # Manejo de errores
+        response = {
+            'success': False,
+            'message': f'Error retrieving data: {str(e)}'
+        }
+        return JsonResponse(response, status=500)
 
 
 

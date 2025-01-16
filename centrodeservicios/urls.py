@@ -161,6 +161,9 @@ urlpatterns = [
     path('api/hembras-registradas/', views.api_hembras_registradas),
     path('decomisos/', views.decomisos_view, name='decomisos'),
     path('api_recepcion/', views.api_recepcion, name='api_recepcion'),
+    path('api_proveeduria/', views.api_proveeduria, name='api_proveeduria'),
+
+    
 #-------------------------------------------------------------------------------
 #----------------API YEMINUS----------------------------------------------------
 #-------------------------------------------------------------------------------
