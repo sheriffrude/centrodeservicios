@@ -235,10 +235,7 @@ friday = (5 - today) % 7
 
 
 CELERY_BEAT_SCHEDULE = {
-    "scheduled_task": {
-        "task": "login.tasks.ejecutar_script",
-        "schedule": 10.0,
-    },
+    
     "scheduled_task2": {
         "task": "login.tasks.ejecutar_script2",
         "schedule": 15.0,
