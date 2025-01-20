@@ -3561,10 +3561,8 @@ def api_proveeduria(request):
                 dl.cerdosDespachados, 
                 dl.lote, 
                 dl.pesoTotal, 
-                dl.FechaDatos,
-                
+                dl.FechaDatos
             FROM despachoLotesGranjas dl
-           
             WHERE YEAR(dl.FechaDatos) = 2025
             """
 
