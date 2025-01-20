@@ -3562,13 +3562,9 @@ def api_proveeduria(request):
                 dl.lote, 
                 dl.pesoTotal, 
                 dl.FechaDatos,
-                ds.id AS consecutivo_disponibilidad,
-                ds.fecha_disponibilidad,
-                ds.disponibilidad_cantidad,
-                ds.disponibilidadRestante
+                
             FROM despachoLotesGranjas dl
-            INNER JOIN disponiblidad_semanal ds
-                ON dl.ConsecutivoDisponibilidad = ds.id
+           
             WHERE YEAR(dl.FechaDatos) = 2025
             """
 
