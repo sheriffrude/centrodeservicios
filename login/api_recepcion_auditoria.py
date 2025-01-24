@@ -4,11 +4,11 @@ from datetime import datetime
 
 # Configuración de la base de datos
 DB_CONFIG = {
-    'host': '192.168.9.134',
+    'host': '192.168.9.41',
     'user': 'DEV_USER',
     'password': 'DEV-USER12345',
     'database': 'prod_carnica',
-    'port': 3308,
+    'port': 3306,
     'charset': 'utf8mb4',
     'autocommit': True,
 }
