@@ -14,7 +14,7 @@ DB_CONFIG = {
 }
 
 # API Configuration
-API_URL = "https://api.controlfrigo.com/api/v1/receptions"
+API_URL = "https://api.controlfrigo.com/api/v1/recepcion/ordenes"
 API_KEY = "a2217af9-7730-430b-8a28-32935108f49e"
 
 # Función para consumir la API
