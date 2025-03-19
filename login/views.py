@@ -3599,14 +3599,14 @@ def api_proveeduria(request):
         }
         return JsonResponse(response, status=500)
 
-def api_benefiicio(request):
+def api_beneficio(request):
     # Conexión a la base de datos
     intranetcercafe2_connection = connections['prod_carnica']
 
     try:
         with intranetcercafe2_connection.cursor() as cursor:
             # Ejecutar la consulta para obtener todos los datos de la tabla recepcion
-            cursor.execute("SELECT * FROM recepcion")
+            cursor.execute("SELECT * FROM beneficio")
             results = cursor.fetchall()
 
             # Obtener los nombres de las columnas
