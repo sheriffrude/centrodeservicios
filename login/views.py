@@ -3217,6 +3217,11 @@ def generar_pdf(request):
                     if nombre_frigorifico_result:
                         nombre_frigorifico = nombre_frigorifico_result[0]
             
+
+
+
+
+            
             total_cantidad = sum(remision[7] for remision in remisionnew)
             total_cerdos = sum(remision[4] for remision in remisionnew)
             promedio = total_cantidad / total_cerdos if total_cerdos > 0 else 0
@@ -3594,7 +3599,39 @@ def api_proveeduria(request):
         }
         return JsonResponse(response, status=500)
 
+def api_benefiicio(request):
+    # Conexión a la base de datos
+    intranetcercafe2_connection = connections['prod_carnica']
 
+    try:
+        with intranetcercafe2_connection.cursor() as cursor:
+            # Ejecutar la consulta para obtener todos los datos de la tabla recepcion
+            cursor.execute("SELECT * FROM recepcion")
+            results = cursor.fetchall()
+
+            # Obtener los nombres de las columnas
+            column_names = [col[0] for col in cursor.description]
+
+        # Construir la respuesta JSON
+        items = {'recepcion': []}
+        for row in results:
+            # Combinar columnas y valores para formar un diccionario para cada fila
+            item = dict(zip(column_names, row))
+            items['recepcion'].append(item)
+
+        response = {
+            'success': True,
+            'data': items,
+            'message': 'data_recepcion_completa'
+        }
+        return JsonResponse(response, status=200)
+    except Exception as e:
+        # Manejo de errores
+        response = {
+            'success': False,
+            'message': f'Error retrieving data: {str(e)}'
+        }
+        return JsonResponse(response, status=500)
 
 
 
