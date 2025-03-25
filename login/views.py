@@ -3643,7 +3643,7 @@ def api_beneficio_auditoria(request):
     try:
         with intranetcercafe2_connection.cursor() as cursor:
             # Ejecutar la consulta para obtener todos los datos de la tabla recepcion
-            cursor.execute("SELECT * FROM beneficio_auditoria")
+            cursor.execute("SELECT * FROM auditoria_beneficio")
             results = cursor.fetchall()
 
             # Obtener los nombres de las columnas
