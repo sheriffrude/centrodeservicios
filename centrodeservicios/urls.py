@@ -163,7 +163,7 @@ urlpatterns = [
     path('api_recepcion/', views.api_recepcion, name='api_recepcion'),
     path('api_proveeduria/', views.api_proveeduria, name='api_proveeduria'),
     path('api_beneficio/', views.api_beneficio, name='api_beneficio'),
-    
+    path('api_beneficio_auditoria/', views.api_beneficio_auditoria, name='api_beneficio_auditoria'),   
 #-------------------------------------------------------------------------------
 #----------------API YEMINUS----------------------------------------------------
 #-------------------------------------------------------------------------------

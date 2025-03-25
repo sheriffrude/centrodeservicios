@@ -3622,7 +3622,7 @@ def api_beneficio(request):
         response = {
             'success': True,
             'data': items,
-            'message': 'data_recepcion_completa'
+            'message': 'data_beneficio_completa'
         }
         return JsonResponse(response, status=200)
     except Exception as e:
@@ -3636,7 +3636,39 @@ def api_beneficio(request):
 
 
 
+def api_beneficio_auditoria(request):
+    # Conexión a la base de datos
+    intranetcercafe2_connection = connections['prod_carnica']
 
+    try:
+        with intranetcercafe2_connection.cursor() as cursor:
+            # Ejecutar la consulta para obtener todos los datos de la tabla recepcion
+            cursor.execute("SELECT * FROM beneficio_auditoria")
+            results = cursor.fetchall()
+
+            # Obtener los nombres de las columnas
+            column_names = [col[0] for col in cursor.description]
+
+        # Construir la respuesta JSON
+        items = {'recepcion': []}
+        for row in results:
+            # Combinar columnas y valores para formar un diccionario para cada fila
+            item = dict(zip(column_names, row))
+            items['recepcion'].append(item)
+
+        response = {
+            'success': True,
+            'data': items,
+            'message': 'data_beneficio_completa'
+        }
+        return JsonResponse(response, status=200)
+    except Exception as e:
+        # Manejo de errores
+        response = {
+            'success': False,
+            'message': f'Error retrieving data: {str(e)}'
+        }
+        return JsonResponse(response, status=500)
 
 
 
