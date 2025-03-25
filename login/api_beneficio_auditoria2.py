@@ -151,7 +151,7 @@ def insertar_datos(datos):
                     if count == 0:
                         # Insertar nuevo registro
                         query_insert = """
-                        INSERT INTO auditoria_beneficio (
+                        INSERT INTO auditoria_beneficio2 (
                             id_frigorifico, fecha_recepcion, consecutivo_cercafe, orden_beneficio, lote, 
                             nit_propietario, id_propietario, id_granja, tiquete, fecha_hora_beneficio, 
                             fecha_hora_peso_caliente, peso_pie, peso_caliente, clasificacion, 
