@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import requests
 import mysql.connector
 from mysql.connector import Error
@@ -163,8 +164,11 @@ def insert_data_to_db(data_from_api):
             print("Conexión a la base de datos cerrada.")
 
 def main():
-    start_date = '2025-05-15'
-    end_date = '2025-05-16'
+    today = datetime.now().strftime("%Y-%m-%d")
+    yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+    
+    start_date = yesterday
+    end_date = today
 
     data = obtener_datos_api(start_date, end_date)
 
