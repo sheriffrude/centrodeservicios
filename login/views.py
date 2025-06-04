@@ -3401,6 +3401,12 @@ def api_hembras_registradas(request):
     return JsonResponse(response, status=200)
 
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from django.db import connections
 
 
 
@@ -3670,8 +3676,52 @@ def api_beneficio_auditoria(request):
         }
         return JsonResponse(response, status=500)
 
+##########################    AGRINESS    ####################################################
 
 
+
+class KpisReproductivosSitio1API(APIView):
+    # Clases de autenticación: Aquí indicamos que usaremos TokenAuthentication
+    authentication_classes = [TokenAuthentication]
+    # Clases de permisos: Aquí indicamos que solo usuarios autenticados pueden acceder
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            # Conexión a la base de datos 'agriness'
+            # Asegúrate de que 'agriness' es el nombre de la conexión en settings.py
+            agriness_connection = connections['agriness']
+
+            with agriness_connection.cursor() as cursor:
+                # Ejecutar la consulta para obtener todos los datos de la tabla kpis_reproductivos_sitio1
+                # Si 'agriness' es un esquema dentro de la DB, la consulta es correcta.
+                # Si 'agriness' es el nombre de la DB y la tabla está en el esquema por defecto,
+                # podrías solo usar "SELECT * FROM kpis_reproductivos_sitio1"
+                cursor.execute("SELECT * FROM agriness.kpis_reproductivos_sitio1")
+                results = cursor.fetchall()
+
+                # Obtener los nombres de las columnas
+                column_names = [col[0] for col in cursor.description]
+
+                # Construir la respuesta JSON
+                items = []
+                for row in results:
+                    item = dict(zip(column_names, row))
+                    items.append(item)
+
+            response_data = {
+                'success': True,
+                'data': items,
+                'message': 'Datos de KPIs Reproductivos del sitio 1 obtenidos exitosamente.'
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            error_response = {
+                'success': False,
+                'message': f'Error al obtener datos de KPIs Reproductivos del sitio 1: {str(e)}'
+            }
+            return Response(error_response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 

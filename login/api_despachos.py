@@ -21,7 +21,7 @@ DB_CONFIG = {
 }
 
 def normalize_tiquete(tiquete_value):
-    """Normaliza un valor de tiquete a un string, minúsculas y sin espacios extra."""
+
     if tiquete_value is None:
         return None
     # Convertir a string, quitar espacios en blanco al inicio/final, y convertir a minúsculas
@@ -80,8 +80,8 @@ def insert_data_to_db(data_from_api):
                 fecha_despacho, orden, consecutivo_cercafe, tiquete, guia,
                 peso_caliente, peso_frio, rendimiento_caliente, rendimiento_frio,
                 merma, clasificacion, mm_grasa, fecha_hora_sacrificio, cliente,
-                es_desposte_traslado, estado, tipo_despacho, es_retoma, expendio,
-                direccion_expendio, guid, metadata
+                es_desposte_traslado, estado, tipo_despacho, es_retoma, sucursal,
+                direccion_sucursal, guid, metadata
             ) VALUES (
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
@@ -125,8 +125,8 @@ def insert_data_to_db(data_from_api):
                         item.get('rendimiento_caliente'), item.get('rendimiento_frio'), item.get('merma'),
                         item.get('clasificacion'), item.get('mm_grasa'), item.get('fecha_hora_sacrificio'),
                         item.get('cliente'), item.get('es_desposte_traslado'), item.get('estado'),
-                        item.get('tipo_despacho'), item.get('es_retoma'), item.get('expendio'),
-                        item.get('direccion_expendio'), guid_value
+                        item.get('tipo_despacho'), item.get('es_retoma'), item.get('sucursal'),
+                        item.get('direccion_sucursal'), guid_value
                     )
                     new_records_to_insert.append(values)
                     processed_api_tiquetes_for_this_run.add(api_tiquete_normalized)

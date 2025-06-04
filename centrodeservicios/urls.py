@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework.authtoken.views import obtain_auth_token
 #--Todas las urls de Centro de servicios ---
 
 urlpatterns = [
@@ -152,7 +153,7 @@ urlpatterns = [
     path('sitio/', views.sitio, name='sitio'),
 
 
-
+    
     
 #-------------------------------API's ------------------------------------------
 #-----------------------------GENERADAS-----------------------------------------
@@ -163,7 +164,9 @@ urlpatterns = [
     path('api_recepcion/', views.api_recepcion, name='api_recepcion'),
     path('api_proveeduria/', views.api_proveeduria, name='api_proveeduria'),
     path('api_beneficio/', views.api_beneficio, name='api_beneficio'),
-    path('api_beneficio_auditoria/', views.api_beneficio_auditoria, name='api_beneficio_auditoria'),   
+    path('api_beneficio_auditoria/', views.api_beneficio_auditoria, name='api_beneficio_auditoria'), 
+    path('api/auth-token/', obtain_auth_token),
+    path('api/kpis-reproductivos-sitio1/', views.KpisReproductivosSitio1API.as_view(), name='api_kpis_reproductivos_sitio1'),  
 #-------------------------------------------------------------------------------
 #----------------API YEMINUS----------------------------------------------------
 #-------------------------------------------------------------------------------

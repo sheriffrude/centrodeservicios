@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'wkhtmltopdf',
     'django_celery_beat',
     'django_celery_results',
+    'rest_framework',
+    'rest_framework.authtoken',
+    
 ]
 
 MIDDLEWARE = [
@@ -132,7 +135,9 @@ DATABASES = {
 esquemas = [
     'b_gc', 'b_gt', 'b_ca', 'b_gab', 'b_ci',
     'b_m', 'b_c', 'b_gd', 'b_gaf', 'b_gh',
-    'b_ti', 'b_sac', 'b_sig', 'b_gg', 'dhc','intranetcercafe2','oinc','frigotun','prodsostenible','prod_carnica',
+    'b_ti', 'b_sac', 'b_sig', 'b_gg', 'dhc',
+    'intranetcercafe2','oinc','frigotun',
+    'prodsostenible','prod_carnica','agriness'
 
 ]
 
@@ -250,5 +255,12 @@ CELERY_BEAT_SCHEDULE = {
     }
 }
 
-
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication', 
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
 
