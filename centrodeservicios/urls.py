@@ -166,7 +166,8 @@ urlpatterns = [
     path('api_beneficio/', views.api_beneficio, name='api_beneficio'),
     path('api_beneficio_auditoria/', views.api_beneficio_auditoria, name='api_beneficio_auditoria'), 
     path('api/auth-token/', obtain_auth_token),
-    path('api/kpis-reproductivos-sitio1/', views.KpisReproductivosSitio1API.as_view(), name='api_kpis_reproductivos_sitio1'),  
+    path('api/kpis-reproductivos-sitio1/', views.KpisReproductivosSitio1API.as_view(), name='api_kpis_reproductivos_sitio1'),
+    path('api/despacho_detalleAPI/', views.despacho_detalleAPI.as_view(), name='despacho_detalleAPI'),
 #-------------------------------------------------------------------------------
 #----------------API YEMINUS----------------------------------------------------
 #-------------------------------------------------------------------------------

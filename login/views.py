@@ -3725,4 +3725,48 @@ class KpisReproductivosSitio1API(APIView):
 
 
 
-    
+    ######### DESPACHO DETALLE #######################################
+
+
+class despacho_detalleAPI(APIView):
+    # Clases de autenticación: Aquí indicamos que usaremos TokenAuthentication
+    authentication_classes = [TokenAuthentication]
+    # Clases de permisos: Aquí indicamos que solo usuarios autenticados pueden acceder
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            # Conexión a la base de datos 'agriness'
+            # Asegúrate de que 'agriness' es el nombre de la conexión en settings.py
+            agriness_connection = connections['prod_carnica']
+
+            with agriness_connection.cursor() as cursor:
+                # Ejecutar la consulta para obtener todos los datos de la tabla kpis_reproductivos_sitio1
+                # Si 'agriness' es un esquema dentro de la DB, la consulta es correcta.
+                # Si 'agriness' es el nombre de la DB y la tabla está en el esquema por defecto,
+                # podrías solo usar "SELECT * FROM kpis_reproductivos_sitio1"
+                cursor.execute("SELECT * FROM prod_carnica.despacho_detalle")
+                results = cursor.fetchall()
+
+                # Obtener los nombres de las columnas
+                column_names = [col[0] for col in cursor.description]
+
+                # Construir la respuesta JSON
+                items = []
+                for row in results:
+                    item = dict(zip(column_names, row))
+                    items.append(item)
+
+            response_data = {
+                'success': True,
+                'data': items,
+                'message': 'Datos de despacho detalle obtenidos exitosamente.'
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            error_response = {
+                'success': False,
+                'message': f'Error al obtener datos de despacho detalle: {str(e)}'
+            }
+            return Response(error_response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
