@@ -20,12 +20,92 @@ DB_CONFIG = {
     'autocommit': False,
 }
 
-def normalize_tiquete(tiquete_value):
+# Mapeo de nombres de campos para los mensajes de cambio
+FIELD_NAMES = {
+    'fecha_despacho': 'Fecha de Despacho',
+    'orden': 'Orden',
+    'consecutivo_cercafe': 'Consecutivo Cercafe',
+    'guia': 'Guía',
+    'peso_caliente': 'Peso Caliente',
+    'peso_frio': 'Peso Frío',
+    'rendimiento_caliente': 'Rendimiento Caliente',
+    'rendimiento_frio': 'Rendimiento Frío',
+    'merma': 'Merma',
+    'clasificacion': 'Clasificación',
+    'mm_grasa': 'MM Grasa',
+    'fecha_hora_sacrificio': 'Fecha Hora Sacrificio',
+    'cliente': 'Cliente',
+    'es_desposte_traslado': 'Es Desposte Traslado',
+    'tipo_despacho': 'Tipo Despacho',
+    'es_retoma': 'Es Retoma',
+    'sucursal': 'Sucursal',
+    'direccion_sucursal': 'Dirección Sucursal'
+}
 
+def normalize_tiquete(tiquete_value):
     if tiquete_value is None:
         return None
     # Convertir a string, quitar espacios en blanco al inicio/final, y convertir a minúsculas
     return str(tiquete_value).strip().lower()
+
+def normalize_value(value):
+    """Normalizar valores para comparación"""
+    if value is None:
+        return None
+    if isinstance(value, str):
+        return value.strip()
+    return value
+
+def compare_and_get_changes(existing_record, new_data, tiquete_original):
+    """Compara los datos existentes con los nuevos y retorna los cambios"""
+    changes = []
+    fields_to_compare = [
+        'fecha_despacho', 'orden', 'consecutivo_cercafe', 'guia',
+        'peso_caliente', 'peso_frio', 'rendimiento_caliente', 'rendimiento_frio',
+        'merma', 'clasificacion', 'mm_grasa', 'fecha_hora_sacrificio', 'cliente',
+        'es_desposte_traslado', 'tipo_despacho', 'es_retoma', 'sucursal',
+        'direccion_sucursal'
+    ]
+    
+    # Mapear los datos existentes por índice de campo
+    existing_data = {
+        'fecha_despacho': existing_record[1],
+        'orden': existing_record[2],
+        'consecutivo_cercafe': existing_record[3],
+        'guia': existing_record[5],
+        'peso_caliente': existing_record[6],
+        'peso_frio': existing_record[7],
+        'rendimiento_caliente': existing_record[8],
+        'rendimiento_frio': existing_record[9],
+        'merma': existing_record[10],
+        'clasificacion': existing_record[11],
+        'mm_grasa': existing_record[12],
+        'fecha_hora_sacrificio': existing_record[13],
+        'cliente': existing_record[14],
+        'es_desposte_traslado': existing_record[15],
+        'tipo_despacho': existing_record[17],
+        'es_retoma': existing_record[18],
+        'sucursal': existing_record[19],
+        'direccion_sucursal': existing_record[20]
+    }
+    
+    for field in fields_to_compare:
+        old_value = normalize_value(existing_data.get(field))
+        # Mapear los campos de la API correctamente
+        api_field = field
+        if field == 'sucursal':
+            api_field = 'expendio'
+        elif field == 'direccion_sucursal':
+            api_field = 'direccion_expendio'
+        
+        new_value = normalize_value(new_data.get(api_field))
+        
+        if old_value != new_value:
+            field_display_name = FIELD_NAMES.get(field, field)
+            change_msg = f"Cambió {field_display_name} de '{old_value}' por '{new_value}'"
+            changes.append(change_msg)
+    
+    return changes
 
 # Función para obtener los datos de la API
 def obtener_datos_api(start_date, end_date):
@@ -47,8 +127,8 @@ def obtener_datos_api(start_date, end_date):
         print(f"Error genérico al consultar la API: {req_err}")
     return []
 
-# Función para insertar datos en la base de datos
-def insert_data_to_db(data_from_api):
+# Función para insertar o actualizar datos en la base de datos
+def insert_or_update_data_to_db(data_from_api):
     if not data_from_api:
         print("No hay datos de la API para procesar.")
         return
@@ -59,37 +139,55 @@ def insert_data_to_db(data_from_api):
         connection = mysql.connector.connect(**DB_CONFIG)
         cursor = connection.cursor()
 
-        # 1. Obtener y normalizar todos los tiquetes existentes de la base de datos
-        cursor.execute("SELECT tiquete FROM despacho_detalle WHERE tiquete IS NOT NULL") # No es necesario CAST aquí si normalizamos en Python
-        existing_tiquetes_raw = cursor.fetchall()
+        # 1. Obtener todos los registros existentes con sus datos completos
+        cursor.execute("""
+            SELECT id, fecha_despacho, orden, consecutivo_cercafe, tiquete, guia,
+                   peso_caliente, peso_frio, rendimiento_caliente, rendimiento_frio,
+                   merma, clasificacion, mm_grasa, fecha_hora_sacrificio, cliente,
+                   es_desposte_traslado, estado, tipo_despacho, es_retoma, sucursal,
+                   direccion_sucursal, guid
+            FROM despacho_detalle 
+            WHERE tiquete IS NOT NULL
+        """)
+        existing_records = cursor.fetchall()
         
-        existing_tiquetes = {normalize_tiquete(row[0]) for row in existing_tiquetes_raw}
-        # Eliminar posible None del set si algún tiquete era NULL y normalize_tiquete devolvió None
-        existing_tiquetes.discard(None)
+        # Crear un diccionario con tiquetes normalizados como clave
+        existing_tiquetes_dict = {}
+        for record in existing_records:
+            tiquete_normalized = normalize_tiquete(record[4])  # tiquete está en índice 4
+            if tiquete_normalized:
+                existing_tiquetes_dict[tiquete_normalized] = record
 
-        print(f"Encontrados {len(existing_tiquetes)} tiquetes existentes normalizados en la base de datos.")
-        # --- INICIO BLOQUE DE DEPURACIÓN ---
-        # Descomenta las siguientes líneas para ver una muestra de tiquetes existentes y de la API
-        # print("Muestra de primeros 5 tiquetes existentes (normalizados):")
-        # for i, t in enumerate(list(existing_tiquetes)[:5]):
-        #     print(f"  BD Tiquete {i+1}: '{t}' (tipo: {type(t)})")
-        # --- FIN BLOQUE DE DEPURACIÓN ---
-
+        print(f"Encontrados {len(existing_tiquetes_dict)} registros existentes en la base de datos.")
+     
+        # Queries para insertar y actualizar
         insert_query = """
             INSERT INTO despacho_detalle (
                 fecha_despacho, orden, consecutivo_cercafe, tiquete, guia,
                 peso_caliente, peso_frio, rendimiento_caliente, rendimiento_frio,
                 merma, clasificacion, mm_grasa, fecha_hora_sacrificio, cliente,
                 es_desposte_traslado, estado, tipo_despacho, es_retoma, sucursal,
-                direccion_sucursal, guid, metadata
+                direccion_sucursal, guid, novedad_estado, metadata
             ) VALUES (
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                %s, CURRENT_TIMESTAMP
+                %s, %s, CURRENT_TIMESTAMP
             )
-        """ # Corregido: 21 placeholders para 21 columnas (guid es el 21)
+        """
+
+        update_query = """
+            UPDATE despacho_detalle SET
+                fecha_despacho = %s, orden = %s, consecutivo_cercafe = %s, guia = %s,
+                peso_caliente = %s, peso_frio = %s, rendimiento_caliente = %s, rendimiento_frio = %s,
+                merma = %s, clasificacion = %s, mm_grasa = %s, fecha_hora_sacrificio = %s,
+                cliente = %s, es_desposte_traslado = %s, tipo_despacho = %s, es_retoma = %s,
+                sucursal = %s, direccion_sucursal = %s, estado = %s, novedad_estado = %s,
+                metadata = CURRENT_TIMESTAMP
+            WHERE id = %s
+        """
 
         new_records_to_insert = []
+        records_to_update = []
         skipped_count = 0
         processed_api_tiquetes_for_this_run = set()
 
@@ -98,55 +196,76 @@ def insert_data_to_db(data_from_api):
             api_tiquete_raw = item.get('tiquete')
             api_tiquete_normalized = normalize_tiquete(api_tiquete_raw)
 
-            # --- INICIO BLOQUE DE DEPURACIÓN ---
-            # Descomenta esta sección para ver la comparación para cada tiquete de la API
-            # if index < 5 or index > len(data_from_api) - 6 : # Muestra los primeros 5 y últimos 5
-            #     is_in_db = api_tiquete_normalized in existing_tiquetes
-            #     print(f"Ítem API {index}: Raw='{api_tiquete_raw}', Norm='{api_tiquete_normalized}' (Tipo Norm: {type(api_tiquete_normalized)}). En BD (norm)?: {is_in_db}")
-            #     if is_in_db:
-            #         # Si dice que está en BD pero luego se inserta, es un problema.
-            #         # Si dice que NO está en BD pero debería estar, también es un problema.
-            #         # Buscar manualmente api_tiquete_normalized en la lista de existing_tiquetes impresos antes.
-            #         pass
-            # --- FIN BLOQUE DE DEPURACIÓN ---
-
-            if api_tiquete_normalized is None or not api_tiquete_normalized: # Si es None o cadena vacía
-                # print(f"Ítem {index}: Tiquete normalizado es None o vacío. Omitiendo. Raw: '{api_tiquete_raw}'")
+            if api_tiquete_normalized is None or not api_tiquete_normalized:
                 skipped_count += 1
                 continue
 
-            if api_tiquete_normalized not in existing_tiquetes:
-                if api_tiquete_normalized not in processed_api_tiquetes_for_this_run:
-                    guid_value = str(uuid.uuid4())
-                    values = (
+            # Evitar duplicados en la misma ejecución
+            if api_tiquete_normalized in processed_api_tiquetes_for_this_run:
+                skipped_count += 1
+                continue
+
+            processed_api_tiquetes_for_this_run.add(api_tiquete_normalized)
+
+            if api_tiquete_normalized in existing_tiquetes_dict:
+                # El registro existe, verificar si hay cambios
+                existing_record = existing_tiquetes_dict[api_tiquete_normalized]
+                changes = compare_and_get_changes(existing_record, item, api_tiquete_raw)
+                
+                if changes:
+                    # Hay cambios, preparar para actualizar
+                    novedad_estado = "; ".join(changes)
+                    update_values = (
                         item.get('fecha_despacho'), item.get('orden'), item.get('consecutivo_cercafe'),
-                        api_tiquete_raw, # Insertar el valor original de la API
                         item.get('guia'), item.get('peso_caliente'), item.get('peso_frio'),
                         item.get('rendimiento_caliente'), item.get('rendimiento_frio'), item.get('merma'),
                         item.get('clasificacion'), item.get('mm_grasa'), item.get('fecha_hora_sacrificio'),
-                        item.get('cliente'), item.get('es_desposte_traslado'), item.get('estado'),
-                        item.get('tipo_despacho'), item.get('es_retoma'), item.get('sucursal'),
-                        item.get('direccion_sucursal'), guid_value
+                        item.get('cliente'), item.get('es_desposte_traslado'), item.get('tipo_despacho'),
+                        item.get('es_retoma'), item.get('expendio'), item.get('direccion_expendio'),
+                        'actualizado',  # estado
+                        novedad_estado,  # novedad_estado
+                        existing_record[0]  # id del registro existente
                     )
-                    new_records_to_insert.append(values)
-                    processed_api_tiquetes_for_this_run.add(api_tiquete_normalized)
+                    records_to_update.append(update_values)
                 else:
-                    # print(f"Ítem {index}: Tiquete '{api_tiquete_normalized}' duplicado dentro de esta llamada API. Omitiendo.")
+                    # No hay cambios, omitir
                     skipped_count += 1
             else:
-                # print(f"Ítem {index}: Tiquete '{api_tiquete_normalized}' ya existe en la BD (normalizado). Omitiendo.")
-                skipped_count += 1
+                # Es un registro nuevo
+                guid_value = str(uuid.uuid4())
+                insert_values = (
+                    item.get('fecha_despacho'), item.get('orden'), item.get('consecutivo_cercafe'),
+                    api_tiquete_raw,  # Insertar el valor original de la API
+                    item.get('guia'), item.get('peso_caliente'), item.get('peso_frio'),
+                    item.get('rendimiento_caliente'), item.get('rendimiento_frio'), item.get('merma'),
+                    item.get('clasificacion'), item.get('mm_grasa'), item.get('fecha_hora_sacrificio'),
+                    item.get('cliente'), item.get('es_desposte_traslado'), 'nuevo',  # estado
+                    item.get('tipo_despacho'), item.get('es_retoma'), item.get('expendio'),
+                    item.get('direccion_expendio'), guid_value, 'Registro nuevo'  # novedad_estado
+                )
+                new_records_to_insert.append(insert_values)
 
+        # Ejecutar inserciones
         if new_records_to_insert:
-            print(f"Intentando insertar {len(new_records_to_insert)} nuevas filas.")
+            print(f"Insertando {len(new_records_to_insert)} nuevos registros.")
             cursor.executemany(insert_query, new_records_to_insert)
-            connection.commit()
-            print(f"Se insertaron {cursor.rowcount} nuevas filas exitosamente.") # Usar cursor.rowcount para executemany
-        else:
-            print("No hay nuevos registros para insertar.")
+            print(f"Se insertaron {len(new_records_to_insert)} nuevos registros exitosamente.")
+
+        # Ejecutar actualizaciones
+        if records_to_update:
+            print(f"Actualizando {len(records_to_update)} registros existentes.")
+            cursor.executemany(update_query, records_to_update)
+            print(f"Se actualizaron {len(records_to_update)} registros exitosamente.")
+
+        if not new_records_to_insert and not records_to_update:
+            print("No hay nuevos registros para insertar ni registros para actualizar.")
 
         if skipped_count > 0:
-            print(f"Se omitieron {skipped_count} registros.")
+            print(f"Se omitieron {skipped_count} registros (sin cambios o duplicados).")
+
+        # Confirmar todos los cambios
+        connection.commit()
+        print("Todos los cambios han sido confirmados en la base de datos.")
 
     except Error as e:
         print(f"Error al interactuar con la base de datos: {e}")
@@ -174,13 +293,7 @@ def main():
 
     if data:
         print(f"API devolvió {len(data)} registros.")
-        # --- INICIO BLOQUE DE DEPURACIÓN ---
-        # Descomenta para ver el primer ítem de la API y verificar 'tiquete'
-        # if data:
-        #     print("Ejemplo del primer ítem de la API:")
-        #     print(json.dumps(data[0], indent=2, ensure_ascii=False))
-        # --- FIN BLOQUE DE DEPURACIÓN ---
-        insert_data_to_db(data)
+        insert_or_update_data_to_db(data)
     else:
         print("No se obtuvieron datos de la API o la respuesta fue vacía.")
 
