@@ -3736,22 +3736,18 @@ class despacho_detalleAPI(APIView):
 
     def get(self, request, *args, **kwargs):
         try:
-            # Conexión a la base de datos 'agriness'
-            # Asegúrate de que 'agriness' es el nombre de la conexión en settings.py
+            
             agriness_connection = connections['prod_carnica']
 
             with agriness_connection.cursor() as cursor:
-                # Ejecutar la consulta para obtener todos los datos de la tabla kpis_reproductivos_sitio1
-                # Si 'agriness' es un esquema dentro de la DB, la consulta es correcta.
-                # Si 'agriness' es el nombre de la DB y la tabla está en el esquema por defecto,
-                # podrías solo usar "SELECT * FROM kpis_reproductivos_sitio1"
+               
                 cursor.execute("SELECT * FROM prod_carnica.despacho_detalle")
                 results = cursor.fetchall()
 
-                # Obtener los nombres de las columnas
+                
                 column_names = [col[0] for col in cursor.description]
 
-                # Construir la respuesta JSON
+                
                 items = []
                 for row in results:
                     item = dict(zip(column_names, row))

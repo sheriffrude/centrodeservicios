@@ -11,13 +11,11 @@ API_KEY = "a2217af9-7730-430b-8a28-32935108f49e"
 
 # Configuración de la base de datos
 DB_CONFIG = {
-    'host': '192.168.9.134',
+    'host': '192.168.9.41',
     'user': 'DEV_USER',
     'password': 'DEV-USER12345',
-    'database': 'prod_carnica',
-    'port': 3308,
-    'charset': 'utf8mb4',
-    'autocommit': False,
+    'database': 'prod_carnica', 
+    'port': 3306,
 }
 
 # Mapeo de nombres de campos para mensajes más legibles
