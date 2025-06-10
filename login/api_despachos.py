@@ -342,7 +342,7 @@ def insert_or_update_data_to_db(data_from_api):
 def main():
     today = datetime.now().strftime("%Y-%m-%d")
     seven_days_ago = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
-    start_date = '2025-01-01'
+    start_date = seven_days_ago
     end_date = today
 
     data = obtener_datos_api(start_date, end_date)
