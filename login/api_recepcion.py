@@ -12,6 +12,16 @@ DB_CONFIG = {
     'charset': 'utf8mb4',
     'autocommit': True,
 }
+#### PRUEBAS ##########
+# DB_CONFIG = {
+#     'host': '192.168.9.134',
+#     'user': 'DEV_USER',
+#     'password': 'DEV-USER12345',
+#     'database': 'prod_carnica',
+#     'port': 3308,
+#     'charset': 'utf8mb4',
+#     'autocommit': True,
+# }
 
 # API Configuration
 API_URL = "https://api.controlfrigo.com/api/v1/recepcion/ordenes"
@@ -33,7 +43,7 @@ def get_registro_ic_and_frigorifico(consecutivo_cercafe):
     
     query = """
     SELECT regic, frigorifico, granja
-    FROM prodsostenible.despacholotesgranjas
+    FROM prodsostenible.despachoLotesGranjas
     WHERE consecutivo_cercafe = %s
     LIMIT 1
     """
@@ -158,35 +168,46 @@ def validate_and_update_orders(data):
         UPPER(C.ID) = %s
     """
 
-    # Query para actualizar el campo 'orden' en prod_carnica.recepcion
-    update_query = """
-    UPDATE prod_carnica.recepcion
-    SET orden = %s
-    WHERE consecutivo_cercafe = %s
-    """
-     # Query para actualizar los campos 'orden' y 'novedad_orden' en prod_carnica.recepcion
+    # Query para actualizar los campos 'orden' y 'novedad_orden' en prod_carnica.recepcion
     update_query = """
     UPDATE prod_carnica.recepcion
     SET orden = %s, novedad_orden = %s
     WHERE consecutivo_cercafe = %s
     """
-    for record in data:
-        consecutivo_cercafe = record.get('consecutivo_cercafe')
-        cantidad_api = record.get('cantidad')
-        granja_api = record.get('id_granja')
-        propietario_api = record.get('nit_propietario')
-        ingreso_qr = record.get('ingreso_qr')
 
+    ####### NUEVA LÓGICA: Agrupar datos por consecutivo_cercafe ##############
+    consecutivos_agrupados = {}
+    
+    for record in data:
+        consecutivo = record.get('consecutivo_cercafe')
+        if consecutivo not in consecutivos_agrupados:
+            consecutivos_agrupados[consecutivo] = {
+                'ordenes': [],
+                'cantidad_total': 0,
+                'granja_api': record.get('id_granja'),
+                'propietario_api': record.get('nit_propietario'),
+                'ingreso_qr': record.get('ingreso_qr')
+            }
         
+        consecutivos_agrupados[consecutivo]['ordenes'].append(record.get('orden'))
+        consecutivos_agrupados[consecutivo]['cantidad_total'] += record.get('cantidad', 0)
+
+    # Procesar cada consecutivo agrupado
+    for consecutivo_cercafe, datos_agrupados in consecutivos_agrupados.items():
+        cantidad_total_api = datos_agrupados['cantidad_total']
+        granja_api = datos_agrupados['granja_api']
+        propietario_api = datos_agrupados['propietario_api']
+        ordenes_list = datos_agrupados['ordenes']
+        
+        # Obtener datos de despachoLotesGranjas
         cursor.execute(fetch_query, (consecutivo_cercafe,))
         results = cursor.fetchall()
 
-        
+        # Obtener Nit_asociado de la granja
         cursor.execute(fetch_nit_query, (granja_api,))
         nit_result = cursor.fetchone()
         nit_asociado = nit_result[3] if nit_result else None
 
-        
         motivo_abierta = None
 
         if not results:
@@ -194,19 +215,19 @@ def validate_and_update_orders(data):
         elif not nit_asociado:
             motivo_abierta = "No se encontró un Nit_asociado para la granja."
         else:
-            
+            # Sumar todos los cerdos despachados para este consecutivo
             total_cerdos_despachados = sum(row[1] for row in results)
             granjas_bd = {row[2] for row in results}
 
-            if cantidad_api != total_cerdos_despachados:
-                motivo_abierta = f"La cantidad API ({cantidad_api}) no coincide con los cerdos despachados ({total_cerdos_despachados})."
+            # VALIDACIÓN CORREGIDA: Comparar suma total de API vs suma total de BD
+            if cantidad_total_api != total_cerdos_despachados:
+                motivo_abierta = f"La cantidad total API ({cantidad_total_api}) no coincide con los cerdos despachados ({total_cerdos_despachados}). Órdenes: {', '.join(map(str, ordenes_list))}"
             elif granja_api not in granjas_bd:
                 motivo_abierta = f"La granja API ({granja_api}) no coincide con la granja en la BD ({granjas_bd})."
             elif propietario_api != nit_asociado:
                 motivo_abierta = f"El propietario API ({propietario_api}) no coincide con el Nit_asociado ({nit_asociado})."
-            
 
-         
+        # Determinar estado de la orden
         if motivo_abierta:
             orden_status = 'ABIERTA'
             novedad_orden = motivo_abierta
@@ -214,17 +235,18 @@ def validate_and_update_orders(data):
             orden_status = 'CERRADA'
             novedad_orden = "S/N"
 
-        # Imprimir motivo si está abierta
+        # Imprimir información de validación
         if orden_status == 'ABIERTA':
             print(f"Orden ABIERTA: {consecutivo_cercafe} - Motivo: {motivo_abierta}")
+        else:
+            print(f"Orden CERRADA: {consecutivo_cercafe} - Total API: {cantidad_total_api}, Total BD: {sum(row[1] for row in results)} - Órdenes: {', '.join(map(str, ordenes_list))}")
 
-        # Actualizar la tabla recepcion con el estado de orden y la novedad
+        # Actualizar TODAS las órdenes de recepción con el mismo consecutivo
         cursor.execute(update_query, (orden_status, novedad_orden, consecutivo_cercafe))
 
     connection.commit()
     cursor.close()
     connection.close()
-
 # Llamar a esta función después de obtener los datos de la API
 def main():
     today = datetime.now().strftime("%Y-%m-%d")
