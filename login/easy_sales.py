@@ -25,7 +25,7 @@ DB_CONFIG = {
     'database': 'easy_sales',
     'port': 3308,
     'charset': 'utf8mb4',
-    'autocommit': False # Controlaremos las transacciones manualmente
+    'autocommit': False 
 }
 
 
@@ -86,7 +86,7 @@ def process_pedidos(pedidos):
     try:
         # Usamos 'with' para asegurar que la conexión se cierre automáticamente
         with mysql.connector.connect(**DB_CONFIG) as conn:
-            with conn.cursor(dictionary=True) as cursor: # dictionary=True para obtener resultados como diccionarios
+            with conn.cursor(dictionary=True) as cursor:
                 
                 for pedido_api in pedidos:
                     pedido_id = pedido_api.get('Pedido_ID')
@@ -113,12 +113,12 @@ def process_pedidos(pedidos):
                             'valor_total': pedido_api.get('Valor_Total'),
                             'fecha_pedido': pedido_api.get('Fecha_Pedido'),
                             'fecha_entrega': pedido_api.get('Fecha_Entrega'),
-                            'hora_desde': str(pedido_api.get('Hora_Entrega_Desde', '00:00:00'))[:8], # Asegurar formato HH:MM:SS
+                            'hora_desde': str(pedido_api.get('Hora_Entrega_Desde', '00:00:00'))[:8],
                             'hora_hasta': str(pedido_api.get('Hora_Entrega_Hasta', '00:00:00'))[:8],
                             'cliente_id': pedido_api.get('Cliente_ID'),
                             'asesor_id': pedido_api.get('Asesor_ID'),
-                            'direccion_entrega_id': pedido_api.get('Direccion_Despacho'), # Asumiendo que este es el campo
-                            'punto_visita_id': pedido_api.get('Ubicacion_ID_Despacho'), # Asumiendo
+                            'direccion_entrega_id': pedido_api.get('Ubicacion_ID_Despacho'), 
+                            'punto_visita_id': pedido_api.get('Ubicacion_ID'), 
                             'observacion_comercial': pedido_api.get('Obs_Comercial'),
                             'observacion_despacho': pedido_api.get('Obs_Despacho')
                         }
@@ -147,7 +147,7 @@ def process_pedidos(pedidos):
                             cursor.execute(sql_insert_encabezado, datos_encabezado_api)
 
                         else:
-                            # 3.B. El pedido ya existe, COMPARAR Y ACTUALIZAR
+                       
                             cambios = []
                             # Campos a comparar (excluimos los que no deben cambiar o se manejan aparte)
                             campos_a_comparar = [
