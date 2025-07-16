@@ -5,7 +5,7 @@ import logging
 
 # --- Configuración ---
 
-# Configurar logging para ver qué está haciendo el script
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Configuración de la base de datos
@@ -17,7 +17,7 @@ DB_CONFIG = {
     'port': 3308,
     'charset': 'utf8mb4',
     'autocommit': True,
-    'cursorclass': pymysql.cursors.DictCursor # Devuelve filas como diccionarios, más fácil de manejar
+    'cursorclass': pymysql.cursors.DictCursor
 }
 
 # API Configuration
@@ -65,7 +65,7 @@ def get_id_propietario(cursor, nit_propietario):
     result = cursor.fetchone()
     return result['id'] if result else None
 
-# --- Lógica Principal de Sincronización (NUEVA FUNCIÓN) ---
+# --- Lógica Principal de Sincronización (NUEVA FUNCIÓNm) ---
 
 def sync_api_data_to_db(data_from_api):
     """
@@ -84,15 +84,15 @@ def sync_api_data_to_db(data_from_api):
     
     try:
         with connection.cursor() as cursor:
-            # Obtener el id_tipo_corte una sola vez para todo el lote
+  
             id_tipo_corte = get_tipo_corte_id(cursor)
 
             for record in data_from_api:
-                # Clave para identificar unívocamente una recepción
+                # Clave para recepción
                 consecutivo = record.get('consecutivo_cercafe')
                 orden = record.get('orden')
 
-                # 1. VERIFICAR SI EL REGISTRO YA EXISTE
+              
                 cursor.execute(
                     """SELECT * FROM recepcion 
                        WHERE consecutivo_cercafe = %s AND orden_recepcion = %s""",
@@ -100,19 +100,18 @@ def sync_api_data_to_db(data_from_api):
                 )
                 db_record = cursor.fetchone()
 
-                # 2. PREPARAR DATOS COMUNES (tanto para INSERT como para UPDATE)
-                # Obtener datos de tablas relacionadas
+
                 despacho_info = get_registro_ic_and_frigorifico(cursor, consecutivo)
                 id_propietario_db = get_id_propietario(cursor, record.get('nit_propietario'))
                 
-                # Datos del registro a insertar/actualizar
+
                 record_data = {
                     'fecha_recepcion': record.get('fecha_recepcion'),
                     'consecutivo_cercafe': consecutivo,
                     'orden_recepcion': orden,
                     'nit_propietario': record.get('nit_propietario'),
                     'id_propietario': id_propietario_db,
-                    'id_granja': despacho_info['granja'], # Usamos la granja de la tabla de despacho
+                    'id_granja': despacho_info['granja'], 
                     'cerdos_recibidos': record.get('cantidad'),
                     'peso_total': record.get('peso_total'),
                     'ingreso_qr': "SI" if record.get('placa') else "NO",
@@ -124,7 +123,7 @@ def sync_api_data_to_db(data_from_api):
                 }
 
                 if db_record is None:
-                    # 3.A. INSERTAR REGISTRO NUEVO
+                    
                     sql_keys = ', '.join(record_data.keys())
                     sql_values = ', '.join(['%s'] * len(record_data))
                     query = f"INSERT INTO recepcion ({sql_keys}) VALUES ({sql_values})"
@@ -134,13 +133,11 @@ def sync_api_data_to_db(data_from_api):
                     logging.info(f"NUEVO REGISTRO: Insertado orden {orden} para consecutivo {consecutivo}.")
                 
                 else:
-                    # 3.B. COMPARAR Y ACTUALIZAR SI ES NECESARIO
-                    # Creamos un diccionario con los datos de la BD para comparar fácilmente
-                    # Convertimos todo a string para una comparación simple y segura
+
                     db_values = {k: str(v) for k, v in db_record.items()}
                     api_values = {k: str(v) for k, v in record_data.items()}
                     
-                    # Campos a comparar para decidir si se actualiza
+
                     fields_to_compare = [
                         'cerdos_recibidos', 'peso_total', 'placa', 
                         'id_granja', 'id_propietario', 'registro_ic'
@@ -169,7 +166,7 @@ def sync_api_data_to_db(data_from_api):
 
     except Exception as e:
         logging.error(f"Error durante la sincronización con la BD: {e}")
-        # En caso de error, es mejor no devolver nada para no procesar validaciones parciales
+
         return set()
     finally:
         connection.close()
@@ -192,7 +189,7 @@ def validate_and_update_orders(api_data, consecutivos_a_validar):
     connection = pymysql.connect(**DB_CONFIG)
     try:
         with connection.cursor() as cursor:
-            # Agrupar datos de la API por consecutivo_cercafe para un fácil acceso
+
             consecutivos_agrupados = {}
             for record in api_data:
                 consecutivo = record.get('consecutivo_cercafe')
@@ -201,7 +198,7 @@ def validate_and_update_orders(api_data, consecutivos_a_validar):
                 
                 consecutivos_agrupados[consecutivo]['ordenes'].append(record.get('orden'))
                 consecutivos_agrupados[consecutivo]['cantidad_total'] += record.get('cantidad', 0)
-                consecutivos_agrupados[consecutivo]['granja_api'] = record.get('granja') # Nombre de la granja de la API
+                consecutivos_agrupados[consecutivo]['granja_api'] = record.get('granja') 
                 consecutivos_agrupados[consecutivo]['propietario_api'] = record.get('nit_propietario')
 
             # Procesar solo los consecutivos que necesitan validación
@@ -211,15 +208,13 @@ def validate_and_update_orders(api_data, consecutivos_a_validar):
                     logging.warning(f"No se encontraron datos de la API para el consecutivo {consecutivo_cercafe} a validar.")
                     continue
                 
-                # Obtener datos de la BD para la validación
-                # Usamos la granja de la tabla despachoLotesGranjas que es la fuente maestra para ID
+
                 cursor.execute(
                     "SELECT SUM(cerdosDespachados), granja, regic FROM prodsostenible.despachoLotesGranjas WHERE consecutivo_cercafe = %s GROUP BY granja, regic", 
                     (consecutivo_cercafe,)
                 )
                 despacho_result = cursor.fetchone()
 
-                # Obtener Nit_asociado a partir del ID de la granja de la tabla de despacho
                 nit_asociado = None
                 if despacho_result and despacho_result['granja']:
                     cursor.execute(
@@ -247,7 +242,6 @@ def validate_and_update_orders(api_data, consecutivos_a_validar):
                     elif propietario_api != nit_asociado:
                         motivo_abierta = f"Propietario API ({propietario_api}) vs NIT asociado BD ({nit_asociado}) no coincide."
 
-                # Determinar estado final y actualizar
                 orden_status = 'ABIERTA' if motivo_abierta else 'CERRADA'
                 novedad_orden = motivo_abierta if motivo_abierta else "S/N"
                 
@@ -267,20 +261,18 @@ def main():
     """
     Función principal que orquesta todo el proceso.
     """
-    # 1. ESTABLECER RANGO DE FECHAS (ÚLTIMOS 7 DÍAS)
+
     today = datetime.now()
     end_date = today.strftime("%Y-%m-%d")
     start_date = (today - timedelta(days=7)).strftime("%Y-%m-%d")
 
     try:
-        # 2. OBTENER DATOS DE LA API
+
         api_data = fetch_data_from_api(start_date, end_date)
-        
-        # 3. SINCRONIZAR DATOS (INSERTAR/ACTUALIZAR) Y OBTENER CONSECUTIVOS AFECTADOS
+
         consecutivos_modificados = sync_api_data_to_db(api_data)
 
-        # 4. VALIDAR Y ACTUALIZAR ESTADO DE ÓRDENES (SOLO LAS MODIFICADAS)
-        # Pasamos api_data completo porque la función de validación necesita acceso a todos los datos para agruparlos
+
         validate_and_update_orders(api_data, consecutivos_modificados)
         
         logging.info("Proceso completado exitosamente.")
