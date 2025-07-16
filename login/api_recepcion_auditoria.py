@@ -1,6 +1,6 @@
 import requests
 import pymysql
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Configuración de la base de datos
 DB_CONFIG = {
@@ -227,8 +227,9 @@ def validate_and_update_orders(data):
 
 # Llamar a esta función después de obtener los datos de la API
 def main():
+    yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
     today = datetime.now().strftime("%Y-%m-%d")
-    start_date = today
+    start_date = yesterday
     end_date = today
 
     try:
