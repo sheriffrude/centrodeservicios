@@ -218,8 +218,8 @@ def validate_and_update_orders(data):
 def main():
     yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
     today = datetime.now().strftime("%Y-%m-%d")
-    start_date = "2025-07-15"
-    end_date = "2025-07-16"
+    start_date = yesterday
+    end_date = today
 
     try:
         data = fetch_data_from_api(start_date, end_date)
