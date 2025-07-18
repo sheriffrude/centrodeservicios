@@ -3,14 +3,17 @@ import mysql.connector
 from mysql.connector import Error
 import logging
 from datetime import datetime
+import requests
+import urllib3
 
 # --- CONFIGURACIÓN ---
-
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # Configuración de logging para ver el proceso en la consola
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Configuración de la API
 API_TOKEN_URL = "https://www.easysales.com.co/API_Entrega_Gestiones_Cercafe/api/WS_01_Controller/WSGES001"
+verify=False
 API_DATA_URL = "https://www.easysales.com.co/API_Entrega_Gestiones_Cercafe/api/WS_02_Controller/WSGES001"
 API_CREDENTIALS = {
   "Usuario": "easynet.cer",
@@ -32,10 +35,14 @@ DB_CONFIG = {
 # --- FUNCIONES DE LA API ---
 
 def get_api_token():
-    """Obtiene el token de autenticación de la API."""
+    """Solicita un token de autenticación a la API."""
     try:
         logging.info("Solicitando token de la API...")
-        response = requests.post(API_TOKEN_URL, json=API_CREDENTIALS)
+        response = requests.post(
+            API_TOKEN_URL, 
+            json=API_CREDENTIALS,
+            verify=False  # <-- ¡AQUÍ ESTÁ LA CORRECCIÓN!
+        )
         response.raise_for_status()  # Lanza un error para códigos 4xx/5xx
         
         data = response.json()
@@ -48,9 +55,8 @@ def get_api_token():
     except requests.exceptions.RequestException as e:
         logging.error(f"Error de conexión al solicitar el token: {e}")
         return None
-
 def get_pedidos_data(token):
-    """Obtiene los datos de los pedidos usando el token."""
+    """Consulta la lista de pedidos usando el token."""
     if not token:
         return None
     
@@ -60,7 +66,11 @@ def get_pedidos_data(token):
     
     try:
         logging.info("Consultando datos de pedidos...")
-        response = requests.get(API_DATA_URL, headers=headers)
+        response = requests.get(
+            API_DATA_URL, 
+            headers=headers,
+            verify=False  # <-- ¡AQUÍ ESTÁ LA CORRECCIÓN!
+        )
         response.raise_for_status()
         
         data = response.json()
@@ -74,11 +84,10 @@ def get_pedidos_data(token):
         logging.error(f"Error de conexión al solicitar los pedidos: {e}")
         return None
 
-
 # --- FUNCIONES DE LA BASE DE DATOS ---
 
 def process_pedidos(pedidos):
-    """Procesa la lista de pedidos y los ingesta en la base de datos."""
+   
     if not pedidos:
         logging.warning("No hay pedidos para procesar.")
         return
@@ -235,7 +244,7 @@ def process_pedidos(pedidos):
 
 
 def main():
-    """Función principal que orquesta todo el proceso."""
+
     logging.info("--- INICIANDO SCRIPT DE INGESTA DE PEDIDOS ---")
     
     token = get_api_token()
