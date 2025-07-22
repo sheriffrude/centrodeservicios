@@ -261,21 +261,46 @@ def main():
     """
     Función principal que orquesta todo el proceso.
     """
-
     today = datetime.now()
     end_date = today.strftime("%Y-%m-%d")
     start_date = (today - timedelta(days=7)).strftime("%Y-%m-%d")
 
     try:
-
         api_data = fetch_data_from_api(start_date, end_date)
-
         consecutivos_modificados = sync_api_data_to_db(api_data)
 
+        # --- INICIO DE LA MODIFICACIÓN ---
+        
+        # 1. Conectarse a la BD para buscar órdenes abiertas.
+        logging.info("Buscando órdenes 'ABIERTA' para re-validar...")
+        consecutivos_abiertos = set()
+        connection = pymysql.connect(**DB_CONFIG)
+        try:
+            with connection.cursor() as cursor:
+                # Busca todos los consecutivos en el rango de fechas que siguen abiertos
+                query = """
+                    SELECT DISTINCT consecutivo_cercafe FROM recepcion 
+                    WHERE orden = 'ABIERTA' AND fecha_recepcion BETWEEN %s AND %s
+                """
+                cursor.execute(query, (start_date, end_date))
+                results = cursor.fetchall()
+                for row in results:
+                    consecutivos_abiertos.add(row['consecutivo_cercafe'])
+        finally:
+            connection.close()
+        
+        logging.info(f"Se encontraron {len(consecutivos_abiertos)} órdenes abiertas para re-validar.")
 
-        validate_and_update_orders(api_data, consecutivos_modificados)
+        # 2. Unir los consecutivos modificados con los que siguen abiertos.
+        consecutivos_a_validar = consecutivos_modificados.union(consecutivos_abiertos)
+        
+        # --- FIN DE LA MODIFICACIÓN ---
+
+        # 3. Pasar el conjunto combinado a la función de validación.
+        validate_and_update_orders(api_data, consecutivos_a_validar)
         
         logging.info("Proceso completado exitosamente.")
+
     except Exception as e:
         logging.error(f"Ocurrió un error en el proceso principal: {e}")
 
