@@ -216,7 +216,7 @@ def validate_and_update_orders(data):
 
 # --- PUNTO DE ENTRADA DEL SCRIPT (sin cambios) ---
 def main():
-    yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+    yesterday = (datetime.now() - timedelta(days=9)).strftime("%Y-%m-%d")
     today = datetime.now().strftime("%Y-%m-%d")
     start_date = yesterday
     end_date = today
