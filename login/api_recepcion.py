@@ -3,12 +3,12 @@ import pymysql
 from datetime import datetime, timedelta
 import logging
 
-# --- Configuración ---
+
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Configuración de la base de datos
+
 DB_CONFIG = {
     'host': '192.168.9.134',
     'user': 'DEV_USER',
@@ -20,11 +20,10 @@ DB_CONFIG = {
     'cursorclass': pymysql.cursors.DictCursor
 }
 
-# API Configuration
 API_URL = "https://api.controlfrigo.com/api/v1/recepcion/ordenes"
 API_KEY = "a2217af9-7730-430b-8a28-32935108f49e"
 
-# --- Funciones de Consulta a la API y Base de Datos (Optimizadas) ---
+
 
 def fetch_data_from_api(start_date, end_date):
     """Consume la API para obtener las órdenes de recepción en un rango de fechas."""
@@ -37,7 +36,7 @@ def fetch_data_from_api(start_date, end_date):
     logging.info(f"Se recibieron {len(response.json())} registros de la API.")
     return response.json()
 
-# Las siguientes funciones ahora aceptan un cursor para reutilizar la conexión
+
 def get_registro_ic_and_frigorifico(cursor, consecutivo_cercafe):
     """Obtiene el registro IC, frigorífico y granja de la tabla de despachos."""
     query = """
@@ -65,7 +64,7 @@ def get_id_propietario(cursor, nit_propietario):
     result = cursor.fetchone()
     return result['id'] if result else None
 
-# --- Lógica Principal de Sincronización (NUEVA FUNCIÓNm) ---
+
 
 def sync_api_data_to_db(data_from_api):
     """
@@ -88,7 +87,7 @@ def sync_api_data_to_db(data_from_api):
             id_tipo_corte = get_tipo_corte_id(cursor)
 
             for record in data_from_api:
-                # Clave para recepción
+
                 consecutivo = record.get('consecutivo_cercafe')
                 orden = record.get('orden')
 
@@ -173,7 +172,6 @@ def sync_api_data_to_db(data_from_api):
         
     return consecutivos_afectados
 
-# --- Lógica de Validación (Modificada para ser más eficiente) ---
 
 def validate_and_update_orders(api_data, consecutivos_a_validar):
     """
@@ -201,7 +199,7 @@ def validate_and_update_orders(api_data, consecutivos_a_validar):
                 consecutivos_agrupados[consecutivo]['granja_api'] = record.get('granja') 
                 consecutivos_agrupados[consecutivo]['propietario_api'] = record.get('nit_propietario')
 
-            # Procesar solo los consecutivos que necesitan validación
+
             for consecutivo_cercafe in consecutivos_a_validar:
                 datos_agrupados = consecutivos_agrupados.get(consecutivo_cercafe)
                 if not datos_agrupados:
@@ -255,7 +253,7 @@ def validate_and_update_orders(api_data, consecutivos_a_validar):
     finally:
         connection.close()
 
-# --- Función Principal ---
+
 
 def main():
     """
@@ -269,15 +267,14 @@ def main():
         api_data = fetch_data_from_api(start_date, end_date)
         consecutivos_modificados = sync_api_data_to_db(api_data)
 
-        # --- INICIO DE LA MODIFICACIÓN ---
+
         
-        # 1. Conectarse a la BD para buscar órdenes abiertas.
         logging.info("Buscando órdenes 'ABIERTA' para re-validar...")
         consecutivos_abiertos = set()
         connection = pymysql.connect(**DB_CONFIG)
         try:
             with connection.cursor() as cursor:
-                # Busca todos los consecutivos en el rango de fechas que siguen abiertos
+    
                 query = """
                     SELECT DISTINCT consecutivo_cercafe FROM recepcion 
                     WHERE orden = 'ABIERTA' AND fecha_recepcion BETWEEN %s AND %s
@@ -291,12 +288,10 @@ def main():
         
         logging.info(f"Se encontraron {len(consecutivos_abiertos)} órdenes abiertas para re-validar.")
 
-        # 2. Unir los consecutivos modificados con los que siguen abiertos.
+  
         consecutivos_a_validar = consecutivos_modificados.union(consecutivos_abiertos)
         
-        # --- FIN DE LA MODIFICACIÓN ---
 
-        # 3. Pasar el conjunto combinado a la función de validación.
         validate_and_update_orders(api_data, consecutivos_a_validar)
         
         logging.info("Proceso completado exitosamente.")
