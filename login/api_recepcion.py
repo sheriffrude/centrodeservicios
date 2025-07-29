@@ -3,11 +3,9 @@ import pymysql
 from datetime import datetime, timedelta
 import logging
 
-
-
+# --- CONFIGURACIÓN ---
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
 
 DB_CONFIG = {
     'host': '192.168.9.134',
@@ -23,7 +21,7 @@ DB_CONFIG = {
 API_URL = "https://api.controlfrigo.com/api/v1/recepcion/ordenes"
 API_KEY = "a2217af9-7730-430b-8a28-32935108f49e"
 
-
+# --- FUNCIONES DE OBTENCIÓN DE DATOS ---
 
 def fetch_data_from_api(start_date, end_date):
     """Consume la API para obtener las órdenes de recepción en un rango de fechas."""
@@ -31,11 +29,15 @@ def fetch_data_from_api(start_date, end_date):
     params = {'startDate': start_date, 'endDate': end_date}
     logging.info(f"Consultando API desde {start_date} hasta {end_date}")
     
-    response = requests.get(API_URL, headers=headers, params=params)
-    response.raise_for_status()
-    logging.info(f"Se recibieron {len(response.json())} registros de la API.")
-    return response.json()
-
+    try:
+        response = requests.get(API_URL, headers=headers, params=params)
+        response.raise_for_status()
+        data = response.json()
+        logging.info(f"Se recibieron {len(data)} registros de la API.")
+        return data
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error al consultar la API: {e}")
+        return [] # Retornar lista vacía en caso de error
 
 def get_registro_ic_and_frigorifico(cursor, consecutivo_cercafe):
     """Obtiene el registro IC, frigorífico y granja de la tabla de despachos."""
@@ -59,12 +61,14 @@ def get_tipo_corte_id(cursor):
 
 def get_id_propietario(cursor, nit_propietario):
     """Obtiene el ID del propietario basado en el NIT."""
+    if not nit_propietario:
+        return None
     query = "SELECT id FROM dhc.razon_social WHERE ID_tributaria = %s LIMIT 1"
     cursor.execute(query, (nit_propietario,))
     result = cursor.fetchone()
     return result['id'] if result else None
 
-
+# --- FUNCIONES PRINCIPALES DE PROCESAMIENTO ---
 
 def sync_api_data_to_db(data_from_api):
     """
@@ -79,31 +83,29 @@ def sync_api_data_to_db(data_from_api):
         return set()
 
     consecutivos_afectados = set()
-    connection = pymysql.connect(**DB_CONFIG)
-    
+    connection = None
     try:
+        connection = pymysql.connect(**DB_CONFIG)
         with connection.cursor() as cursor:
-  
             id_tipo_corte = get_tipo_corte_id(cursor)
 
             for record in data_from_api:
-
                 consecutivo = record.get('consecutivo_cercafe')
                 orden = record.get('orden')
 
-              
+                if not consecutivo or not orden:
+                    logging.warning(f"Registro de API omitido por falta de 'consecutivo_cercafe' u 'orden': {record}")
+                    continue
+
                 cursor.execute(
-                    """SELECT * FROM recepcion 
-                       WHERE consecutivo_cercafe = %s AND orden_recepcion = %s""",
+                    "SELECT * FROM recepcion WHERE consecutivo_cercafe = %s AND orden_recepcion = %s",
                     (consecutivo, orden)
                 )
                 db_record = cursor.fetchone()
 
-
                 despacho_info = get_registro_ic_and_frigorifico(cursor, consecutivo)
                 id_propietario_db = get_id_propietario(cursor, record.get('nit_propietario'))
                 
-
                 record_data = {
                     'fecha_recepcion': record.get('fecha_recepcion'),
                     'consecutivo_cercafe': consecutivo,
@@ -122,21 +124,17 @@ def sync_api_data_to_db(data_from_api):
                 }
 
                 if db_record is None:
-                    
-                    sql_keys = ', '.join(record_data.keys())
+                    sql_keys = ', '.join(f"`{k}`" for k in record_data.keys())
                     sql_values = ', '.join(['%s'] * len(record_data))
                     query = f"INSERT INTO recepcion ({sql_keys}) VALUES ({sql_values})"
                     
                     cursor.execute(query, list(record_data.values()))
                     consecutivos_afectados.add(consecutivo)
                     logging.info(f"NUEVO REGISTRO: Insertado orden {orden} para consecutivo {consecutivo}.")
-                
                 else:
-
-                    db_values = {k: str(v) for k, v in db_record.items()}
-                    api_values = {k: str(v) for k, v in record_data.items()}
+                    db_values = {k: str(v) if v is not None else None for k, v in db_record.items()}
+                    api_values = {k: str(v) if v is not None else None for k, v in record_data.items()}
                     
-
                     fields_to_compare = [
                         'cerdos_recibidos', 'peso_total', 'placa', 
                         'id_granja', 'id_propietario', 'registro_ic'
@@ -162,84 +160,107 @@ def sync_api_data_to_db(data_from_api):
                         logging.info(f"REGISTRO ACTUALIZADO: Orden {orden} para consecutivo {consecutivo} ha cambiado.")
                     else:
                         logging.debug(f"SIN CAMBIOS: Orden {orden} para consecutivo {consecutivo} ya está sincronizado.")
-
     except Exception as e:
         logging.error(f"Error durante la sincronización con la BD: {e}")
-
         return set()
     finally:
-        connection.close()
-        
+        if connection:
+            connection.close()
     return consecutivos_afectados
 
-
+# ==============================================================================
+# FUNCIÓN CORREGIDA
+# ==============================================================================
 def validate_and_update_orders(api_data, consecutivos_a_validar):
     """
     Valida las órdenes y actualiza su estado (ABIERTA/CERRADA).
-    Solo procesa los consecutivos que fueron modificados.
+    El problema original era que `SUM(...) GROUP BY ...` creaba múltiples filas
+    si los valores de `regic` eran diferentes para un mismo consecutivo, y `fetchone()`
+    solo leía la primera fila.
+
+    La solución es separar las consultas:
+    1. Una consulta para obtener la SUMA TOTAL de `cerdosDespachados`.
+    2. Otra consulta para obtener la información de la granja y el NIT asociado.
     """
     if not consecutivos_a_validar:
         logging.info("No hay consecutivos nuevos o actualizados para validar.")
         return
 
-    logging.info(f"Iniciando validación para {len(consecutivos_a_validar)} consecutivos: {list(consecutivos_a_validar)}")
+    logging.info(f"Iniciando validación para {len(consecutivos_a_validar)} consecutivos.")
 
-    connection = pymysql.connect(**DB_CONFIG)
+    connection = None
     try:
+        connection = pymysql.connect(**DB_CONFIG)
         with connection.cursor() as cursor:
-
+            # Agrupamos los datos de la API una sola vez para eficiencia
             consecutivos_agrupados = {}
             for record in api_data:
                 consecutivo = record.get('consecutivo_cercafe')
                 if consecutivo not in consecutivos_agrupados:
-                    consecutivos_agrupados[consecutivo] = {'ordenes': [], 'cantidad_total': 0, 'granja_api': None, 'propietario_api': None}
+                    consecutivos_agrupados[consecutivo] = {'ordenes': [], 'cantidad_total': 0, 'propietario_api': None}
                 
                 consecutivos_agrupados[consecutivo]['ordenes'].append(record.get('orden'))
                 consecutivos_agrupados[consecutivo]['cantidad_total'] += record.get('cantidad', 0)
-                consecutivos_agrupados[consecutivo]['granja_api'] = record.get('granja') 
                 consecutivos_agrupados[consecutivo]['propietario_api'] = record.get('nit_propietario')
-
 
             for consecutivo_cercafe in consecutivos_a_validar:
                 datos_agrupados = consecutivos_agrupados.get(consecutivo_cercafe)
                 if not datos_agrupados:
-                    logging.warning(f"No se encontraron datos de la API para el consecutivo {consecutivo_cercafe} a validar.")
+                    logging.warning(f"No se encontraron datos de la API para el consecutivo {consecutivo_cercafe} a validar. Saltando...")
                     continue
-                
 
+                # --- INICIO DE LA CORRECCIÓN ---
+
+                # 1. Obtenemos la SUMA TOTAL REAL de cerdos despachados para el consecutivo, sin agrupar.
+                #    Esto resuelve el problema principal.
                 cursor.execute(
-                    "SELECT SUM(cerdosDespachados), granja, regic FROM prodsostenible.despachoLotesGranjas WHERE consecutivo_cercafe = %s GROUP BY granja, regic", 
+                    "SELECT SUM(cerdosDespachados) AS total_despachado FROM prodsostenible.despachoLotesGranjas WHERE consecutivo_cercafe = %s",
                     (consecutivo_cercafe,)
                 )
-                despacho_result = cursor.fetchone()
+                sum_result = cursor.fetchone()
+                total_cerdos_despachados_bd = sum_result['total_despachado'] if sum_result and sum_result['total_despachado'] is not None else 0
 
+                # 2. Obtenemos la información de la granja (asumimos que es la misma para un mismo consecutivo).
+                cursor.execute(
+                    "SELECT granja FROM prodsostenible.despachoLotesGranjas WHERE consecutivo_cercafe = %s LIMIT 1",
+                    (consecutivo_cercafe,)
+                )
+                despacho_info = cursor.fetchone()
+
+                # --- FIN DE LA CORRECCIÓN ---
+
+                motivo_abierta = None
                 nit_asociado = None
-                if despacho_result and despacho_result['granja']:
+
+                # Validamos si encontramos al menos un registro de despacho
+                if not despacho_info:
+                    motivo_abierta = "No hay registros en despachoLotesGranjas."
+                else:
+                    # Si hay despacho, buscamos el NIT asociado a la granja encontrada
+                    granja_id_bd = despacho_info['granja']
                     cursor.execute(
                         """
                         SELECT E.ID_tributaria AS Nit_asociado
                         FROM dhc.granjas C JOIN dhc.razon_social E ON C.RAZON_SOCIAL = E.ID
                         WHERE C.ID = %s
-                        """, (despacho_result['granja'],)
+                        """, (granja_id_bd,)
                     )
                     nit_result = cursor.fetchone()
                     nit_asociado = nit_result['Nit_asociado'] if nit_result else None
-                
-                motivo_abierta = None
-                if not despacho_result:
-                    motivo_abierta = "No hay registros en despachoLotesGranjas."
-                else:
+                    
+                    # Ahora realizamos las validaciones con los datos correctos
                     cantidad_total_api = datos_agrupados['cantidad_total']
-                    total_cerdos_despachados_bd = despacho_result['SUM(cerdosDespachados)']
                     propietario_api = datos_agrupados['propietario_api']
 
+                    # Comparamos la suma total de la API vs la suma total REAL de la BD
                     if cantidad_total_api != total_cerdos_despachados_bd:
-                        motivo_abierta = f"Cantidad API ({cantidad_total_api}) vs BD ({total_cerdos_despachados_bd}) no coincide."
+                        motivo_abierta = f"Cantidad API ({cantidad_total_api}) vs BD ({int(total_cerdos_despachados_bd)}) no coincide."
                     elif not nit_asociado:
-                        motivo_abierta = f"No se encontró NIT asociado para la granja ID ({despacho_result['granja']})."
+                        motivo_abierta = f"No se encontró NIT asociado para la granja ID ({granja_id_bd})."
                     elif propietario_api != nit_asociado:
                         motivo_abierta = f"Propietario API ({propietario_api}) vs NIT asociado BD ({nit_asociado}) no coincide."
 
+                # Actualizamos el estado de la orden
                 orden_status = 'ABIERTA' if motivo_abierta else 'CERRADA'
                 novedad_orden = motivo_abierta if motivo_abierta else "S/N"
                 
@@ -251,53 +272,61 @@ def validate_and_update_orders(api_data, consecutivos_a_validar):
     except Exception as e:
         logging.error(f"Error durante la validación de órdenes: {e}")
     finally:
-        connection.close()
-
+        if connection:
+            connection.close()
 
 
 def main():
     """
     Función principal que orquesta todo el proceso.
     """
+    logging.info("--- INICIANDO PROCESO DE SINCRONIZACIÓN ---")
     today = datetime.now()
     end_date = today.strftime("%Y-%m-%d")
+ 
     start_date = (today - timedelta(days=7)).strftime("%Y-%m-%d")
 
     try:
+        # 1. Obtener datos frescos de la API
         api_data = fetch_data_from_api(start_date, end_date)
-        consecutivos_modificados = sync_api_data_to_db(api_data)
-
-
         
-        logging.info("Buscando órdenes 'ABIERTA' para re-validar...")
+        # Si no hay datos de la API, no hay nada que hacer.
+        if not api_data:
+            logging.info("No se recibieron datos de la API. Finalizando proceso.")
+            return
+
+        # 2. Sincronizar datos con la BD (insertar/actualizar)
+        consecutivos_modificados = sync_api_data_to_db(api_data)
+        
+        # 3. Identificar órdenes que ya estaban 'ABIERTA' para re-validarlas
+        logging.info("Buscando órdenes 'ABIERTA' existentes para re-validar...")
         consecutivos_abiertos = set()
         connection = pymysql.connect(**DB_CONFIG)
         try:
             with connection.cursor() as cursor:
-    
                 query = """
                     SELECT DISTINCT consecutivo_cercafe FROM recepcion 
                     WHERE orden = 'ABIERTA' AND fecha_recepcion BETWEEN %s AND %s
                 """
-                cursor.execute(query, (start_date, end_date))
+                cursor.execute(query, (start_date + " 00:00:00", end_date + " 23:59:59"))
                 results = cursor.fetchall()
                 for row in results:
                     consecutivos_abiertos.add(row['consecutivo_cercafe'])
         finally:
             connection.close()
         
-        logging.info(f"Se encontraron {len(consecutivos_abiertos)} órdenes abiertas para re-validar.")
+        logging.info(f"Se encontraron {len(consecutivos_abiertos)} consecutivos abiertos para re-validar.")
 
-  
+        # 4. Unir los consecutivos modificados con los que ya estaban abiertos
         consecutivos_a_validar = consecutivos_modificados.union(consecutivos_abiertos)
         
-
+        # 5. Validar el estado de todas las órdenes relevantes
         validate_and_update_orders(api_data, consecutivos_a_validar)
         
-        logging.info("Proceso completado exitosamente.")
+        logging.info("--- PROCESO COMPLETADO EXITOSAMENTE ---")
 
     except Exception as e:
-        logging.error(f"Ocurrió un error en el proceso principal: {e}")
+        logging.error(f"Ocurrió un error fatal en el proceso principal: {e}")
 
 if __name__ == "__main__":
     main()
