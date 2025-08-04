@@ -234,9 +234,16 @@
 
                                         <!-- Reg ICA -->
                                         <div class="form-group">
-                                            <label for="regica">Registro ICA:</label>
-                                            <input type="text" class="form-control" id="regica" name="regica" required>
-                                        </div>
+                                            <label for="regica_part1">Registro ICA:</label>
+                                            <div class="d-flex align-items-center">
+                                                <input type="text" class="form-control" style="width: 25%;" id="regica_part1" placeholder="02X" maxlength="3" required>
+                                                
+                                                <span class="mx-2 font-weight-bold">-</span>
+                                                
+                                                <input type="text" class="form-control" id="regica_part2" placeholder="XXXXXXXXX" required>
+                                            </div>
+                                            <input type="hidden" id="regica" name="regica">
+                                        </div>          
 
                                         <!-- Retiro Alimentación -->
                                         <div class="form-group">
@@ -479,7 +486,12 @@
             }
             $('#formDespacho').on('submit', function (e) {
                 e.preventDefault();  // Evitar la recarga de la página
-
+                // --- INICIO DEL NUEVO CÓDIGO ---
+                // Combinar los dos campos del Registro ICA en el campo oculto
+                var part1 = $('#regica_part1').val();
+                var part2 = $('#regica_part2').val();
+                $('#regica').val(part1 + '-' + part2);
+                // --- FIN DEL NUEVO CÓDIGO ---
                 var formData = $(this).serialize();  // Obtener los datos del formulario
                 $('#loadingLottie').hide();  // Mostrar el loader de carga
                 $('#Lottiex').hide();  // Asegurarse de que el error Lottie esté oculto
