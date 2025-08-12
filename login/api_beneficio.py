@@ -146,7 +146,6 @@ def insertar_datos(datos):
     connection = pymysql.connect(**DB_CONFIG)
     try:
         with connection.cursor() as cursor:
-            # Crear tabla de novedades si no existe
             crear_tabla_novedades_si_no_existe(cursor)
             
             registros_procesados = 0
@@ -158,12 +157,10 @@ def insertar_datos(datos):
             for registro in datos:
                 tiquete = registro['tiquete']
                 estado = registro['estado']
-                tiene_novedades_criticas = False  # Flag para saber si hay problemas reales
                 
                 # Obtener el id_granja a partir del nombre de la granja
                 id_granja = obtener_id_granja(cursor, registro['granja'])
                 if id_granja is None:
-                    tiene_novedades_criticas = True
                     insertar_novedad(
                         cursor, 
                         tiquete, 
@@ -171,13 +168,11 @@ def insertar_datos(datos):
                         f"No se encontró id_granja para la granja: {registro['granja']}", 
                         registro
                     )
-                    # Usar valores por defecto o NULL
-                    id_granja = None
+                    # Sigue con id_granja = None (que se convierte a NULL)
                 
                 # Obtener ID propietario y NIT propietario
                 id_propietario, nit_propietario = obtener_id_propietario(id_granja, cursor)
                 if not id_propietario or not nit_propietario:
-                    tiene_novedades_criticas = True
                     insertar_novedad(
                         cursor, 
                         tiquete, 
@@ -185,16 +180,8 @@ def insertar_datos(datos):
                         f"No se encontró propietario para la granja con ID {id_granja}", 
                         registro
                     )
-                    # Usar valores por defecto
-                    id_propietario = None
-                    nit_propietario = None
-                
-                # Si hay novedades críticas (datos faltantes), saltamos este registro
-                if tiene_novedades_criticas:
-                    registros_con_novedades += 1
-                    print(f"⚠️  Tiquete {tiquete} saltado por novedades críticas")
-                    continue
-                
+                    # Sigue con valores None (que se convierten a NULL)
+
                 # Verificar si el tiquete ya existe y obtener su estado
                 query_check = """
                 SELECT COUNT(*), 
@@ -218,7 +205,6 @@ def insertar_datos(datos):
                 
                 count, estado_actual = result
 
-                # PROCESAR EL REGISTRO SOLO SI NO HAY PROBLEMAS CRÍTICOS
                 try:
                     if count == 0:
                         # Insertar registro nuevo
@@ -230,7 +216,7 @@ def insertar_datos(datos):
                             clasificacion_seurop, mm_grasa, porcentaje_magro, 
                             rendimiento_caliente, estado_frigorifico, metadata
                         ) VALUES (
-                           %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW()
+                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW()
                         )
                         """
                         cursor.execute(query_insert, (
@@ -263,7 +249,7 @@ def insertar_datos(datos):
                         if estado_actual == "PROCESADOS":
                             registros_omitidos_procesados += 1
                             print(f"ℹ️  Tiquete {tiquete} en estado PROCESADOS - se omite actualización")
-                            continue  # No actualizar registros en estado PROCESADOS
+                            continue
                         
                         # Actualizar registro existente
                         query_update = """
@@ -344,7 +330,7 @@ def insertar_datos(datos):
 def main():
     # Configurar rango de fechas (hoy)
     today = datetime.now().strftime("%Y-%m-%d")
-    datos = obtener_datos_api(start_date='2025-06-01', end_date=today)
+    datos = obtener_datos_api(start_date='2025-08-09', end_date='2025-08-09')
     if datos:
         insertar_datos(datos)
     else:

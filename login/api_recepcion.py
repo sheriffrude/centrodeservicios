@@ -9,27 +9,27 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 # Se asume que ambas bases de datos (prod_carnica y data360) son accesibles
 # con la misma conexión. Si no es así, se necesitaría una segunda configuración.
-# DB_CONFIG = {
-#     'host': '192.168.9.134',
-#     'user': 'DEV_USER',
-#     'password': 'DEV-USER12345',
-#     'database': 'prod_carnica', # Base de datos por defecto
-#     'port': 3308,
-#     'charset': 'utf8mb4',
-#     'autocommit': True,
-#     'cursorclass': pymysql.cursors.DictCursor
-# }
-##### PRODUCCION  ####
 DB_CONFIG = {
-    'host': '192.168.9.41',
+    'host': '192.168.9.134',
     'user': 'DEV_USER',
     'password': 'DEV-USER12345',
-    'database': 'prod_carnica',
-    'port': 3306,
+    'database': 'prod_carnica', # Base de datos por defecto
+    'port': 3308,
     'charset': 'utf8mb4',
     'autocommit': True,
     'cursorclass': pymysql.cursors.DictCursor
 }
+##### PRODUCCION  ####
+# DB_CONFIG = {
+#     'host': '192.168.9.41',
+#     'user': 'DEV_USER',
+#     'password': 'DEV-USER12345',
+#     'database': 'prod_carnica',
+#     'port': 3306,
+#     'charset': 'utf8mb4',
+#     'autocommit': True,
+#     'cursorclass': pymysql.cursors.DictCursor
+# }
 
 API_URL = "https://api.controlfrigo.com/api/v1/recepcion/ordenes"
 API_KEY = "a2217af9-7730-430b-8a28-32935108f49e"
@@ -63,6 +63,16 @@ def get_registro_ic_and_frigorifico(cursor, consecutivo_cercafe):
     cursor.execute(query, (consecutivo_cercafe,))
     result = cursor.fetchone()
     return result if result else {'regic': None, 'frigorifico': None, 'granja': None}
+
+def get_granja_info_frigotun(cursor, granja_id):
+    """Obtiene el nombre de la granja desde la tabla de homologación de Frigotun."""
+    if not granja_id:
+        return None
+    
+    query = "SELECT NOMBRE_FRIGOTUN FROM dhc.homologacion_granjas WHERE ID = %s LIMIT 1"
+    cursor.execute(query, (granja_id,))
+    result = cursor.fetchone()
+    return result['NOMBRE_FRIGOTUN'] if result else None
 
 def get_tipo_corte_id(cursor):
     """Obtiene el ID del tipo de corte basado en la hora actual."""
@@ -182,13 +192,14 @@ def sync_api_data_to_db(data_from_api):
     return consecutivos_afectados
 
 # ==============================================================================
-# FUNCIÓN CORREGIDA Y MEJORADA
+# FUNCIÓN CORREGIDA Y MEJORADA CON VALIDACIÓN DE GRANJA
 # ==============================================================================
 def validate_and_update_orders(api_data, consecutivos_a_validar):
     """
     Valida las órdenes comparando datos de API, despachos y llegada de animales.
+    Incluye validación del nombre de la granja.
     Acumula las novedades para una validación más completa antes de actualizar.
-   """
+    """
     if not consecutivos_a_validar:
         logging.info("No hay consecutivos nuevos o actualizados para validar.")
         return
@@ -197,102 +208,124 @@ def validate_and_update_orders(api_data, consecutivos_a_validar):
 
     connection = None
     try:
-            connection = pymysql.connect(**DB_CONFIG)
-            with connection.cursor() as cursor:
-                    consecutivos_agrupados = {record['consecutivo_cercafe']: record for record in api_data}
+        connection = pymysql.connect(**DB_CONFIG)
+        with connection.cursor() as cursor:
+            consecutivos_agrupados = {record['consecutivo_cercafe']: record for record in api_data}
 
-                    for consecutivo_cercafe in consecutivos_a_validar:
-                            api_record = consecutivos_agrupados.get(consecutivo_cercafe)
-                            if not api_record:
-                                    logging.warning(f"No se encontraron datos de la API para el consecutivo {consecutivo_cercafe}. Saltando...")
-                                    continue
+            for consecutivo_cercafe in consecutivos_a_validar:
+                api_record = consecutivos_agrupados.get(consecutivo_cercafe)
+                if not api_record:
+                    logging.warning(f"No se encontraron datos de la API para el consecutivo {consecutivo_cercafe}. Saltando...")
+                    continue
 
-                            # Obtener total de cerdos despachados desde `prodsostenible`
-                            cursor.execute(
-                                    "SELECT SUM(cerdosDespachados) AS total_despachado FROM prodsostenible.despachoLotesGranjas WHERE consecutivo_cercafe = %s",
-                                    (consecutivo_cercafe,)
-                            )
-                            sum_result = cursor.fetchone()
-                            total_cerdos_despachados_bd = int(sum_result['total_despachado'] or 0)
+                # Obtener total de cerdos despachados desde `prodsostenible`
+                cursor.execute(
+                    "SELECT SUM(cerdosDespachados) AS total_despachado FROM prodsostenible.despachoLotesGranjas WHERE consecutivo_cercafe = %s",
+                    (consecutivo_cercafe,)
+                )
+                sum_result = cursor.fetchone()
+                total_cerdos_despachados_bd = int(sum_result['total_despachado'] or 0)
 
-                            # OBTENER MUERTOS EN TRANSPORTE desde `data360`
-                            cursor.execute(
-                                    "SELECT muertos_transporte FROM data360.llegada_animales WHERE consecutivo_cercafe = %s LIMIT 1",
-                                    (consecutivo_cercafe,)
-                            )
-                            llegada_animales_info = cursor.fetchone()
-                            muertos_transporte = int(llegada_animales_info['muertos_transporte'] or 0) if llegada_animales_info else 0
-                            
-                            # Obtener información de la granja (para validación de NIT)
-                            cursor.execute(
-                                    "SELECT granja FROM prodsostenible.despachoLotesGranjas WHERE consecutivo_cercafe = %s LIMIT 1",
-                                    (consecutivo_cercafe,)
-                            )
-                            despacho_info = cursor.fetchone()
+                # OBTENER MUERTOS EN TRANSPORTE desde `data360`
+                cursor.execute(
+                    "SELECT muertos_transporte FROM data360.llegada_animales WHERE consecutivo_cercafe = %s LIMIT 1",
+                    (consecutivo_cercafe,)
+                )
+                llegada_animales_info = cursor.fetchone()
+                muertos_transporte = int(llegada_animales_info['muertos_transporte'] or 0) if llegada_animales_info else 0
+                
+                # Obtener información del despacho (granja y otros datos)
+                cursor.execute(
+                    "SELECT granja FROM prodsostenible.despachoLotesGranjas WHERE consecutivo_cercafe = %s LIMIT 1",
+                    (consecutivo_cercafe,)
+                )
+                despacho_info = cursor.fetchone()
 
-                            # Iniciar lógica de validación
-                            novedades = []
-                            final_status = 'CERRADA'
+                # Iniciar lógica de validación
+                novedades = []
+                final_status = 'CERRADA'
 
-                            if not despacho_info:
-                                    novedades.append("No hay registros en despachoLotesGranjas.")
-                                    final_status = 'ABIERTA'
-                            else:
-                                    # Validaciones de cantidad de cerdos
-                                    cantidad_total_api = sum(r.get('cantidad', 0) for r in api_data if r.get('consecutivo_cercafe') == consecutivo_cercafe)
-                                    if (cantidad_total_api + muertos_transporte) != total_cerdos_despachados_bd:
-                                            novedades.append(f"Cantidad API ({cantidad_total_api}) vs BD ({total_cerdos_despachados_bd}) no coincide. Muertos: {muertos_transporte}.")
-                                            final_status = 'ABIERTA'
-                                    elif muertos_transporte > 0:
-                                            # Si la cantidad coincide gracias a los muertos, el estado es CERRADA NOVEDAD
-                                            novedades.append(f"Cantidad ajustada por {muertos_transporte} muertos en transporte.")
-                                            final_status = 'CERRADA NOVEDAD'
+                if not despacho_info:
+                    novedades.append("No hay registros en despachoLotesGranjas.")
+                    final_status = 'ABIERTA'
+                else:
+                    # Validaciones de cantidad de cerdos
+                    cantidad_total_api = sum(r.get('cantidad', 0) for r in api_data if r.get('consecutivo_cercafe') == consecutivo_cercafe)
+                    if (cantidad_total_api + muertos_transporte) != total_cerdos_despachados_bd:
+                        novedades.append(f"Cantidad API ({cantidad_total_api}) vs BD ({total_cerdos_despachados_bd}) no coincide. Muertos: {muertos_transporte}.")
+                        final_status = 'ABIERTA'
+                    elif muertos_transporte > 0:
+                        # Si la cantidad coincide gracias a los muertos, el estado es CERRADA NOVEDAD
+                        novedades.append(f"Cantidad ajustada por {muertos_transporte} muertos en transporte.")
+                        final_status = 'CERRADA NOVEDAD'
 
-                                    # Validaciones de propietario
-                                    granja_id_bd = despacho_info['granja']
-                                    cursor.execute(
-                                            "SELECT E.ID_tributaria AS Nit_asociado FROM dhc.granjas C JOIN dhc.razon_social E ON C.RAZON_SOCIAL = E.ID WHERE C.ID = %s",
-                                            (granja_id_bd,)
-                                    )
-                                    nit_result = cursor.fetchone()
-                                    nit_asociado = nit_result['Nit_asociado'] if nit_result else None
-                                    
-                                    propietario_api = api_record.get('nit_propietario')
-                                    if nit_asociado and propietario_api != nit_asociado:
-                                            novedades.append(f"Propietario API ({propietario_api}) vs NIT asociado BD ({nit_asociado}) no coincide.")
-                                            final_status = 'ABIERTA'
-                                    elif not nit_asociado:
-                                            novedades.append(f"No se encontró NIT asociado para la granja ID ({granja_id_bd}).")
-                                            final_status = 'ABIERTA'
-                            
-                            # Determinar la novedad final y actualizar
-                            final_novedad = "S/N"
-                            if novedades:
-                                    final_novedad = " ".join(novedades)
-                                    if final_status == 'CERRADA':
-                                            final_status = 'CERRADA NOVEDAD'
+                    # NUEVA VALIDACIÓN: Comparar granja de la API con granja homologada de Frigotun
+                    granja_id_bd = despacho_info['granja']
+                    granja_nombre_frigotun = get_granja_info_frigotun(cursor, granja_id_bd)
+                    granja_nombre_api = api_record.get('granja')  # Campo 'granja' de la API
+                    
+                    if granja_nombre_api and granja_nombre_frigotun:
+                        # Comparación normalizada (sin espacios extra y en mayúsculas)
+                        granja_api_normalizada = granja_nombre_api.strip().upper()
+                        granja_frigotun_normalizada = granja_nombre_frigotun.strip().upper()
+                        
+                        if granja_api_normalizada != granja_frigotun_normalizada:
+                            novedades.append(f"Granja API ({granja_nombre_api}) vs Frigotun ({granja_nombre_frigotun}) no coincide.")
+                            final_status = 'ABIERTA'
+                            logging.warning(f"Granja no coincide para consecutivo {consecutivo_cercafe}: API='{granja_nombre_api}' vs Frigotun='{granja_nombre_frigotun}'")
+                        else:
+                            logging.info(f"Granja validada correctamente para consecutivo {consecutivo_cercafe}: '{granja_nombre_api}' = '{granja_nombre_frigotun}'")
+                    elif granja_nombre_api and not granja_nombre_frigotun:
+                        novedades.append(f"No se encontró homologación Frigotun para granja ID ({granja_id_bd}).")
+                        final_status = 'ABIERTA'
+                        logging.warning(f"No se encontró homologación Frigotun para granja ID {granja_id_bd}, consecutivo {consecutivo_cercafe}")
+                    elif not granja_nombre_api:
+                        novedades.append("No se recibió nombre de granja desde la API.")
+                        final_status = 'ABIERTA'
+                        logging.warning(f"No hay nombre de granja en API para consecutivo {consecutivo_cercafe}")
 
-                            update_query = "UPDATE recepcion SET orden = %s, novedad_orden = %s WHERE consecutivo_cercafe = %s"
-                            cursor.execute(update_query, (final_status, final_novedad, consecutivo_cercafe))
-                            logging.info(f"VALIDACIÓN: Consecutivo {consecutivo_cercafe} - Estado: {final_status}. Motivo: {final_novedad}")
+                    # Validaciones de propietario
+                    cursor.execute(
+                        "SELECT E.ID_tributaria AS Nit_asociado FROM dhc.granjas C JOIN dhc.razon_social E ON C.RAZON_SOCIAL = E.ID WHERE C.ID = %s",
+                        (granja_id_bd,)
+                    )
+                    nit_result = cursor.fetchone()
+                    nit_asociado = nit_result['Nit_asociado'] if nit_result else None
+                    
+                    propietario_api = api_record.get('nit_propietario')
+                    if nit_asociado and propietario_api != nit_asociado:
+                        novedades.append(f"Propietario API ({propietario_api}) vs NIT asociado BD ({nit_asociado}) no coincide.")
+                        final_status = 'ABIERTA'
+                    elif not nit_asociado:
+                        novedades.append(f"No se encontró NIT asociado para la granja ID ({granja_id_bd}).")
+                        final_status = 'ABIERTA'
+                
+                # Determinar la novedad final y actualizar
+                final_novedad = "S/N"
+                if novedades:
+                    final_novedad = " ".join(novedades)
+                    if final_status == 'CERRADA':
+                        final_status = 'CERRADA NOVEDAD'
+
+                update_query = "UPDATE recepcion SET orden = %s, novedad_orden = %s WHERE consecutivo_cercafe = %s"
+                cursor.execute(update_query, (final_status, final_novedad, consecutivo_cercafe))
+                logging.info(f"VALIDACIÓN: Consecutivo {consecutivo_cercafe} - Estado: {final_status}. Motivo: {final_novedad}")
 
     except Exception as e:
-            logging.error(f"Error durante la validación de órdenes: {e}")
+        logging.error(f"Error durante la validación de órdenes: {e}")
     finally:
-            if connection:
-                    connection.close()
+        if connection:
+            connection.close()
 
 
 def main():
-   
     logging.info("--- INICIANDO PROCESO DE SINCRONIZACIÓN ---")
     today = datetime.now()
     end_date = today.strftime("%Y-%m-%d")
     
-    start_date = (today - timedelta(days=7)).strftime("%Y-%m-%d")
+    start_date = (today - timedelta(days=5)).strftime("%Y-%m-%d")
 
     try:
-       
         api_data = fetch_data_from_api(start_date, end_date)
         
         if not api_data:
@@ -318,7 +351,7 @@ def main():
             connection.close()
         
         logging.info(f"Se encontraron {len(consecutivos_abiertos)} consecutivos abiertos para re-validar.")
-       
+        
         consecutivos_a_validar = consecutivos_modificados.union(consecutivos_abiertos)
         
         validate_and_update_orders(api_data, consecutivos_a_validar)

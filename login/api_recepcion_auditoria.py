@@ -4,17 +4,16 @@ from datetime import datetime, timedelta
 import traceback
 
 
-#### PRUEBAS ##########
 DB_CONFIG = {
-    'host': '192.168.9.134',
+    'host': '192.168.9.41',
     'user': 'DEV_USER',
     'password': 'DEV-USER12345',
     'database': 'prod_carnica',
-    'port': 3308,
+    'port': 3306,
     'charset': 'utf8mb4',
     'autocommit': True,
+    'cursorclass': pymysql.cursors.DictCursor
 }
-
 
 API_URL = "https://api.controlfrigo.com/api/v1/recepcion/ordenes"
 API_KEY = "a2217af9-7730-430b-8a28-32935108f49e"
@@ -32,7 +31,7 @@ def get_registro_ic_and_frigorifico(consecutivo_cercafe):
     if not consecutivo_cercafe: return None, None, None
     connection = pymysql.connect(**DB_CONFIG)
     with connection.cursor() as cursor:
-        query = "SELECT regic, frigorifico, granja FROM prodsostenible.despacholotesgranjas WHERE consecutivo_cercafe = %s LIMIT 1"
+        query = "SELECT regic, frigorifico, granja FROM prodsostenible.despachoLotesGranjas WHERE consecutivo_cercafe = %s LIMIT 1"
         cursor.execute(query, (consecutivo_cercafe,))
         result = cursor.fetchone()
     connection.close()
@@ -161,7 +160,7 @@ def validate_and_update_orders(data):
             #     motivo_abierta = "Falta registro IC."
             
             if not motivo_abierta:
-                cursor.execute("SELECT cerdosDespachados, granja FROM prodsostenible.despacholotesgranjas WHERE consecutivo_cercafe = %s", (consecutivo_cercafe,))
+                cursor.execute("SELECT cerdosDespachados, granja FROM prodsostenible.despachoLotesGranjas WHERE consecutivo_cercafe = %s", (consecutivo_cercafe,))
                 results_despacho = cursor.fetchall()
                 
                 cursor.execute("SELECT E.ID_tributaria FROM dhc.granjas C JOIN dhc.razon_social E ON C.RAZON_SOCIAL = E.ID WHERE C.ID = %s", (id_granja_db,))
