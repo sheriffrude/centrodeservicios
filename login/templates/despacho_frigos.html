@@ -166,6 +166,7 @@
                                 <div class="modal-body">
                                     <form id="formDespacho" method="POST" action="{% url 'registrar_despacho' %}">
                                         {% csrf_token %}
+                                        
                                         <!-- Consecutivo Despacho -->
                                         <div class="form-group">
                                             <label for="consecutivoDespacho">Consecutivo Cercafe:</label>
@@ -486,12 +487,14 @@
             }
             $('#formDespacho').on('submit', function (e) {
                 e.preventDefault();  // Evitar la recarga de la página
-                // --- INICIO DEL NUEVO CÓDIGO ---
-                // Combinar los dos campos del Registro ICA en el campo oculto
-                var part1 = $('#regica_part1').val();
-                var part2 = $('#regica_part2').val();
-                $('#regica').val(part1 + '-' + part2);
-                // --- FIN DEL NUEVO CÓDIGO ---
+               
+                var submitBtn = $(this).find('button[type="submit"]');
+                submitBtn.prop('disabled', true).text('Guardando...');
+                    // Combinar los dos campos del Registro ICA en el campo oculto
+                    var part1 = $('#regica_part1').val();
+                    var part2 = $('#regica_part2').val();
+                    $('#regica').val(part1 + '-' + part2);
+                    
                 var formData = $(this).serialize();  // Obtener los datos del formulario
                 $('#loadingLottie').hide();  // Mostrar el loader de carga
                 $('#Lottiex').hide();  // Asegurarse de que el error Lottie esté oculto
@@ -503,21 +506,20 @@
                     success: function (response) {
                         $('#loadingLottie').hide();  // Ocultar loader de carga
                         if (response.success) {
-                            // Mostrar modal de éxito utilizando SweetAlert
                             Swal.fire({
-                            title: 'Éxito',
-                            html: `
-                                <div style="text-align: center;">
-                                    <p>${response.message || 'El despacho se ha registrado correctamente'}</p>
-                                    <iframe src="https://lottie.host/embed/0253666a-e63d-4e63-817c-6bc0bd1186ef/eWKMqDv3fh.json"
-                                        style="border:none; width: 300px; height: 300px;"></iframe>
-                                </div>`,
-                            showConfirmButton: true,
-                            confirmButtonText: 'Aceptar'
-                        }).then((result) => {
-                            // Recargar la página para actualizar la tabla
-                            window.location.reload();
-                        });
+                                title: 'Éxito',
+                                html: `
+                                    <div style="text-align: center;">
+                                        <p>${response.message || 'El despacho se ha registrado correctamente'}</p>
+                                        <iframe src="https://lottie.host/embed/0253666a-e63d-4e63-817c-6bc0bd1186ef/eWKMqDv3fh.json"
+                                            style="border:none; width: 300px; height: 300px;"></iframe>
+                                    </div>`,
+                                showConfirmButton: false, // 🔹 No mostrar botón
+                                timer: 2500                // 🔹 Tiempo visible (2.5 segundos)
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        
                         } else {
                             // Mostrar modal de error utilizando SweetAlert
                             Swal.fire({
